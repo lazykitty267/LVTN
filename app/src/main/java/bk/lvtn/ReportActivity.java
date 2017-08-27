@@ -1,11 +1,16 @@
 package bk.lvtn;
 
 
+import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -20,7 +25,7 @@ import bk.lvtn.fragment_adapter.ReportAdapter;
 public class ReportActivity extends Fragment {
 
     ListView listRp;
-
+    FloatingActionButton add_b;
 
     public ReportActivity() {
         // Required empty public constructor
@@ -35,6 +40,7 @@ public class ReportActivity extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_report, container, false);
         listRp = (ListView)view.findViewById(R.id.listRp);
+        add_b = (FloatingActionButton)view.findViewById(R.id.fab_rp);
         adapter = new ReportAdapter(getActivity(),arrRp,R.layout.item_inlist_report);
         listRp.setAdapter(adapter);
         // Test listview
@@ -47,6 +53,20 @@ public class ReportActivity extends Fragment {
         arrRp.add(test);
         adapter.notifyDataSetChanged();
         //
+        add_b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Dialog dialog = new Dialog(getActivity());
+                dialog.setContentView(R.layout.list_template_dialog);
+                GridView lv = (GridView ) dialog.findViewById(R.id.list_template_d);
+                String names[] ={"A","B","C","D"};
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,names);
+                lv.setAdapter(adapter);
+                dialog.setCancelable(true);
+                dialog.setTitle("ListView");
+                dialog.show();
+            }
+        });
         return view;
     }
 

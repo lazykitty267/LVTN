@@ -9,5 +9,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="template fragment" />
-
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_tpl"
+        android:layout_width="62dp"
+        android:layout_height="57dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_input_add" />
 </FrameLayout>
