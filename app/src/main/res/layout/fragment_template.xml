@@ -5,10 +5,10 @@
     tools:context="bk.lvtn.TemplateActivity">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="template fragment" />
+        android:id="@+id/list_template"></ListView>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_tpl"
         android:layout_width="62dp"
