@@ -13,8 +13,8 @@ public class FieldActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.template1_layout);
         EditText a = (EditText) findViewById(R.id.company_name_input);
-        Animation scaleAnimation = new ScaleAnimation(0, 1, 1, 1);
-        scaleAnimation.setDuration(750);
-        a.startAnimation(scaleAnimation);
+//        Animation scaleAnimation = new ScaleAnimation(0, 1, 1, 1);
+//        scaleAnimation.setDuration(750);
+//        a.startAnimation(scaleAnimation);
     }
 }
