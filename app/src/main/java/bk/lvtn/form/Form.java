@@ -13,6 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Map;
 
 import com.itextpdf.text.Anchor;
 import com.itextpdf.text.BaseColor;
@@ -40,20 +41,20 @@ import com.itextpdf.text.pdf.events.PdfPCellEventForwarder;
 
 
 public class Form {
-	
+	//ArrayList<Map<String, String>> = new ArrayList<Map<String, String>>();
 	ArrayList<String> keyForm = new ArrayList<String>();
 	ArrayList<String> dataForm = new ArrayList<String>();
 	Form(){
-		this.keyForm.add("Thời gian bắt đầu".toLowerCase());
-		this.keyForm.add("Địa điểm".toLowerCase());
-		this.keyForm.add("Thành phần tham dự".toLowerCase());
-		this.keyForm.add("Chủ trì".toLowerCase());
-		this.keyForm.add("Thư ký".toLowerCase());
-		this.keyForm.add("Nội dung".toLowerCase());
-		this.keyForm.add("giờ".toLowerCase());
-		this.keyForm.add("ngày".toLowerCase());
-		this.keyForm.add("tháng".toLowerCase());
-		this.keyForm.add("năm".toLowerCase());
+		this.keyForm.add("Thời gian bắt đầu");
+		this.keyForm.add("Địa điểm");
+		this.keyForm.add("Thành phần tham dự");
+		this.keyForm.add("Chủ trì (chủ tọa)");
+		this.keyForm.add("Thư ký (người ghi biên bản)");
+		this.keyForm.add("Nội dung (theo diễn biến cuộc họp/hội nghị/hội thảo)");
+		this.keyForm.add("giờ");
+		this.keyForm.add("ngày");
+		this.keyForm.add("tháng");
+		this.keyForm.add("năm");
 		this.dataForm.add("");
 		this.dataForm.add("");
 		this.dataForm.add("");
@@ -65,13 +66,61 @@ public class Form {
 		this.dataForm.add("");
 		this.dataForm.add("");
 	}
+	Form(ArrayList<String> keyForm,ArrayList<String> dataForm){
+		for(int i=0;i<keyForm.size();i++){
+			this.keyForm.add(keyForm.get(i));
+			this.dataForm.add(dataForm.get(i));
+		}
+	}
 	
+	
+	public boolean isSameString(String s1, String s2){
+		int count = 0,total = 0;
+		String[] lStr1=s1.split("\\s");
+		String[] lStr2=s2.split("\\s");
+		ArrayList<String> Str = new ArrayList<String>();
+		if (s1.length()<s2.length()){
+			for (int i=0;i<lStr2.length;i++){
+				Str.add(lStr2[i]);
+			}
+			for (int i=0;i<lStr1.length;i++){
+				total = total + lStr1[i].length();
+				if (Str.contains(lStr1[i])){
+					count = count + lStr1[i].length();
+				}
+			}
+			//System.out.print((float)count/(float)total);
+			if ((float)count/(float)total > 0.85){
+				return true;
+			}
+			
+		}
+		else {
+			for (int i=0;i<lStr1.length;i++){
+				Str.add(lStr1[i]);
+			}
+			for (int i=0;i<lStr2.length;i++){
+				total = total + lStr2[i].length();
+				if (Str.contains(lStr2[i])){
+					count = count + lStr2[i].length();
+				}
+			}
+			//System.out.print((float)count/(float)total);
+			if ((float)count/(float)total > 0.85){
+				return true;
+			}
+		}
+		
+		return false;
+	}
 	public void getData(ArrayList<String> key, ArrayList<String> data){
 		for (int i = 0;i<key.size();i++){
 			String str = key.get(i).toLowerCase();
-			if (this.keyForm.contains(str)){
-				int j = this.keyForm.indexOf(str);
-				this.dataForm.set(j, data.get(i));
+			for (int k = 0;k<this.keyForm.size();k++){
+				if (this.isSameString(str, this.keyForm.get(k).toLowerCase())){
+					//int j = this.keyForm.indexOf(str);
+					this.dataForm.set(k, data.get(i));
+				}
 			}
 		}
 		
@@ -158,25 +207,25 @@ public class Form {
 
     		System.out.print(this.dataForm);
             
-            Paragraph line1 = new Paragraph("Thời gian bắt đầu: " + this.dataForm.get(0),font);
+            Paragraph line1 = new Paragraph(this.keyForm.get(0) +": " + this.dataForm.get(0),font);
             line1.setFirstLineIndent((float) 30.30);
             document.add(line1);
-            Paragraph line2 = new Paragraph("Địa điểm: " + this.dataForm.get(1),font);
+            Paragraph line2 = new Paragraph(this.keyForm.get(1) +": " + this.dataForm.get(1),font);
             line2.setFirstLineIndent((float) 30.30);
             document.add(line2);
-            Paragraph line3 = new Paragraph("Thành phần tham dự gồm:",font);
+            Paragraph line3 = new Paragraph(this.keyForm.get(2) +": ",font);
             line3.setFirstLineIndent((float) 30.30);
             document.add(line3);
 	        Paragraph line4 = new Paragraph(this.dataForm.get(2),font);
 	        line4.setIndentationLeft((float) 30.30);
 	        document.add(line4);
-            Paragraph line5 = new Paragraph("Chủ trì (chủ tọa): " + this.dataForm.get(3),font);
+            Paragraph line5 = new Paragraph(this.keyForm.get(3) +": " + this.dataForm.get(3),font);
             line5.setFirstLineIndent((float) 30.30);
             document.add(line5);
-            Paragraph line6 = new Paragraph("Thư ký (người ghi biên bản): " + this.dataForm.get(4),font);
+            Paragraph line6 = new Paragraph(this.keyForm.get(4) +": " + this.dataForm.get(4),font);
             line6.setFirstLineIndent((float) 30.30);
             document.add(line6);
-            Paragraph line7 = new Paragraph("Nội dung (theo diễn biến cuộc họp/hội nghị/hội thảo):",font);
+            Paragraph line7 = new Paragraph(this.keyForm.get(5) +": ",font);
             line7.setFirstLineIndent((float) 30.30);
             document.add(line7);
             for (int i = 1;i<5;i++){
@@ -184,7 +233,10 @@ public class Form {
 	            nd.setFirstLineIndent((float) 30.30);
 	            document.add(nd);
             }
-            Paragraph line8 = new Paragraph("Cuộc họp (hội nghị, hội thảo) kết thúc vào "+this.dataForm.get(6)+", ngày "+this.dataForm.get(7)+ " tháng "+this.dataForm.get(8)+ " năm " + this.dataForm.get(9) ,font);
+            Paragraph line8 = new Paragraph("Cuộc họp (hội nghị, hội thảo) kết thúc vào "+ 
+            this.dataForm.get(6)+ " " +this.keyForm.get(6) +", "+ this.keyForm.get(7)+ " " + this.dataForm.get(7)+ " "+ 
+            		this.keyForm.get(8)+ " "+this.dataForm.get(8)+ " "+ this.keyForm.get(9)+ " " + this.dataForm.get(9)+ " " ,font);
+            
             line8.setFirstLineIndent((float) 30.30);
             document.add(line8);
             
