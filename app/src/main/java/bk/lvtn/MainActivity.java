@@ -105,21 +105,21 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Button aa = (Button) findViewById(R.id.button);
-        aa.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent myIntent=new Intent(MainActivity.this, FieldActivity.class);
-                startActivity(myIntent);
-            }
-        });
-        Button bb = (Button) findViewById(R.id.read_excel);
-        bb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showFileChooser();
-            }
-        });
+//        Button aa = (Button) findViewById(R.id.button);
+//        aa.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent myIntent=new Intent(MainActivity.this, FieldActivity.class);
+//                startActivity(myIntent);
+//            }
+//        });
+//        Button bb = (Button) findViewById(R.id.read_excel);
+//        bb.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                showFileChooser();
+//            }
+//        });
 
 
 

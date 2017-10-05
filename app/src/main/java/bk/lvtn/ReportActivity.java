@@ -10,12 +10,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Date;
 
+import bk.lvtn.component.ReportHandle;
+import bk.lvtn.data.DataRow;
 import bk.lvtn.fragment_adapter.Report;
 import bk.lvtn.fragment_adapter.ReportAdapter;
 
@@ -52,7 +56,6 @@ public class ReportActivity extends Fragment {
         arrRp.add(test);
         arrRp.add(test);
         adapter.notifyDataSetChanged();
-        //
         add_b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -65,8 +68,25 @@ public class ReportActivity extends Fragment {
                 dialog.setCancelable(true);
                 dialog.setTitle("ListView");
                 dialog.show();
+                Button rp_select = (Button) dialog.findViewById(R.id.rp_select);
+                rp_select.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent myIntent = new Intent(getActivity(), FieldActivity.class);
+                        startActivity(myIntent);
+                    }
+                });
             }
         });
+        //test data
+        ReportHandle report = new ReportHandle();
+        report.addValue("company_name","Viettel");
+        report.addValue("time",new Date());
+        report.addValue("members",new String[] {"phu","long","nghia"});
+        report.addValue("noidung","aaaaaaaaaabbbbbbbbbbbbbbbb");
+        String[] stringValues = (String[])report.getListValue().get(2).value;
+        Toast.makeText(getContext(), "Path: "+stringValues,
+                Toast.LENGTH_SHORT).show();
         return view;
     }
 
