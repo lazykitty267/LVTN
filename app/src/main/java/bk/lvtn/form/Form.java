@@ -2,6 +2,10 @@ package bk.lvtn.form;
 
 
 
+import android.os.Environment;
+import android.util.Log;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -197,6 +201,7 @@ public class Form {
             	//t.getRow(0).getCells()[1].disableBorderSide(i);
             	//t.getRow(0).getCells()[0].disableBorderSide(i);
             }
+
 			Log.d("aaaaaaa","aaaaaaaaaaaaaaaa");
             document.add(t);
 
