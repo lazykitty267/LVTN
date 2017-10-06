@@ -1,7 +1,9 @@
 package bk.lvtn.form;
 
+import android.util.Log;
+import android.widget.Toast;
 
-
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -132,8 +134,8 @@ public class Form {
         try {
 
             // Tạo đối tượng PdfWriter
-        	
-        	FileOutputStream fos = new FileOutputStream("test.pdf");
+
+        	FileOutputStream fos = new FileOutputStream("/sdcard/Android/data/test.pdf");
             
         	try {
 				OutputStreamWriter writer = new OutputStreamWriter(fos, "UTF-8");
@@ -147,7 +149,7 @@ public class Form {
             // Mở file để thực hiện ghi
             document.open();
             // Thêm nội dung sử dụng add function
-            String base = "form/vuArial.ttf";
+            String base = "/res/vuArial.ttf";
             BaseFont courier = null;
 			try {
 				courier = BaseFont.createFont(base, BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
@@ -179,7 +181,7 @@ public class Form {
             	//t.getRow(0).getCells()[1].disableBorderSide(i);
             	//t.getRow(0).getCells()[0].disableBorderSide(i);
             }
-
+			Log.d("aaaaaaa","aaaaaaaaaaaaaaaa");
             document.add(t);
 
             String s = "\n\n\nBIÊN BẢN CUỘC HỌP GIAO BAN\n\n\n";
