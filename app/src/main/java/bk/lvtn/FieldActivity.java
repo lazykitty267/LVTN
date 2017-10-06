@@ -7,22 +7,49 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import java.io.File;
+import java.util.Date;
 
 import bk.lvtn.component.ReportHandle;
+import bk.lvtn.form.Form;
 
 public class FieldActivity extends AppCompatActivity {
-
+    Button saveForm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.template1_layout);
         EditText a = (EditText) findViewById(R.id.company_name_input);
+        saveForm = (Button) findViewById(R.id.save_report_button);
 //        Animation scaleAnimation = new ScaleAnimation(0, 1, 1, 1);
 //        scaleAnimation.setDuration(750);
 //        a.startAnimation(scaleAnimation);
+        // get app dir
+        saveForm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Form form = new Form();
+                ReportHandle report = new ReportHandle();
+                report.addValue("Địa điểm",new String[] {"Viettel"});
+                report.addValue("Thời gian bắt đầu",new String[]{new Date().toString()});
+                report.addValue("Thành phần tham dự",new String[] {"phu","long","nghia"});
+                report.addValue("Chủ trì",new String[] {"aaaaaaaaaabbbbbbbbbbbbbbbb"});
+                form.getData(report);
+                try {
+                    form.createForm1();
+                }
+                catch (Exception e){
+
+                }
+            }
+        });
 
     }
     @Override

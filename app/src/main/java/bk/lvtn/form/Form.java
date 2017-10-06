@@ -2,10 +2,6 @@ package bk.lvtn.form;
 
 
 
-import android.os.Environment;
-import android.util.Log;
-
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,7 +23,6 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.pdf.codec.Base64;
 
 import bk.lvtn.component.ReportHandle;
 import bk.lvtn.data.DataRow;
@@ -170,7 +165,7 @@ public class Form {
             // Mở file để thực hiện ghi
             document.open();
             // Thêm nội dung sử dụng add function
-            String base = "form/vuArial.ttf";
+            String base = "/res/vuArial.ttf";
             BaseFont courier = null;
 			try {
 				courier = BaseFont.createFont(base, BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
@@ -202,7 +197,7 @@ public class Form {
             	//t.getRow(0).getCells()[1].disableBorderSide(i);
             	//t.getRow(0).getCells()[0].disableBorderSide(i);
             }
-
+			Log.d("aaaaaaa","aaaaaaaaaaaaaaaa");
             document.add(t);
 
             String s = "\n\n\nBIÊN BẢN CUỘC HỌP GIAO BAN\n\n\n";
