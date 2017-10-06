@@ -2,12 +2,19 @@ package bk.lvtn.form;
 
 
 
+import android.os.Environment;
+import android.util.Log;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.itextpdf.text.BaseColor;
@@ -20,6 +27,7 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.codec.Base64;
 
 import bk.lvtn.component.ReportHandle;
 import bk.lvtn.data.DataRow;
@@ -132,15 +140,30 @@ public class Form {
         try {
 
             // Tạo đối tượng PdfWriter
-        	
-        	FileOutputStream fos = new FileOutputStream("test.pdf");
+
+			File pdfFolder = new File(Environment.getExternalStoragePublicDirectory(
+					Environment.DIRECTORY_DOCUMENTS), "pdfdemo");
+			if (!pdfFolder.exists()) {
+				pdfFolder.mkdir();
+			}
+
+			//Create time stamp
+
+			Date date = new Date() ;
+			String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(date);
+
+			File myFile = new File(pdfFolder + timeStamp + ".pdf");
+
+			OutputStream fos = new FileOutputStream(myFile);
+
+			/*FileOutputStream fos = new FileOutputStream("test.pdf");
             
         	try {
 				OutputStreamWriter writer = new OutputStreamWriter(fos, "UTF-8");
 			} catch (UnsupportedEncodingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			}
+			}*/
         	
             PdfWriter.getInstance(document, fos);
 
