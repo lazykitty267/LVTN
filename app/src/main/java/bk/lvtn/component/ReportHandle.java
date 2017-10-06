@@ -23,7 +23,7 @@ public class ReportHandle {
         this.listValue = listValue;
     }
 
-    public void addValue(String key,Object value){
+    public void addValue(String key,String[] value){
         DataRow a = new DataRow(key,value);
         listValue.add(a);
     }

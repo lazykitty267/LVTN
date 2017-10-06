@@ -10,7 +10,7 @@ import java.util.Date;
 public class DataRow {
     private String key;
 
-    private String getKey() {
+    public String getKey() {
         return key;
     }
 
@@ -18,16 +18,16 @@ public class DataRow {
         this.key = key;
     }
 
-    public Object getValue() {
+    public String[] getValue() {
         return value;
     }
 
-    public void setValue(Object value) {
+    public void setValue(String[] value) {
         this.value = value;
     }
 
-    public Object value;
-    public DataRow(String key,Object value){
+    public String[] value;
+    public DataRow(String key,String[] value){
         this.key = key;
         this.value = value;
     }

@@ -20,6 +20,7 @@ import java.util.Date;
 
 import bk.lvtn.component.ReportHandle;
 import bk.lvtn.data.DataRow;
+import bk.lvtn.form.Form;
 import bk.lvtn.fragment_adapter.Report;
 import bk.lvtn.fragment_adapter.ReportAdapter;
 
@@ -79,11 +80,19 @@ public class ReportActivity extends Fragment {
             }
         });
         //test data
+        Form form = new Form();
         ReportHandle report = new ReportHandle();
-        report.addValue("company_name","Viettel");
-        report.addValue("time",new Date());
-        report.addValue("members",new String[] {"phu","long","nghia"});
-        report.addValue("noidung","aaaaaaaaaabbbbbbbbbbbbbbbb");
+        report.addValue("Địa điểm",new String[] {"Viettel"});
+        report.addValue("Thời gian bắt đầu",new String[]{new Date().toString()});
+        report.addValue("Thành phần tham dự",new String[] {"phu","long","nghia"});
+        report.addValue("Chủ trì",new String[] {"aaaaaaaaaabbbbbbbbbbbbbbbb"});
+        form.getData(report);
+        try {
+            form.createForm1();
+        }
+        catch (Exception e){
+
+        }
         String[] stringValues = (String[])report.getListValue().get(2).value;
         Toast.makeText(getContext(), "Path: "+stringValues,
                 Toast.LENGTH_SHORT).show();

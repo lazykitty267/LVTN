@@ -1,78 +1,68 @@
-package form;
+package bk.lvtn.form;
 
 
 
-import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.BufferedOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
 
-import com.itextpdf.text.Anchor;
 import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Chapter;
-import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
-import com.itextpdf.text.FontFactory;
-import com.itextpdf.text.List;
-import com.itextpdf.text.ListItem;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Section;
-import com.itextpdf.text.TabSettings;
 import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.CMYKColor;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPCellEvent;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.pdf.events.PdfPCellEventForwarder;
 
+import bk.lvtn.component.ReportHandle;
+import bk.lvtn.data.DataRow;
 
 public class Form {
 	//ArrayList<Map<String, String>> = new ArrayList<Map<String, String>>();
 	ArrayList<String> keyForm = new ArrayList<String>();
 	ArrayList<String> dataForm = new ArrayList<String>();
-	Form(){
-		this.keyForm.add("Thời gian bắt đầu");
-		this.keyForm.add("Địa điểm");
-		this.keyForm.add("Thành phần tham dự");
-		this.keyForm.add("Chủ trì (chủ tọa)");
-		this.keyForm.add("Thư ký (người ghi biên bản)");
-		this.keyForm.add("Nội dung (theo diễn biến cuộc họp/hội nghị/hội thảo)");
-		this.keyForm.add("giờ");
-		this.keyForm.add("ngày");
-		this.keyForm.add("tháng");
-		this.keyForm.add("năm");
-		this.dataForm.add("");
-		this.dataForm.add("");
-		this.dataForm.add("");
-		this.dataForm.add("");
-		this.dataForm.add("");
-		this.dataForm.add("");
-		this.dataForm.add("");
-		this.dataForm.add("");
-		this.dataForm.add("");
-		this.dataForm.add("");
+
+	private ReportHandle report = new ReportHandle();
+
+	public Form(){
+		this.report.addValue("Thời gian bắt đầu",new String[] {""});
+		this.report.addValue("Địa điểm",new String[] {""});
+		this.report.addValue("Thành phần tham dự",new String[] {""});
+		this.report.addValue("Chủ trì (chủ tọa)",new String[] {""});
+		this.report.addValue("Thư ký (người ghi biên bản)",new String[] {""});
+		this.report.addValue("Nội dung (theo diễn biến cuộc họp/hội nghị/hội thảo)",new String[] {""});
+		this.report.addValue("giờ",new String[] {""});
+		this.report.addValue("ngày",new String[] {""});
+		this.report.addValue("tháng",new String[] {""});
+		this.report.addValue("năm",new String[] {""});
+		this.change();
 	}
-	Form(ArrayList<String> keyForm,ArrayList<String> dataForm){
-		for(int i=0;i<keyForm.size();i++){
-			this.keyForm.add(keyForm.get(i));
-			this.dataForm.add(dataForm.get(i));
+	public Form(ReportHandle report){
+		this.report = report;
+		this.change();
+	}
+	private void change(){
+		List<DataRow> list = this.report.getListValue();
+		for (int i=0;i<list.size();i++){
+			this.keyForm.add(list.get(i).getKey());
+			this.dataForm.add(list.get(i).getValue().toString());
 		}
 	}
-	
+
+	private String changeToString(String[] sList){
+		String s = new String();
+		for (int i = 0;i<sList.length;i++){
+			s = s + sList[i] + "\n";
+		}
+		return s;
+	}
 	
 	public boolean isSameString(String s1, String s2){
 		int count = 0,total = 0;
@@ -113,13 +103,14 @@ public class Form {
 		
 		return false;
 	}
-	public void getData(ArrayList<String> key, ArrayList<String> data){
-		for (int i = 0;i<key.size();i++){
-			String str = key.get(i).toLowerCase();
+	public void getData(ReportHandle report){
+		List<DataRow> list = this.report.getListValue();
+		for (int i = 0;i<list.size();i++){
+			String str = list.get(i).getKey().toLowerCase();
 			for (int k = 0;k<this.keyForm.size();k++){
 				if (this.isSameString(str, this.keyForm.get(k).toLowerCase())){
 					//int j = this.keyForm.indexOf(str);
-					this.dataForm.set(k, data.get(i));
+					this.dataForm.set(k, this.changeToString(list.get(i).getValue()));
 				}
 			}
 		}
@@ -142,7 +133,7 @@ public class Form {
 
             // Tạo đối tượng PdfWriter
         	
-        	FileOutputStream fos = new FileOutputStream("D:/TTTN/LVTN/test.pdf");
+        	FileOutputStream fos = new FileOutputStream("test.pdf");
             
         	try {
 				OutputStreamWriter writer = new OutputStreamWriter(fos, "UTF-8");
