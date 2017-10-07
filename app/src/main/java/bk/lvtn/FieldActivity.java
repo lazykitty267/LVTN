@@ -3,6 +3,7 @@ package bk.lvtn;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.Date;
+import java.util.jar.Manifest;
 
 import bk.lvtn.component.ReportHandle;
 import bk.lvtn.form.Form;
@@ -28,10 +30,6 @@ public class FieldActivity extends AppCompatActivity {
         setContentView(R.layout.template1_layout);
         EditText a = (EditText) findViewById(R.id.company_name_input);
         saveForm = (Button) findViewById(R.id.save_report_button);
-//        Animation scaleAnimation = new ScaleAnimation(0, 1, 1, 1);
-//        scaleAnimation.setDuration(750);
-//        a.startAnimation(scaleAnimation);
-        // get app dir
         saveForm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -43,7 +41,10 @@ public class FieldActivity extends AppCompatActivity {
                 report.addValue("Chủ trì",new String[] {"aaaaaaaaaabbbbbbbbbbbbbbbb"});
                 form.getData(report);
                 try {
-                    form.createForm1();
+                    // lưu form thành pdf
+                    // cần test file pdf có lưu trong dir : getFilesDir().getAbsolutePath()
+                    // ko
+                    form.createForm1(getFilesDir().getAbsolutePath().toString());
                 }
                 catch (Exception e){
 

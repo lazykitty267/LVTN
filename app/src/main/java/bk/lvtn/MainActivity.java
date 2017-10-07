@@ -1,5 +1,6 @@
 package bk.lvtn;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -7,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity
                     // Get the Uri of the selected file
                     Uri uri = data.getData();
                     String a = data.getDataString();
-                    Log.d("aaaaaaaaaaaaaaaaaa", "File Uri: " + a);
+                    Log.d("aaaaaaaaaaaaaaaaaa", "File Uri: " + uri.getPath());
                     // Get the path
                     String path="";
                     try {
@@ -105,6 +107,10 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+//        ActivityCompat.requestPermissions(MainActivity.this,
+//                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},
+//                1);
 //        Button aa = (Button) findViewById(R.id.button);
 //        aa.setOnClickListener(new View.OnClickListener() {
 //            @Override
