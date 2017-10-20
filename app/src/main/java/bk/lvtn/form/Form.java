@@ -30,7 +30,7 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.pdf.codec.Base64;
+
 
 import bk.lvtn.component.ReportHandle;
 import bk.lvtn.data.DataRow;
@@ -65,7 +65,7 @@ public class Form {
         List<DataRow> list = this.report.getListValue();
         for (int i = 0; i < list.size(); i++) {
             this.keyForm.add(list.get(i).getKey());
-            this.dataForm.add(list.get(i).getValue().toString());
+            this.dataForm.add(changeToString(list.get(i).getValue()));
         }
     }
 
@@ -117,13 +117,17 @@ public class Form {
     }
 
     public void getData(ReportHandle report) {
-        List<DataRow> list = this.report.getListValue();
+        List<DataRow> list = report.getListValue();
         for (int i = 0; i < list.size(); i++) {
             String str = list.get(i).getKey().toLowerCase();
             for (int k = 0; k < this.keyForm.size(); k++) {
                 if (this.isSameString(str, this.keyForm.get(k).toLowerCase())) {
                     //int j = this.keyForm.indexOf(str);
+                    int a =5;
                     this.dataForm.set(k, this.changeToString(list.get(i).getValue()));
+
+                    String as =dataForm.get(k);
+                    Log.d("dataform",as);
                 }
             }
         }

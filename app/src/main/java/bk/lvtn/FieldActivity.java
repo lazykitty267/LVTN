@@ -42,6 +42,7 @@ public class FieldActivity extends AppCompatActivity {
                 report.addValue("Thời gian bắt đầu",new String[]{new Date().toString()});
                 report.addValue("Thành phần tham dự",new String[] {"phu","long","nghia"});
                 report.addValue("Chủ trì",new String[] {"aaaaaaaaaabbbbbbbbbbbbbbbb"});
+
                 form.getData(report);
                 try {
                     // lưu form thành pdf
