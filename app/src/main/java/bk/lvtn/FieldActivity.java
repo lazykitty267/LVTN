@@ -3,10 +3,12 @@ package bk.lvtn;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -16,6 +18,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.jar.Manifest;
 
@@ -44,9 +47,19 @@ public class FieldActivity extends AppCompatActivity {
                     // lưu form thành pdf
                     // cần test file pdf có lưu trong dir : getFilesDir().getAbsolutePath()
                     // ko
-                    form.createForm1(getFilesDir().getAbsolutePath().toString());
+//                    form.createForm1(getFilesDir().getAbsolutePath().toString());
+                    ActivityCompat.requestPermissions(FieldActivity.this,
+                            new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            1);
+
+                    InputStream is = getAssets().open("vuArial.ttf");
+
+
+                    form.createForm1(Environment.getExternalStorageDirectory().getAbsolutePath().toString(),is);
                 }
                 catch (Exception e){
+                    Log.d("aaa",e.toString());
+
 
                 }
             }
