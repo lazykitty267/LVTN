@@ -155,9 +155,7 @@ public class Form {
             if (!pdfFolder.exists()) {
                 pdfFolder.mkdir();
             }
-//            File len =pdfFolder.listFiles()[1];
-//            File le =pdfFolder.listFiles()[0];
-//            Log.d("listfile", String.valueOf(len));
+
             //Create time stamp
 
             Date date = new Date();
@@ -169,18 +167,7 @@ public class Form {
             } catch (Exception e) {
                 Log.d("create new file", e.toString());
             }
-            Boolean a = myFile.isFile();
-            long bbb = myFile.getUsableSpace();
             OutputStream fos = new FileOutputStream(myFile);
-
-			/*FileOutputStream fos = new FileOutputStream("test.pdf");
-            
-        	try {
-				OutputStreamWriter writer = new OutputStreamWriter(fos, "UTF-8");
-			} catch (UnsupportedEncodingException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}*/
 
             PdfWriter.getInstance(document, fos);
 
@@ -193,8 +180,6 @@ public class Form {
                 int size = is.available();
                 byte[] buffer = new byte[size];
                 is.read(buffer);
-
-//                courier = BaseFont.createFont(base, BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
                 courier = BaseFont.createFont("vuArial.ttf", BaseFont.IDENTITY_H, true, false, buffer, null);
             } catch (IOException e) {
 
