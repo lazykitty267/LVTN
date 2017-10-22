@@ -72,6 +72,9 @@ public class Form {
     private String changeToString(String[] sList) {
         String s = new String();
         for (int i = 0; i < sList.length; i++) {
+            if(sList.length > 1){
+                s = s + (i+1)+ ". ";
+            }
             s = s + sList[i] + "\n";
         }
         return s;
@@ -228,7 +231,7 @@ public class Form {
             Font font = new Font(courier, 12, Font.NORMAL, BaseColor.BLACK);
 
             System.out.print(this.dataForm);
-
+            /*
             Paragraph line1 = new Paragraph(this.keyForm.get(0) + ": " + this.dataForm.get(0), font);
             line1.setFirstLineIndent((float) 30.30);
             document.add(line1);
@@ -261,7 +264,13 @@ public class Form {
 
             line8.setFirstLineIndent((float) 30.30);
             document.add(line8);
+            */
 
+            for (int i = 0;i<keyForm.size();i++){
+                Paragraph line1 = new Paragraph(this.keyForm.get(i) + ": " + this.dataForm.get(i), font);
+                line1.setFirstLineIndent((float) 30.30);
+                document.add(line1);
+            }
 
             // Đóng File
             document.close();
