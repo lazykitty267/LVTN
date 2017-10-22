@@ -23,6 +23,8 @@ import bk.lvtn.data.DataRow;
 import bk.lvtn.form.Form;
 import bk.lvtn.fragment_adapter.Report;
 import bk.lvtn.fragment_adapter.ReportAdapter;
+import bk.lvtn.fragment_adapter.Template;
+import bk.lvtn.fragment_adapter.TemplateAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -63,9 +65,20 @@ public class ReportActivity extends Fragment {
                 Dialog dialog = new Dialog(getActivity());
                 dialog.setContentView(R.layout.list_template_dialog);
                 GridView lv = (GridView ) dialog.findViewById(R.id.list_template_d);
-                String names[] ={"A","B","C","D"};
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,names);
+                ArrayList<Template> arrTp = new ArrayList<Template>();
+
+
+
+                TemplateAdapter adapter = new TemplateAdapter(getActivity(),arrTp,R.layout.item_inlist_template);
                 lv.setAdapter(adapter);
+
+                Template test = new Template();
+                test.setTp_name("Báo cáo kết quả");
+                test.setImag_src(R.drawable.ic_note_black_24dp);
+                arrTp.add(test);
+                arrTp.add(test);
+                adapter.notifyDataSetChanged();
+
                 dialog.setCancelable(true);
                 dialog.setTitle("ListView");
                 dialog.show();

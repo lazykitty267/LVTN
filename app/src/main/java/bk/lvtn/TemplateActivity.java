@@ -33,7 +33,7 @@ public class TemplateActivity extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_template, container, false);
         GridView gridView = (GridView)view.findViewById(R.id.gridview);
-        adapter = new TemplateAdapter(getActivity(), arrTp);
+        adapter = new TemplateAdapter(getActivity(), arrTp,R.layout.item_inlist_template);
         gridView.setAdapter(adapter);
 
         // Test gridview
