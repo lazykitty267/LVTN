@@ -25,7 +25,16 @@ import android.support.v4.app.FragmentTransaction;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.github.angads25.filepicker.controller.DialogSelectionListener;
+import com.github.angads25.filepicker.model.DialogConfigs;
+import com.github.angads25.filepicker.model.DialogProperties;
+import com.github.angads25.filepicker.view.FilePickerDialog;
+
+import java.io.File;
+import java.net.URI;
 import java.net.URISyntaxException;
+
+import bk.lvtn.component.ExcelHandle;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
@@ -33,73 +42,106 @@ public class MainActivity extends AppCompatActivity
     FragmentTransaction fragmentTransaction;
     //Test file chooser
     private static final int FILE_SELECT_CODE = 0;
-    private void showFileChooser() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
+//    private void showFileChooser() {
+//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//        intent.setType("*/*");
+//        intent.addCategory(Intent.CATEGORY_OPENABLE);
+//
+//        try {
+//            startActivityForResult(
+//                    Intent.createChooser(intent, "Select a File to Upload"),
+//                    FILE_SELECT_CODE);
+//        } catch (android.content.ActivityNotFoundException ex) {
+//            // Potentially direct the user to the Market with a Dialog
+//            Toast.makeText(this, "Please install a File Manager.",
+//                    Toast.LENGTH_SHORT).show();
+//        }
+//    }
+//
+//    public static String getPath(Context context, Uri uri) throws URISyntaxException {
+//        if ("content".equalsIgnoreCase(uri.getScheme())) {
+//            String[] projection = { "_data" };
+//            Cursor cursor = null;
+//
+//            try {
+//                cursor = context.getContentResolver().query(uri, projection, null, null, null);
+//                int column_index = cursor.getColumnIndexOrThrow("_data");
+//                if (cursor.moveToFirst()) {
+//                    String bb= cursor.getString(column_index);
+//                    return cursor.getString(column_index);
+//                }
+//            } catch (Exception e) {
+//                // Eat it
+//                e.printStackTrace();
+//            }
+//        }
+//        else if ("file".equalsIgnoreCase(uri.getScheme())) {
+//            return uri.getPath();
+//        }
+//
+//        return null;
+//    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        switch (requestCode) {
+//            case FILE_SELECT_CODE:
+//                if (resultCode == RESULT_OK) {
+//                    // Get the Uri of the selected file
+//                    Uri uri = data.getData();
+//                    String a = data.getDataString();
+//
+//                    String path1 = uri.getPath();
+//
+//                    Toast.makeText(this, "Path: "+uri.getPath(),
+//                            Toast.LENGTH_SHORT).show();
+//                    // Get the path
+//                    String path="";
+//                    try {
+//                        File file = new File(uri.getPath());
+//                        boolean aaa=file.isFile();
+//                        path = getPath(this, uri);
+//                    }
+//                    catch (URISyntaxException e){
+//                        Log.d("",e.toString());
+//                    }
+//
+//                    // Get the file instance
+//                    // File file = new File(path);
+//                    // Initiate the upload
+//                }
+//                break;
+//        }
+//        super.onActivityResult(requestCode, resultCode, data);
+//    }
 
-        try {
-            startActivityForResult(
-                    Intent.createChooser(intent, "Select a File to Upload"),
-                    FILE_SELECT_CODE);
-        } catch (android.content.ActivityNotFoundException ex) {
-            // Potentially direct the user to the Market with a Dialog
-            Toast.makeText(this, "Please install a File Manager.",
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public static String getPath(Context context, Uri uri) throws URISyntaxException {
-        if ("content".equalsIgnoreCase(uri.getScheme())) {
-            String[] projection = { "_data" };
-            Cursor cursor = null;
-
-            try {
-                cursor = context.getContentResolver().query(uri, projection, null, null, null);
-                int column_index = cursor.getColumnIndexOrThrow("_data");
-                if (cursor.moveToFirst()) {
-                    return cursor.getString(column_index);
-                }
-            } catch (Exception e) {
-                // Eat it
+    private void test(){
+        DialogProperties properties = new DialogProperties();
+        properties.selection_mode = DialogConfigs.SINGLE_MODE;
+        properties.selection_type = DialogConfigs.FILE_SELECT;
+        properties.root = new File(DialogConfigs.DEFAULT_DIR);
+        properties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
+        properties.offset = new File(DialogConfigs.DEFAULT_DIR);
+        properties.extensions = null;
+        FilePickerDialog dialog = new FilePickerDialog(MainActivity.this,properties);
+        dialog.setTitle("Select a File");
+        dialog.setDialogSelectionListener(new DialogSelectionListener() {
+            @Override
+            public void onSelectedFilePaths(String[] files) {
+                //files is the array of the paths of files selected by the Application User.
+                Log.d("path",files[0].toString());
+                File file = new File(files[0].toString());
+                boolean aaa=file.isFile();
+                boolean b=file.isFile();
+                ExcelHandle excelfile = new ExcelHandle(files[0].toString());
             }
-        }
-        else if ("file".equalsIgnoreCase(uri.getScheme())) {
-            return uri.getPath();
-        }
 
-        return null;
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case FILE_SELECT_CODE:
-                if (resultCode == RESULT_OK) {
-                    // Get the Uri of the selected file
-                    Uri uri = data.getData();
-                    String a = data.getDataString();
-                    Log.d("aaaaaaaaaaaaaaaaaa", "File Uri: " + uri.getPath());
-                    // Get the path
-                    String path="";
-                    try {
-                        path = getPath(this, uri);
-                    }
-                    catch (URISyntaxException e){
-                        Log.d("",e.toString());
-                    }
-                    Toast.makeText(this, "Path: "+path,
-                            Toast.LENGTH_SHORT).show();
-                    // Get the file instance
-                    // File file = new File(path);
-                    // Initiate the upload
-                }
-                break;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
+        });
+        dialog.show();
 
+    }
 
     //end of test
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,9 +150,9 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
-//        ActivityCompat.requestPermissions(MainActivity.this,
-//                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},
-//                1);
+        ActivityCompat.requestPermissions(MainActivity.this,
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                1);
 //        Button aa = (Button) findViewById(R.id.button);
 //        aa.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -123,7 +165,7 @@ public class MainActivity extends AppCompatActivity
 //        bb.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
-//                showFileChooser();
+//                test();
 //            }
 //        });
 
