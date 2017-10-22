@@ -86,7 +86,7 @@ public class ReportActivity extends Fragment {
                 rp_select.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent myIntent = new Intent(getActivity(), FieldActivity.class);
+                        Intent myIntent = new Intent(getActivity(), ReportDetailActivity.class);
                         startActivity(myIntent);
                     }
                 });
