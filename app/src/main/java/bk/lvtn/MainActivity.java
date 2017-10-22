@@ -153,21 +153,21 @@ public class MainActivity extends AppCompatActivity
         ActivityCompat.requestPermissions(MainActivity.this,
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 1);
-        Button aa = (Button) findViewById(R.id.button);
-        aa.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent myIntent=new Intent(MainActivity.this, FieldActivity.class);
-                startActivity(myIntent);
-            }
-        });
-        Button bb = (Button) findViewById(R.id.read_excel);
-        bb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                test();
-            }
-        });
+//        Button aa = (Button) findViewById(R.id.button);
+//        aa.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent myIntent=new Intent(MainActivity.this, FieldActivity.class);
+//                startActivity(myIntent);
+//            }
+//        });
+//        Button bb = (Button) findViewById(R.id.read_excel);
+//        bb.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                test();
+//            }
+//        });
 
 
 

@@ -34,19 +34,12 @@ public class ReportAdapter extends ArrayAdapter<Report> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         LayoutInflater layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = layoutInflater.inflate(resId,null);
-//        TextView totalTime = (TextView)convertView.findViewById(R.id);
-//        TextView currentTime = (TextView)convertView.findViewById(R.id.currentTime);
-//        TextView noId = (TextView)convertView.findViewById(R.id.noId);
         TextView reportName = (TextView)convertView.findViewById(R.id.rpName);
         TextView reportDetail = (TextView) convertView.findViewById(R.id.rpDetail);
         Report report = listReport.get(position);
         reportName.setText(report.getRp_name());
         reportDetail.setText(report.getRp_detail());
 
-//        Lap lap = lstLap.get(position);
-//        totalTime.setText(lap.getTime());
-//        currentTime.setText(lap.getTimeSpace());
-//        noId.setText(lap.getId());
 
         return convertView;
 
