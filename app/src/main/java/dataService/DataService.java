@@ -12,8 +12,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import entity.PdfFile;
 import entity.Report;
@@ -21,15 +25,14 @@ import entity.Report;
 /**
  * Created by lazyk on 10/3/2017.
  */
-
 public class DataService {
-    private DatabaseConnection databaseConnection;
+    private DatabaseConnection databaseConnection = new DatabaseConnection();
 
     /**
-     * @param data
      * @param pdfFile có id băng với id của Report
      */
-    public void uploadFile(Uri data, final PdfFile pdfFile) {
+    public void uploadFile(File file, final PdfFile pdfFile) {
+        Uri data = Uri.fromFile(file);
         StorageReference storageReference = databaseConnection.connectPdfFileDatabase();
         savePdf(pdfFile);
         final StorageReference sRef = storageReference.child(pdfFile.getId() + "_" + pdfFile.getName() + ".pdf");
@@ -51,8 +54,16 @@ public class DataService {
                 });
     }
 
-    public Uri downloadFile(PdfFile pdfFile) {
-        return Uri.parse(pdfFile.getUrl());
+    public File downloadFile(PdfFile pdfFile) {
+        try {
+            StorageReference storageReference = databaseConnection.connectPdfFileDatabase();
+            File localFIle = File.createTempFile(pdfFile.getId()+"_"+pdfFile.getName(),"pdf");
+            storageReference.child(pdfFile.getId()+"_"+pdfFile.getName()+".pdf").getFile(localFIle);
+            return localFIle;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public boolean saveReport(Report report) {
