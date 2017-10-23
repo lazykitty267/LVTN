@@ -18,10 +18,10 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Date;
 
-import bk.lvtn.fragment_adapter.Report;
 import bk.lvtn.fragment_adapter.ReportAdapter;
 import bk.lvtn.fragment_adapter.Template;
 import bk.lvtn.fragment_adapter.TemplateAdapter;
+import entity.Report;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,10 +49,10 @@ public class ReportActivity extends Fragment {
         listRp.setAdapter(adapter);
         // Test listview
         Report test = new Report();
-        test.setAuthor_name("Phu");
-        test.setRp_name("Báo cáo kết quả thường kỳ");
+        test.setUserName("Phu");
+        test.setReportName("Báo cáo kết quả thường kỳ");
         Date a = new Date();
-        test.setCreate_date(a);
+//        test.setCreate_date(a);
         arrRp.add(test);
         arrRp.add(test);
         adapter.notifyDataSetChanged();

@@ -1,23 +1,14 @@
 package bk.lvtn;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.speech.RecognizerIntent;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Date;
 
-import bk.lvtn.R;
 import bk.lvtn.fragment_adapter.Field;
 import bk.lvtn.fragment_adapter.FieldAdapter;
-import bk.lvtn.fragment_adapter.Report;
-import bk.lvtn.fragment_adapter.ReportAdapter;
 
 public class ReportDetailActivity extends AppCompatActivity {
     ListView listField;

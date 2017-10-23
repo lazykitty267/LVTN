@@ -271,7 +271,7 @@ public class Form {
 
             // Đóng File
             document.close();
-            long ccc = myFile.getUsableSpace();
+//            long ccc = myFile.getUsableSpace();
             long c = 1;
 
 
