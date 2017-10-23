@@ -2,6 +2,8 @@ package bk.lvtn.form;
 
 
 import android.Manifest;
+import android.content.UriMatcher;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -276,6 +278,12 @@ public class Form {
             document.close();
             long ccc = myFile.getUsableSpace();
             long c = 1;
+
+
+
+            Uri.fromFile(myFile);
+
+
         } catch (FileNotFoundException | DocumentException e) {
             e.printStackTrace();
         }

@@ -2,10 +2,12 @@ package bk.lvtn;
 
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,8 +69,6 @@ public class ReportActivity extends Fragment {
                 GridView lv = (GridView ) dialog.findViewById(R.id.list_template_d);
                 ArrayList<Template> arrTp = new ArrayList<Template>();
 
-
-
                 TemplateAdapter adapter = new TemplateAdapter(getActivity(),arrTp,R.layout.item_inlist_template);
                 lv.setAdapter(adapter);
 
@@ -86,8 +86,34 @@ public class ReportActivity extends Fragment {
                 rp_select.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent myIntent = new Intent(getActivity(), ReportDetailActivity.class);
-                        startActivity(myIntent);
+                        final Intent myIntent = new Intent(getActivity(), FieldActivity.class);
+                        final Bundle bundle = new Bundle();
+                        AlertDialog alertbox = new AlertDialog.Builder(getActivity())
+                                .setMessage("Bạn có muốn thêm dữ liệu kèm theo?")
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+                                    // do something when the button is clicked
+                                    public void onClick(DialogInterface arg0, int arg1) {
+                                        bundle.putBoolean("isAdd",true);
+                                        myIntent.putExtra("Stream", bundle);
+                                        startActivity(myIntent);
+                                        //close();
+
+
+                                    }
+                                })
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+                                    // do something when the button is clicked
+                                    public void onClick(DialogInterface arg0, int arg1) {
+                                        bundle.putBoolean("isAdd",false);
+                                        myIntent.putExtra("Stream", bundle);
+                                        startActivity(myIntent);
+                                    }
+                                })
+                                .show();
+
+
                     }
                 });
             }
