@@ -129,7 +129,7 @@ public class FieldActivity extends AppCompatActivity {
         properties.extensions = null;
 
         //final EditText valueField = (EditText) findViewById(R.id.company_name_input);
-
+        excelfile = null;
         //ExcelHandle excelfile = null;
 
         FilePickerDialog dialog = new FilePickerDialog(FieldActivity.this,properties);
