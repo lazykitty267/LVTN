@@ -11,18 +11,13 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-import bk.lvtn.component.ReportHandle;
-import bk.lvtn.data.DataRow;
-import bk.lvtn.form.Form;
 import bk.lvtn.fragment_adapter.Report;
 import bk.lvtn.fragment_adapter.ReportAdapter;
 import bk.lvtn.fragment_adapter.Template;

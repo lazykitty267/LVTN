@@ -1,11 +1,7 @@
 package bk.lvtn.form;
 
 
-import android.Manifest;
-import android.content.UriMatcher;
 import android.net.Uri;
-import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import java.io.File;
@@ -14,7 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,15 +29,15 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 
-import bk.lvtn.component.ReportHandle;
 import bk.lvtn.data.DataRow;
+import entity.Report;
 
 public class Form {
     //ArrayList<Map<String, String>> = new ArrayList<Map<String, String>>();
     ArrayList<String> keyForm = new ArrayList<String>();
     ArrayList<String> dataForm = new ArrayList<String>();
 
-    private ReportHandle report = new ReportHandle();
+    private Report report = new Report();
 
     public Form() {
         this.report.addValue("Thời gian bắt đầu", new String[]{""});
@@ -58,13 +53,13 @@ public class Form {
         this.change();
     }
 
-    public Form(ReportHandle report) {
+    public Form(Report report) {
         this.report = report;
         this.change();
     }
 
     private void change() {
-        List<DataRow> list = this.report.getListValue();
+        List<DataRow> list = this.report.getFieldList();
         for (int i = 0; i < list.size(); i++) {
             this.keyForm.add(list.get(i).getKey());
             this.dataForm.add(changeToString(list.get(i).getValue()));
@@ -121,8 +116,8 @@ public class Form {
         return false;
     }
 
-    public void getData(ReportHandle report) {
-        List<DataRow> list = report.getListValue();
+    public void getData(Report report) {
+        List<DataRow> list = report.getFieldList();
         for (int i = 0; i < list.size(); i++) {
             String str = list.get(i).getKey().toLowerCase();
             for (int k = 0; k < this.keyForm.size(); k++) {

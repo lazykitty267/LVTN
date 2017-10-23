@@ -25,8 +25,8 @@ import java.io.InputStream;
 import java.util.Date;
 
 import bk.lvtn.component.ExcelHandle;
-import bk.lvtn.component.ReportHandle;
 import bk.lvtn.form.Form;
+import entity.Report;
 
 public class FieldActivity extends AppCompatActivity {
     Button saveForm;
@@ -41,9 +41,9 @@ public class FieldActivity extends AppCompatActivity {
             excelfile = getExcel();
         }
 
-        ReportHandle report = getReport();
+        Report report = getReport();
         if(report == null) {
-            report = new ReportHandle();
+            report = new Report();
             report.addValue("Địa điểm", new String[]{""});
             report.addValue("Thời gian bắt đầu", new String[]{""});
             report.addValue("Thành phần tham dự", new String[]{""});
@@ -57,7 +57,7 @@ public class FieldActivity extends AppCompatActivity {
         saveForm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ReportHandle report = new ReportHandle();
+                Report report = new Report();
                 report.addValue("Địa điểm",new String[] {"Viettel"});
                 report.addValue("Thời gian bắt đầu",new String[]{new Date().toString()});
                 report.addValue("Thành phần tham dự",new String[] {"phu","long","nghia"});
@@ -152,8 +152,8 @@ public class FieldActivity extends AppCompatActivity {
 
     }
 
-    private ReportHandle getReport(){
-        ReportHandle report = new ReportHandle();
+    private Report getReport(){
+        Report report = new Report();
         if (excelfile == null) return null;
         HSSFSheet sheet = excelfile.getSheet();
         for (int i =0; i<sheet.getPhysicalNumberOfRows(); i++){

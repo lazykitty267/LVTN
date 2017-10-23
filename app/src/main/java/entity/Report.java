@@ -1,5 +1,6 @@
 package entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import bk.lvtn.data.DataRow;
@@ -79,4 +80,15 @@ public class Report {
     public void setManagerId(String managerId) {
         this.managerId = managerId;
     }
+
+
+    public void addValue(String key,String[] value){
+        DataRow a = new DataRow(key,value);
+        fieldList.add(a);
+    }
+
+    public Report(){
+        fieldList = new ArrayList<DataRow>();
+    }
+
 }
