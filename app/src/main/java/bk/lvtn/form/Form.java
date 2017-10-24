@@ -30,6 +30,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 
 import bk.lvtn.data.DataRow;
+import entity.PdfFile;
 import entity.Report;
 
 public class Form {
@@ -137,7 +138,7 @@ public class Form {
     }
 
 
-    public void createForm1(String dir, InputStream is) throws UnsupportedEncodingException {
+    public File createForm1(String dir, InputStream is, PdfFile pdfFile) throws UnsupportedEncodingException {
 
         // Tạo đối tượng tài liệu
         Document document = new Document(PageSize.A4, 50, 50, 50, 50);
@@ -160,6 +161,7 @@ public class Form {
 
             Date date = new Date();
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(date);
+            pdfFile.setName(timeStamp);
             // Test file pdf có đc tạo ko
             File myFile = new File(pdfFolder, timeStamp + ".pdf");
             try {
@@ -276,12 +278,12 @@ public class Form {
 
 
 
-            Uri.fromFile(myFile);
-
+            return myFile;
 
         } catch (FileNotFoundException | DocumentException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
 

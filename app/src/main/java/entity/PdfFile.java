@@ -17,6 +17,10 @@ public class PdfFile {
         this.name = name;
     }
 
+    public PdfFile(){
+
+    }
+
     public void setUrl(String url) {
         this.url = url;
     }

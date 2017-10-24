@@ -26,6 +26,8 @@ import java.util.Date;
 
 import bk.lvtn.component.ExcelHandle;
 import bk.lvtn.form.Form;
+import dataService.DataService;
+import entity.PdfFile;
 import entity.Report;
 
 public class FieldActivity extends AppCompatActivity {
@@ -75,6 +77,15 @@ public class FieldActivity extends AppCompatActivity {
 
                     InputStream is = getAssets().open("vuArial.ttf");
 
+                    PdfFile pdfFile = new PdfFile();
+                    File file = form.createForm1(Environment.getExternalStorageDirectory().getAbsolutePath().toString(),is, pdfFile);
+                    if (file == null) {
+                        return;
+                    }
+                    DataService dataService = new DataService();
+                    dataService.saveReport(report);
+                    pdfFile.setId(report.getId());
+                    dataService.uploadFile(file, pdfFile);
 
                     form.createForm1(Environment.getExternalStorageDirectory().getAbsolutePath().toString(),is);
                 }
