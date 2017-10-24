@@ -32,7 +32,7 @@ public class ExcelHandle {
             //file = new FileInputStream(f);
             //POIFSFileSystem myFileSystem = new POIFSFileSystem(file);
             HSSFWorkbook a = new HSSFWorkbook(file);
-            setSheet(a.getSheetAt(0));
+            this.sheet = a.getSheetAt(0);
         }
         catch (IOException e) {
             setSheet(null);

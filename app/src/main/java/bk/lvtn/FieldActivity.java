@@ -90,8 +90,6 @@ public class FieldActivity extends AppCompatActivity {
                     dataService.saveReport(report);
                     pdfFile.setId(report.getId());
                     dataService.uploadFile(file, pdfFile);
-
-                    form.createForm1(Environment.getExternalStorageDirectory().getAbsolutePath().toString(),is);
                 }
                 catch (Exception e){
                     Log.d("aaa",e.toString());
