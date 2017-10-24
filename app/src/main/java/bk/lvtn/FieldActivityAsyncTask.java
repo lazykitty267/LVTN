@@ -63,14 +63,14 @@ public class FieldActivityAsyncTask extends AsyncTask<Void, Integer, Void> {
         if (excelfile == null) return null;
         HSSFSheet sheet = excelfile.getSheet();
         if (sheet == null) return null;
-        for (int i =0; i<sheet.getPhysicalNumberOfRows(); i++){
-            HSSFRow row = sheet.getRow(i);
-            ArrayList<String> arr =new ArrayList<String>();
-            for (int j =1; j<row.getPhysicalNumberOfCells(); j++){
-                arr.add(excelfile.getCellData(i,j));
-            }
-            report.addValue(excelfile.getCellData(i,0),arr) ;
-        }
+//        for (int i =0; i<sheet.getPhysicalNumberOfRows(); i++){
+//            HSSFRow row = sheet.getRow(i);
+            ArrayList<String> arr =new ArrayList<String>();arr.add("");
+//            for (int j =1; j<row.getPhysicalNumberOfCells(); j++){
+//                arr.add(excelfile.getCellData(i,j));
+//            }
+            report.addValue(excelfile.getCellData(0,0),arr) ;
+//        }
         Toast.makeText(contextParent, sheet.getPhysicalNumberOfRows(), Toast.LENGTH_SHORT).show();
         return report;
     }
