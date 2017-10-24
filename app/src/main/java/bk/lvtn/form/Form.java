@@ -39,20 +39,20 @@ public class Form {
     ArrayList<String> dataForm = new ArrayList<String>();
 
     private Report report = new Report();
-
-    public Form() {
-        this.report.addValue("Thời gian bắt đầu", new String[]{""});
-        this.report.addValue("Địa điểm", new String[]{""});
-        this.report.addValue("Thành phần tham dự", new String[]{""});
-        this.report.addValue("Chủ trì (chủ tọa)", new String[]{""});
-        this.report.addValue("Thư ký (người ghi biên bản)", new String[]{""});
-        this.report.addValue("Nội dung (theo diễn biến cuộc họp/hội nghị/hội thảo)", new String[]{""});
-        this.report.addValue("giờ", new String[]{""});
-        this.report.addValue("ngày", new String[]{""});
-        this.report.addValue("tháng", new String[]{""});
-        this.report.addValue("năm", new String[]{""});
-        this.change();
-    }
+//
+//    public Form() {
+//        this.report.addValue("Thời gian bắt đầu", new String[]{""});
+//        this.report.addValue("Địa điểm", new String[]{""});
+//        this.report.addValue("Thành phần tham dự", new String[]{""});
+//        this.report.addValue("Chủ trì (chủ tọa)", new String[]{""});
+//        this.report.addValue("Thư ký (người ghi biên bản)", new String[]{""});
+//        this.report.addValue("Nội dung (theo diễn biến cuộc họp/hội nghị/hội thảo)", new String[]{""});
+//        this.report.addValue("giờ", new String[]{""});
+//        this.report.addValue("ngày", new String[]{""});
+//        this.report.addValue("tháng", new String[]{""});
+//        this.report.addValue("năm", new String[]{""});
+//        this.change();
+//    }
 
     public Form(Report report) {
         this.report = report;
@@ -67,13 +67,13 @@ public class Form {
         }
     }
 
-    private String changeToString(String[] sList) {
+    private String changeToString(List<String> sList) {
         String s = new String();
-        for (int i = 0; i < sList.length; i++) {
-            if(sList.length > 1){
+        for (int i = 0; i < sList.size(); i++) {
+            if(sList.size() > 1){
                 s = s + (i+1)+ ". ";
             }
-            s = s + sList[i] + "\n";
+            s = s + sList.get(i) + "\n";
         }
         return s;
     }

@@ -26,7 +26,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import bk.lvtn.component.ExcelHandle;
 import bk.lvtn.form.Form;
@@ -50,10 +52,12 @@ public class FieldActivity extends AppCompatActivity {
         Report report = getReport();
         if(report == null) {
             report = new Report();
-            report.addValue("Địa điểm", new String[]{""});
-            report.addValue("Thời gian bắt đầu", new String[]{""});
-            report.addValue("Thành phần tham dự", new String[]{""});
-            report.addValue("Chủ trì", new String[]{""});
+            List<String> l = new ArrayList<>();
+            l.add("");
+            report.addValue("Địa điểm", new ArrayList<String>() {{add("");}});
+            report.addValue("Thời gian bắt đầu", new ArrayList<String>() {{add("");}});
+            report.addValue("Thành phần tham dự", new ArrayList<String>() {{add("");}});
+            report.addValue("Chủ trì", new ArrayList<String>() {{add("");}});
         }
         final Form form = new Form(report);
 
@@ -64,10 +68,10 @@ public class FieldActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Report report = new Report();
-                report.addValue("Địa điểm",new String[] {"Viettel"});
-                report.addValue("Thời gian bắt đầu",new String[]{new Date().toString()});
-                report.addValue("Thành phần tham dự",new String[] {"phu","long","nghia"});
-                report.addValue("Chủ trì",new String[] {"aaaaaaaaaabbbbbbbbbbbbbbbb"});
+                report.addValue("Địa điểm",new ArrayList<String>() {{add("Viettel");}});
+                report.addValue("Thời gian bắt đầu",new ArrayList<String>() {{add(new Date().toString());}});
+                report.addValue("Thành phần tham dự",new ArrayList<String>() {{add("phu");add("nghia");add("long");}});
+                report.addValue("Chủ trì",new ArrayList<String>() {{add("Viettel");}});
 
                 form.getData(report);
                 try {
@@ -178,7 +182,7 @@ public class FieldActivity extends AppCompatActivity {
         HSSFSheet sheet = excelfile.getSheet();
         if (sheet == null) return null;
         for (int i =0; i<sheet.getPhysicalNumberOfRows(); i++){
-            report.addValue(excelfile.getCellData(i,0), new String[]{""});
+            report.addValue(excelfile.getCellData(i,0),new ArrayList<String>() {{add("");}}) ;
         }
         return report;
     }
