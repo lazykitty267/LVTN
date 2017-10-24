@@ -13,6 +13,26 @@ public class Report {
 
     private String id;
 
+    private String reportName;
+
+    public String getReportName() {
+        return reportName;
+    }
+
+    public void setReportName(String reportName) {
+        this.reportName = reportName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    private String userName;
+
     private String templateId;
 
     private String createUserId;

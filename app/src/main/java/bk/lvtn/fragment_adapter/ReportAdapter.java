@@ -12,7 +12,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import bk.lvtn.R;
-import bk.lvtn.fragment_adapter.Report;
+import entity.Report;
+
 /**
  * Created by Phupc on 08/10/17.
  */
@@ -37,8 +38,8 @@ public class ReportAdapter extends ArrayAdapter<Report> {
         TextView reportName = (TextView)convertView.findViewById(R.id.rpName);
         TextView reportDetail = (TextView) convertView.findViewById(R.id.rpDetail);
         Report report = listReport.get(position);
-        reportName.setText(report.getRp_name());
-        reportDetail.setText(report.getRp_detail());
+        reportName.setText(report.getReportName());
+        reportDetail.setText(report.getCreateDate());
 
 
         return convertView;

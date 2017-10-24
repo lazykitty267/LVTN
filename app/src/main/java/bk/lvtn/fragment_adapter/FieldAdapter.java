@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,11 +57,8 @@ public class FieldAdapter extends ArrayAdapter<Field> {
         voiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                pos = position;
                 promptSpeechInput();
-//                field = listField.get(position);
-//                pos = position;
-//                field.setValue_field("aaaa");
-
             }
         });
         return convertView;
@@ -73,36 +71,13 @@ public class FieldAdapter extends ArrayAdapter<Field> {
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
                 context.getString(R.string.speech_prompt));
-        Bundle bundle = new Bundle();
-        bundle.putInt("pos",pos);
-        intent.putExtra("position",bundle);
         try {
-            ((Activity)context).startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+            ((Activity)context).startActivityForResult(intent,pos);
         } catch (ActivityNotFoundException a) {
             Toast.makeText(context,
                     "Sorry! Your device doesn\\'t support speech input",
                     Toast.LENGTH_SHORT).show();
         }
     }
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        switch (requestCode) {
-            case REQ_CODE_SPEECH_INPUT: {
-                if (resultCode == ((Activity)context).RESULT_OK && null != data) {
-
-                    ArrayList<String> result = data
-                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                                Toast.makeText(context, result.get(0),
-                    Toast.LENGTH_SHORT).show();
-                    field = listField.get(pos);
-                    field.setValue_field("vcvcvcv");
-                    valueField.setText("vcvcvcv");
-                    valueField.setSelection(valueField.getText().length());
-                    notifyDataSetChanged();
-                }
-                break;
-            }
-
-        }
-    }
 }

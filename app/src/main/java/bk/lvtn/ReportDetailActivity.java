@@ -1,23 +1,16 @@
 package bk.lvtn;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.speech.RecognizerIntent;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Date;
 
-import bk.lvtn.R;
 import bk.lvtn.fragment_adapter.Field;
 import bk.lvtn.fragment_adapter.FieldAdapter;
-import bk.lvtn.fragment_adapter.Report;
-import bk.lvtn.fragment_adapter.ReportAdapter;
 
 public class ReportDetailActivity extends AppCompatActivity {
     ListView listField;
@@ -47,28 +40,28 @@ public class ReportDetailActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int position, int resultCode, Intent data) {
 
-        switch (requestCode) {
-            case 100: {
-//                if (resultCode == (RESULT_OK && null != data) {
 
-//                ArrayList<String> result = data
-//                        .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-//                Toast.makeText(this, result.get(0),
-//                        Toast.LENGTH_SHORT).show();
-//                Bundle eee = data.getBundleExtra("position");
-//
-//                Field field = adapter.getItem(eee.getInt("pos"));
-////                    field = listField.get(pos);
-//                field.setValue_field("vcvcvcv");
-////                    valueField.setText("vcvcvcv");
-////                    valueField.setSelection(valueField.getText().length());
-//                adapter.notifyDataSetChanged();
-//                }
-                break;
+        if (resultCode == RESULT_OK && null != data) {
+
+            ArrayList<String> result = data
+                    .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            try {
+                Toast.makeText(this, "aaaaa" + position,
+                        Toast.LENGTH_SHORT).show();
+                Field field = adapter.getItem(position);
+                field.setValue_field(result.get(0));
+                adapter.notifyDataSetChanged();
+            } catch (Exception e) {
+                Toast.makeText(this, e.getMessage(),
+                        Toast.LENGTH_SHORT).show();
             }
-
+        } else {
+            Toast.makeText(this, "null cmnr", Toast.LENGTH_SHORT).show();
         }
+
     }
+
+
 }
