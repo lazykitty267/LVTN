@@ -2,6 +2,7 @@ package bk.lvtn.data;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Phupc on 10/05/17.
@@ -18,16 +19,16 @@ public class DataRow {
         this.key = key;
     }
 
-    public String[] getValue() {
+    public List<String> getValue() {
         return value;
     }
 
-    public void setValue(String[] value) {
+    public void setValue(List<String> value) {
         this.value = value;
     }
 
-    public String[] value;
-    public DataRow(String key,String[] value){
+    public List<String> value;
+    public DataRow(String key,List<String> value){
         this.key = key;
         this.value = value;
     }

@@ -102,7 +102,7 @@ public class Report {
     }
 
 
-    public void addValue(String key,String[] value){
+    public void addValue(String key,List<String> value){
         DataRow a = new DataRow(key,value);
         fieldList.add(a);
     }
