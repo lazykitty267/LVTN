@@ -50,7 +50,7 @@ public class FieldActivity extends AppCompatActivity {
             FileInputStream f = null;
             try {
                 f = new FileInputStream(new File (excel_name));
-                excelfile = new ExcelHandle(f,FieldActivity.this);
+                excelfile = new ExcelHandle(f);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }

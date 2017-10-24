@@ -25,7 +25,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 public class ExcelHandle {
     private FileInputStream file;
     private HSSFSheet sheet = null;
-    public ExcelHandle(FileInputStream file, Context c){
+    public ExcelHandle(FileInputStream file){
         //File f = new File(path);
         //FileInputStream file = null;
         try {
@@ -37,7 +37,6 @@ public class ExcelHandle {
         catch (IOException e) {
             setSheet(null);
             e.printStackTrace();
-            Toast.makeText(c, e.toString(), Toast.LENGTH_SHORT).show();
         }
     }
 
