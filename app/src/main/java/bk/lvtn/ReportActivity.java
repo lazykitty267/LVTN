@@ -15,12 +15,16 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import bk.lvtn.fragment_adapter.ReportAdapter;
 import bk.lvtn.fragment_adapter.Template;
 import bk.lvtn.fragment_adapter.TemplateAdapter;
+import dataService.DataService;
+import entity.PdfFile;
 import entity.Report;
 
 /**
@@ -47,14 +51,30 @@ public class ReportActivity extends Fragment {
         add_b = (FloatingActionButton)view.findViewById(R.id.fab_rp);
         adapter = new ReportAdapter(getActivity(),arrRp,R.layout.item_inlist_report);
         listRp.setAdapter(adapter);
+
+        PdfFile pdfFile = new PdfFile();
+
+        DataService dataService = new DataService();
+        List<Report> lReport = dataService.getAllReport();
+//        pdfFile = dataService.getPdf(lReport.get(0).getId());
+//        File f = dataService.downloadFile(pdfFile);
+//
+        for (int i =0;i<lReport.size();i++){
+            Report test = new Report();
+            test.setUserName(lReport.get(i).getUserName());
+            test.setReportName(lReport.get(i).getReportName());
+            test.setCreateDate(lReport.get(i).getCreateDate());
+            arrRp.add(test);
+        }
+
         // Test listview
-        Report test = new Report();
-        test.setUserName("Phu");
-        test.setReportName("Báo cáo kết quả thường kỳ");
-        Date a = new Date();
-//        test.setCreate_date(a);
-        arrRp.add(test);
-        arrRp.add(test);
+//        Report test = new Report();
+//        test.setUserName("Phu");
+//        test.setReportName("Báo cáo kết quả thường kỳ");
+//        Date a = new Date();
+////        test.setCreate_date(a);
+//        arrRp.add(test);
+//        arrRp.add(test);
         adapter.notifyDataSetChanged();
         add_b.setOnClickListener(new View.OnClickListener() {
             @Override

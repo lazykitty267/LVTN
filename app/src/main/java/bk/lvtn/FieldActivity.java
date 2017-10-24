@@ -55,7 +55,6 @@ public class FieldActivity extends AppCompatActivity {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-
         }
 
         Report report = getReport();
