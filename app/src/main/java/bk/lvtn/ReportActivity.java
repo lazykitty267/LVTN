@@ -101,7 +101,7 @@ public class ReportActivity extends Fragment {
                 rp_select.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final Intent myIntent = new Intent(getActivity(), FieldActivity.class);
+                        final Intent myIntent = new Intent(getActivity(), ReportDetailActivity.class);
                         final Bundle bundle = new Bundle();
                         AlertDialog alertbox = new AlertDialog.Builder(getActivity())
                                 .setMessage("Bạn có muốn thêm dữ liệu kèm theo?")
