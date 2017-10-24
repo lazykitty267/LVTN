@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 
 import java.io.File;
@@ -12,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import bk.lvtn.component.ExcelHandle;
+import bk.lvtn.form.Form;
 import bk.lvtn.fragment_adapter.FieldAdapter;
 import entity.Report;
 
@@ -61,9 +63,14 @@ public class FieldActivityAsyncTask extends AsyncTask<Void, Integer, Void> {
         if (excelfile == null) return null;
         HSSFSheet sheet = excelfile.getSheet();
         if (sheet == null) return null;
-        //for (int i =0; i<sheet.getPhysicalNumberOfRows(); i++){
-            report.addValue(excelfile.getCellData(0,0),new ArrayList<String>() {{add("");}}) ;
-        //}
+        for (int i =0; i<sheet.getPhysicalNumberOfRows(); i++){
+            HSSFRow row = sheet.getRow(i);
+            ArrayList<String> arr =new ArrayList<String>();
+            for (int j =1; j<row.getPhysicalNumberOfCells(); j++){
+                arr.add(excelfile.getCellData(i,j));
+            }
+            report.addValue(excelfile.getCellData(i,0),arr) ;
+        }
         Toast.makeText(contextParent, sheet.getPhysicalNumberOfRows(), Toast.LENGTH_SHORT).show();
         return report;
     }
@@ -72,9 +79,18 @@ public class FieldActivityAsyncTask extends AsyncTask<Void, Integer, Void> {
     protected void onProgressUpdate(Integer... values) {
         //Hàm thực hiện update giao diện khi có dữ liệu từ hàm doInBackground gửi xuống
         super.onProgressUpdate(values);
-        //report = getReport(excelfile);
+        report = getReport(excelfile);
         //Toast.makeText(contextParent, report.getFieldList().get(0).getKey(), Toast.LENGTH_SHORT).show();
-        adapter.getItem(1).setValue_field("m laf con chos");
+        Report r = new Report();
+        for (int i = 0; i<adapter.getCount();i++){
+            r.addValue(adapter.getItem(i).getKey_field(),new ArrayList<String>(){{add("");}});
+        }
+        Form form = new Form(r);
+        form.getData(report);
+        for (int i = 0; i<adapter.getCount();i++){
+            adapter.getItem(i).setValue_field(form.dataForm.get(i));
+        }
+        //adapter.getItem(1).setValue_field("m laf con chos");
         adapter.notifyDataSetChanged();
     }
 
