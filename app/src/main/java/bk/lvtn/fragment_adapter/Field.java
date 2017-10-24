@@ -5,6 +5,12 @@ package bk.lvtn.fragment_adapter;
  */
 
 public class Field {
+
+    public Field(String key_field){
+        this.key_field = key_field;
+        this.value_field = "";
+    }
+
     private String key_field;
 
     public String getKey_field() {

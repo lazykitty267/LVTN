@@ -26,15 +26,18 @@ public class ReportDetailActivity extends AppCompatActivity {
 
         listField.setAdapter(adapter);
         // Test listview
-        Field test = new Field();
-        test.setKey_field("Địa điểm");
-        test.setValue_field("Báo cáo kết quả thường kỳ");
+        Field field1 = new Field("Tên cơ quan");
+        Field field2 = new Field("Thời gian bắt đầu");
+        Field field3 = new Field("Địa điểm");
+        Field field4 = new Field("Thành phần tham dự");
+        Field field5 = new Field("Nội dung");
 
-        Field test1 = new Field();
-        test1.setKey_field("Địa asdasd");
-        test1.setValue_field("Báo cáo kếasdasdasdsat quả thường kỳ");
-        arrField.add(test);
-        arrField.add(test1);
+
+        arrField.add(field1);
+        arrField.add(field2);
+        arrField.add(field3);
+        arrField.add(field4);
+        arrField.add(field5);
         adapter.notifyDataSetChanged();
 
     }
