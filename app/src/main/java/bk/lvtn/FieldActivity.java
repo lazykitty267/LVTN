@@ -3,6 +3,7 @@ package bk.lvtn;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.github.angads25.filepicker.controller.DialogSelectionListener;
 import com.github.angads25.filepicker.model.DialogConfigs;
@@ -21,6 +23,8 @@ import com.github.angads25.filepicker.view.FilePickerDialog;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Date;
 
@@ -38,7 +42,7 @@ public class FieldActivity extends AppCompatActivity {
         Bundle bundle = intent.getBundleExtra("Stream");
 
         if (bundle.getBoolean("isAdd")){
-            excelfile = getExcel();
+            getExcel();
         }
 
         Report report = getReport();
@@ -119,7 +123,7 @@ public class FieldActivity extends AppCompatActivity {
                 .show();
     }
 
-    private ExcelHandle getExcel(){
+    private void getExcel(){
         DialogProperties properties = new DialogProperties();
         properties.selection_mode = DialogConfigs.SINGLE_MODE;
         properties.selection_type = DialogConfigs.FILE_SELECT;
@@ -138,24 +142,32 @@ public class FieldActivity extends AppCompatActivity {
             @Override
             public void onSelectedFilePaths(String[] files) {
                 //files is the array of the paths of files selected by the Application User.
-                Log.d("path",files[0].toString());
+                //Log.d("path",files[0].toString());
                 File file = new File(files[0].toString());
-                boolean aaa=file.isFile();
-                boolean b=file.isFile();
+                //boolean aaa=file.isFile();
+                //boolean b=file.isFile();
                 //valueField.setText(files[0].toString());
-                excelfile = new ExcelHandle(files[0].toString());
+                FileInputStream f = null;
+                try {
+                    f = new FileInputStream(file);
+                    excelfile = new ExcelHandle(f,FieldActivity.this);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                //excelfile = new ExcelHandle(f,FieldActivity.this);
             }
         });
         dialog.show();
         //excelfile = new ExcelHandle(valueField.getText().toString());
-        return excelfile;
 
     }
 
+    @Nullable
     private Report getReport(){
         Report report = new Report();
         if (excelfile == null) return null;
         HSSFSheet sheet = excelfile.getSheet();
+        if (sheet == null) return null;
         for (int i =0; i<sheet.getPhysicalNumberOfRows(); i++){
             report.addValue(excelfile.getCellData(i,0), new String[]{""});
         }

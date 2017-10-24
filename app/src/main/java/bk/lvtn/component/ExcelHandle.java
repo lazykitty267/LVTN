@@ -1,16 +1,22 @@
 package bk.lvtn.component;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.CellReference;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Workbook;
 
 /**
  * Created by Phupc on 09/29/17.
@@ -18,15 +24,20 @@ import org.apache.poi.ss.usermodel.DateUtil;
 
 public class ExcelHandle {
     private FileInputStream file;
-    private HSSFSheet sheet;
-    public ExcelHandle(String path){
+    private HSSFSheet sheet = null;
+    public ExcelHandle(FileInputStream file, Context c){
+        //File f = new File(path);
+        //FileInputStream file = null;
         try {
-            this.file = new FileInputStream(new File(path));
+            //file = new FileInputStream(f);
+            //POIFSFileSystem myFileSystem = new POIFSFileSystem(file);
             HSSFWorkbook a = new HSSFWorkbook(file);
-            setSheet(a.getSheet("sheet1"));
+            setSheet(a.getSheetAt(0));
         }
-        catch (Exception e){
-            Log.d("ReadfileError","Read file exception: "+e.toString());
+        catch (IOException e) {
+            setSheet(null);
+            e.printStackTrace();
+            Toast.makeText(c, e.toString(), Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity
 //        super.onActivityResult(requestCode, resultCode, data);
 //    }
 
-    private void test(){
+ /*   private void test(){
         DialogProperties properties = new DialogProperties();
         properties.selection_mode = DialogConfigs.SINGLE_MODE;
         properties.selection_type = DialogConfigs.FILE_SELECT;
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity
         dialog.show();
 
     }
-
+*/
     //end of test
 
     @Override
