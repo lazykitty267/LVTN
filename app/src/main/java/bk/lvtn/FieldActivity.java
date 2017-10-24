@@ -39,6 +39,7 @@ import entity.Report;
 public class FieldActivity extends AppCompatActivity {
     Button saveForm;
     ExcelHandle excelfile = null;
+    String excel_name="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +48,14 @@ public class FieldActivity extends AppCompatActivity {
 
         if (bundle.getBoolean("isAdd")){
             getExcel();
+            FileInputStream f = null;
+            try {
+                f = new FileInputStream(new File (excel_name));
+                excelfile = new ExcelHandle(f,FieldActivity.this);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
         }
 
         Report report = getReport();
@@ -156,17 +165,19 @@ public class FieldActivity extends AppCompatActivity {
             public void onSelectedFilePaths(String[] files) {
                 //files is the array of the paths of files selected by the Application User.
                 //Log.d("path",files[0].toString());
-                File file = new File(files[0].toString());
+                //File file = new File(files[0].toString());
+                excel_name = files[0].toString();
                 //boolean aaa=file.isFile();
+
                 //boolean b=file.isFile();
                 //valueField.setText(files[0].toString());
-                FileInputStream f = null;
-                try {
-                    f = new FileInputStream(file);
-                    excelfile = new ExcelHandle(f,FieldActivity.this);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+//                FileInputStream f = null;
+//                try {
+//                    f = new FileInputStream(file);
+//                    excelfile = new ExcelHandle(f,FieldActivity.this);
+//                } catch (FileNotFoundException e) {
+//                    e.printStackTrace();
+//                }
                 //excelfile = new ExcelHandle(f,FieldActivity.this);
             }
         });
