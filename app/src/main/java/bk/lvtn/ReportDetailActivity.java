@@ -45,6 +45,8 @@ public class ReportDetailActivity extends AppCompatActivity {
         Bundle bundle = intent.getBundleExtra("Stream");
 
         Button saveForm = (Button) findViewById(R.id.save_button);
+        Button addField = (Button) findViewById(R.id.add_button);
+        final EditText fieldAdd = (EditText) findViewById(R.id.add_field);
         listField = (ListView) findViewById(R.id.list_field);
         adapter = new FieldAdapter(this, arrField, R.layout.item_inlist_field);
 
@@ -55,8 +57,6 @@ public class ReportDetailActivity extends AppCompatActivity {
         Field field3 = new Field("Địa điểm");
         Field field4 = new Field("Thành phần tham dự");
         Field field5 = new Field("Nội dung");
-
-
         arrField.add(field1);
         arrField.add(field2);
         arrField.add(field3);
@@ -67,6 +67,15 @@ public class ReportDetailActivity extends AppCompatActivity {
             getExcel();
 
         }
+        addField.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Field f = new Field(fieldAdd.getText().toString());
+                fieldAdd.setText("");
+                arrField.add(f);
+                adapter.notifyDataSetChanged();
+            }
+        });
         saveForm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,6 +105,9 @@ public class ReportDetailActivity extends AppCompatActivity {
                     dataService.saveReport(report);
                     pdfFile.setId(report.getId());
                     dataService.uploadFile(file, pdfFile);
+
+                    Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(myIntent);
                 }
                 catch (Exception e){
                     Log.d("aaa",e.toString());
