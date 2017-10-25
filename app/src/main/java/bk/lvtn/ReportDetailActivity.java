@@ -1,9 +1,15 @@
 package bk.lvtn;
 
 import android.content.Intent;
+import android.os.Environment;
 import android.speech.RecognizerIntent;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -13,10 +19,16 @@ import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 
+import bk.lvtn.form.Form;
 import bk.lvtn.fragment_adapter.Field;
 import bk.lvtn.fragment_adapter.FieldAdapter;
+import dataService.DataService;
+import entity.PdfFile;
+import entity.Report;
 
 public class ReportDetailActivity extends AppCompatActivity {
     FieldActivityAsyncTask fieldActivityAsyncTask;
@@ -24,6 +36,7 @@ public class ReportDetailActivity extends AppCompatActivity {
     ArrayList<Field> arrField = new ArrayList<Field>();
     FieldAdapter adapter;
     String excel_name = "";
+    Form form;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +44,7 @@ public class ReportDetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("Stream");
 
+        Button saveForm = (Button) findViewById(R.id.save_button);
         listField = (ListView) findViewById(R.id.list_field);
         adapter = new FieldAdapter(this, arrField, R.layout.item_inlist_field);
 
@@ -53,6 +67,45 @@ public class ReportDetailActivity extends AppCompatActivity {
             getExcel();
 
         }
+        saveForm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Report report = new Report();
+                for (int i = 0; i<adapter.getCount();i++){
+                    final String s = adapter.getItem(i).getValue_field();
+                    report.addValue(adapter.getItem(i).getKey_field(),new ArrayList<String>(){{add(s);}});
+                }
+                form = new Form(report);
+                try {
+                    // lưu form thành pdf
+                    // cần test file pdf có lưu trong dir : getFilesDir().getAbsolutePath()
+                    // ko
+//                    form.createForm1(getFilesDir().getAbsolutePath().toString());
+                    ActivityCompat.requestPermissions(ReportDetailActivity.this,
+                            new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            1);
+
+                    InputStream is = getAssets().open("vuArial.ttf");
+
+                    PdfFile pdfFile = new PdfFile();
+                    File file = form.createForm1(Environment.getExternalStorageDirectory().getAbsolutePath().toString(),is, pdfFile);
+                    if (file == null) {
+                        return;
+                    }
+                    DataService dataService = new DataService();
+                    dataService.saveReport(report);
+                    pdfFile.setId(report.getId());
+                    dataService.uploadFile(file, pdfFile);
+                }
+                catch (Exception e){
+                    Log.d("aaa",e.toString());
+
+
+                }
+            }
+        });
+
+
     }
 
     @Override

@@ -47,6 +47,7 @@ public class ExcelHandle {
         //CellReference cellReference = new CellReference(cell_name);
         HSSFRow row = getSheet().getRow(rowNum);
         HSSFCell cell = row.getCell(colNum);
+        if (cell == null) return null;
         String cellValue;
         switch (cell.getCellType()) {
             case HSSFCell.CELL_TYPE_STRING:

@@ -49,13 +49,12 @@ public class FieldActivityAsyncTask extends AsyncTask<Void, Integer, Void> {
         try {
             FileInputStream f = new FileInputStream(new File(excel_path));
             excelfile = new ExcelHandle(f);
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
 
-            publishProgress();
+        publishProgress();
         return null;
     }
     private Report getReport(ExcelHandle excelfile){
@@ -63,15 +62,16 @@ public class FieldActivityAsyncTask extends AsyncTask<Void, Integer, Void> {
         if (excelfile == null) return null;
         HSSFSheet sheet = excelfile.getSheet();
         if (sheet == null) return null;
-//        for (int i =0; i<sheet.getPhysicalNumberOfRows(); i++){
-//            HSSFRow row = sheet.getRow(i);
-            ArrayList<String> arr =new ArrayList<String>();arr.add("");
-//            for (int j =1; j<row.getPhysicalNumberOfCells(); j++){
-//                arr.add(excelfile.getCellData(i,j));
-//            }
-            report.addValue(excelfile.getCellData(0,0),arr) ;
-//        }
-        Toast.makeText(contextParent, sheet.getPhysicalNumberOfRows(), Toast.LENGTH_SHORT).show();
+        for (int i =0;i<sheet.getRow(0).getPhysicalNumberOfCells();i++){
+            ArrayList<String> arr =new ArrayList<String>();
+            for (int j =1; j<sheet.getPhysicalNumberOfRows(); j++){
+                String s = excelfile.getCellData(i,j);
+                if (s != null)
+                    arr.add(excelfile.getCellData(i,j));
+            }
+            report.addValue(excelfile.getCellData(i,0),arr) ;
+        }
+//        Toast.makeText(contextParent, sheet.getPhysicalNumberOfRows(), Toast.LENGTH_SHORT).show();
         return report;
     }
 
@@ -81,14 +81,18 @@ public class FieldActivityAsyncTask extends AsyncTask<Void, Integer, Void> {
         super.onProgressUpdate(values);
         report = getReport(excelfile);
         //Toast.makeText(contextParent, report.getFieldList().get(0).getKey(), Toast.LENGTH_SHORT).show();
-        Report r = new Report();
-        for (int i = 0; i<adapter.getCount();i++){
-            r.addValue(adapter.getItem(i).getKey_field(),new ArrayList<String>(){{add("");}});
-        }
-        Form form = new Form(r);
-        form.getData(report);
-        for (int i = 0; i<adapter.getCount();i++){
-            adapter.getItem(i).setValue_field(form.dataForm.get(i));
+        if (report != null) {
+            Report r = new Report();
+            for (int i = 0; i < adapter.getCount(); i++) {
+                r.addValue(adapter.getItem(i).getKey_field(), new ArrayList<String>() {{
+                    add("");
+                }});
+            }
+            Form form = new Form(r);
+            form.getData(report);
+            for (int i = 0; i < adapter.getCount(); i++) {
+                adapter.getItem(i).setValue_field(form.dataForm.get(i));
+            }
         }
         //adapter.getItem(1).setValue_field("m laf con chos");
         adapter.notifyDataSetChanged();
