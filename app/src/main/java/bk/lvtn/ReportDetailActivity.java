@@ -1,9 +1,12 @@
 package bk.lvtn;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Environment;
 import android.speech.RecognizerIntent;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,6 +40,7 @@ public class ReportDetailActivity extends AppCompatActivity {
     FieldAdapter adapter;
     String excel_name = "";
     Form form;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +71,7 @@ public class ReportDetailActivity extends AppCompatActivity {
             getExcel();
 
         }
-        addField.setOnClickListener(new View.OnClickListener(){
+        addField.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Field f = new Field(fieldAdd.getText().toString());
@@ -80,16 +84,15 @@ public class ReportDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Report report = new Report();
-                for (int i = 0; i<adapter.getCount();i++){
+                for (int i = 0; i < adapter.getCount(); i++) {
                     final String s = adapter.getItem(i).getValue_field();
-                    report.addValue(adapter.getItem(i).getKey_field(),new ArrayList<String>(){{add(s);}});
+                    report.addValue(adapter.getItem(i).getKey_field(), new ArrayList<String>() {{
+                        add(s);
+                    }});
                 }
                 form = new Form(report);
                 try {
-                    // lưu form thành pdf
-                    // cần test file pdf có lưu trong dir : getFilesDir().getAbsolutePath()
-                    // ko
-//                    form.createForm1(getFilesDir().getAbsolutePath().toString());
+
                     ActivityCompat.requestPermissions(ReportDetailActivity.this,
                             new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
                             1);
@@ -97,7 +100,8 @@ public class ReportDetailActivity extends AppCompatActivity {
                     InputStream is = getAssets().open("vuArial.ttf");
 
                     PdfFile pdfFile = new PdfFile();
-                    File file = form.createForm1(Environment.getExternalStorageDirectory().getAbsolutePath().toString(),is, pdfFile);
+
+                    File file = form.createForm1(Environment.getExternalStorageDirectory().getAbsolutePath().toString(), is, pdfFile);
                     if (file == null) {
                         return;
                     }
@@ -106,17 +110,13 @@ public class ReportDetailActivity extends AppCompatActivity {
                     pdfFile.setId(report.getId());
                     dataService.uploadFile(file, pdfFile);
 
-                    Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(myIntent);
-                }
-                catch (Exception e){
-                    Log.d("aaa",e.toString());
 
-
+                } catch (Exception e) {
+                    Log.d("aaa", e.toString());
                 }
+                showSuccessDialog();
             }
         });
-
 
     }
 
@@ -142,6 +142,17 @@ public class ReportDetailActivity extends AppCompatActivity {
 
     }
 
+    private void showSuccessDialog() {
+        AlertDialog alertbox = new AlertDialog.Builder(ReportDetailActivity.this).setTitle("Success")
+                .setMessage("Báo cáo đã được tạo")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(myIntent);
+                    }
+                }).show();
+    }
+
     private void getExcel() {
         DialogProperties properties = new DialogProperties();
         properties.selection_mode = DialogConfigs.SINGLE_MODE;
@@ -162,7 +173,7 @@ public class ReportDetailActivity extends AppCompatActivity {
             public void onSelectedFilePaths(String[] files) {
 
                 excel_name = files[0].toString();
-                fieldActivityAsyncTask = new FieldActivityAsyncTask(ReportDetailActivity.this,excel_name,adapter);
+                fieldActivityAsyncTask = new FieldActivityAsyncTask(ReportDetailActivity.this, excel_name, adapter);
                 fieldActivityAsyncTask.execute();
             }
         });
