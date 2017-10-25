@@ -117,10 +117,8 @@ public class ReportDetailActivity extends AppCompatActivity {
             ArrayList<String> result = data
                     .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             try {
-                Toast.makeText(this, "aaaaa" + position,
-                        Toast.LENGTH_SHORT).show();
                 Field field = adapter.getItem(position);
-                field.setValue_field(result.get(0));
+                field.setValue_field(field.getValue_field() + result.get(0) + ".");
                 adapter.notifyDataSetChanged();
             } catch (Exception e) {
                 Toast.makeText(this, e.getMessage(),
