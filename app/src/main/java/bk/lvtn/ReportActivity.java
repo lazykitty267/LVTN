@@ -31,7 +31,7 @@ import entity.Report;
  * A simple {@link Fragment} subclass.
  */
 public class ReportActivity extends Fragment {
-
+    Dialog dialog;
     ListView listRp;
     FloatingActionButton add_b;
 
@@ -79,7 +79,7 @@ public class ReportActivity extends Fragment {
         add_b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Dialog dialog = new Dialog(getActivity());
+                dialog = new Dialog(getActivity());
                 dialog.setContentView(R.layout.list_template_dialog);
                 GridView lv = (GridView ) dialog.findViewById(R.id.list_template_d);
                 ArrayList<Template> arrTp = new ArrayList<Template>();
@@ -101,6 +101,7 @@ public class ReportActivity extends Fragment {
                 rp_select.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        dialog.cancel();
                         final Intent myIntent = new Intent(getActivity(), ReportDetailActivity.class);
                         final Bundle bundle = new Bundle();
                         AlertDialog alertbox = new AlertDialog.Builder(getActivity())
