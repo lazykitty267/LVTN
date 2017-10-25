@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,7 +52,7 @@ public class FieldAdapter extends ArrayAdapter<Field> {
         convertView = layoutInflater.inflate(resId,null);
         TextView keyField = (TextView)convertView.findViewById(R.id.key_field);
         valueField = (EditText) convertView.findViewById(R.id.value_field);
-        Button voiceButton = (Button) convertView.findViewById(R.id.voice_button);
+        ImageButton voiceButton = (ImageButton) convertView.findViewById(R.id.voice_button);
         field = listField.get(position);
         keyField.setText(field.getKey_field());
         valueField.setText(field.getValue_field());

@@ -18,10 +18,11 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:padding="10dp"/>
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="voice"
+            android:src="@mipmap/ic_voice"
             android:id="@+id/voice_button"/>
     </LinearLayout>
 
