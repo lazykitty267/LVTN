@@ -64,12 +64,17 @@ public class FieldAdapter extends ArrayAdapter<Field> {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                valueField.setText(charSequence);
+                field = listField.get(position);
+                field.setValue_field(charSequence.toString());
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
+//                valueField.setText("asdasdsa");
 
+//                field.
+//                Toast.makeText(context, valueField.getText().toString(),
+//                        Toast.LENGTH_SHORT).show();
             }
         });
         voiceButton.setOnClickListener(new View.OnClickListener() {
