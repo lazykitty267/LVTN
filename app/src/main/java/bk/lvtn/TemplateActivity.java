@@ -39,7 +39,7 @@ public class TemplateActivity extends Fragment {
         // Test gridview
         Template test = new Template();
         test.setTp_name("Báo cáo kết quả");
-        test.setImag_src(R.drawable.ic_note_black_24dp);
+        test.setImag_src(R.drawable.report_thumbnai);
         arrTp.add(test);
         arrTp.add(test);
         adapter.notifyDataSetChanged();
