@@ -1,5 +1,6 @@
 package bk.lvtn;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Environment;
 import android.speech.RecognizerIntent;
@@ -12,7 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-
+import android.support.v7.app.AlertDialog;
 import com.github.angads25.filepicker.controller.DialogSelectionListener;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
@@ -84,20 +85,20 @@ public class ReportDetailActivity extends AppCompatActivity {
                 getAttachFile();
             }
         });
+
         saveForm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Report report = new Report();
-                for (int i = 0; i<adapter.getCount();i++){
+                for (int i = 0; i < adapter.getCount(); i++) {
                     final String s = adapter.getItem(i).getValue_field();
-                    report.addValue(adapter.getItem(i).getKey_field(),new ArrayList<String>(){{add(s);}});
+                    report.addValue(adapter.getItem(i).getKey_field(), new ArrayList<String>() {{
+                        add(s);
+                    }});
                 }
                 form = new Form(report);
                 try {
-                    // lưu form thành pdf
-                    // cần test file pdf có lưu trong dir : getFilesDir().getAbsolutePath()
-                    // ko
-//                    form.createForm1(getFilesDir().getAbsolutePath().toString());
+
                     ActivityCompat.requestPermissions(ReportDetailActivity.this,
                             new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
                             1);
@@ -105,7 +106,8 @@ public class ReportDetailActivity extends AppCompatActivity {
                     InputStream is = getAssets().open("vuArial.ttf");
 
                     PdfFile pdfFile = new PdfFile();
-                    File file = form.createForm1(Environment.getExternalStorageDirectory().getAbsolutePath().toString(),is, pdfFile);
+
+                    File file = form.createForm1(Environment.getExternalStorageDirectory().getAbsolutePath().toString(), is, pdfFile);
                     if (file == null) {
                         return;
                     }
@@ -114,25 +116,17 @@ public class ReportDetailActivity extends AppCompatActivity {
                     pdfFile.setId(report.getId());
                     dataService.uploadFile(file, pdfFile);
 
-                    for (int i = 0;i< fileList.length;i++){
-                        File f = new File(fileList[i].toString());
-                        Toast.makeText(ReportDetailActivity.this,f.getName().toString(),Toast.LENGTH_SHORT).show();
-                    }
 
-
-                    Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(myIntent);
+                } catch (Exception e) {
+                    Log.d("aaa", e.toString());
                 }
-                catch (Exception e){
-                    Log.d("aaa",e.toString());
-
-
-                }
+                showSuccessDialog();
             }
         });
 
-
     }
+
+
 
     @Override
     protected void onActivityResult(int position, int resultCode, Intent data) {
@@ -154,6 +148,17 @@ public class ReportDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "null cmnr", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private void showSuccessDialog() {
+        AlertDialog alertbox = new AlertDialog.Builder(ReportDetailActivity.this).setTitle("Success")
+                .setMessage("Báo cáo đã được tạo")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(myIntent);
+                    }
+                }).show();
     }
 
     private void getExcel() {
