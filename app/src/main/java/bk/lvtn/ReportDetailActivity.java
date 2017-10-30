@@ -37,6 +37,7 @@ public class ReportDetailActivity extends AppCompatActivity {
     FieldAdapter adapter;
     String excel_name = "";
     Form form;
+    String[] fileList = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +47,7 @@ public class ReportDetailActivity extends AppCompatActivity {
 
         Button saveForm = (Button) findViewById(R.id.save_button);
         Button addField = (Button) findViewById(R.id.add_button);
+        Button attachFile = (Button) findViewById(R.id.attach_file_button);
         final EditText fieldAdd = (EditText) findViewById(R.id.add_field);
         listField = (ListView) findViewById(R.id.list_field);
         adapter = new FieldAdapter(this, arrField, R.layout.item_inlist_field);
@@ -74,6 +76,12 @@ public class ReportDetailActivity extends AppCompatActivity {
                 fieldAdd.setText("");
                 arrField.add(f);
                 adapter.notifyDataSetChanged();
+            }
+        });
+        attachFile.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                getAttachFile();
             }
         });
         saveForm.setOnClickListener(new View.OnClickListener() {
@@ -105,6 +113,12 @@ public class ReportDetailActivity extends AppCompatActivity {
                     dataService.saveReport(report);
                     pdfFile.setId(report.getId());
                     dataService.uploadFile(file, pdfFile);
+
+                    for (int i = 0;i< fileList.length;i++){
+                        File f = new File(fileList[i].toString());
+                        Toast.makeText(ReportDetailActivity.this,f.getName().toString(),Toast.LENGTH_SHORT).show();
+                    }
+
 
                     Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(myIntent);
@@ -164,6 +178,30 @@ public class ReportDetailActivity extends AppCompatActivity {
                 excel_name = files[0].toString();
                 fieldActivityAsyncTask = new FieldActivityAsyncTask(ReportDetailActivity.this,excel_name,adapter);
                 fieldActivityAsyncTask.execute();
+            }
+        });
+        dialog.show();
+    }
+
+    private void getAttachFile() {
+        DialogProperties properties = new DialogProperties();
+        properties.selection_mode = DialogConfigs.MULTI_MODE;
+        properties.selection_type = DialogConfigs.FILE_SELECT;
+        properties.root = new File(DialogConfigs.DEFAULT_DIR);
+        properties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
+        properties.offset = new File(DialogConfigs.DEFAULT_DIR);
+        properties.extensions = null;
+
+        //final EditText valueField = (EditText) findViewById(R.id.company_name_input);
+//        excelfile = null;
+        //ExcelHandle excelfile = null;
+
+        FilePickerDialog dialog = new FilePickerDialog(ReportDetailActivity.this, properties);
+        dialog.setTitle("Select a File");
+        dialog.setDialogSelectionListener(new DialogSelectionListener() {
+            @Override
+            public void onSelectedFilePaths(String[] files) {
+                fileList = files;
             }
         });
         dialog.show();
