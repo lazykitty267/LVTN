@@ -5,10 +5,25 @@ package entity;
  */
 
 public class PdfFile {
+    public String getReportId() {
+        return reportId;
+    }
+
+    public void setReportId(String reportId) {
+        this.reportId = reportId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     private String name;
-    /**
-     * giong voi id cua report
-     */
+    private String reportId;
+    private String userId;
     private String id;
     private String url;
 
