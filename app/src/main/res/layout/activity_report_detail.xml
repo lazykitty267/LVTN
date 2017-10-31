@@ -1,13 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="bk.lvtn.ReportDetailActivity">
-
-    <ListView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+        android:id="@+id/save_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/list_field"></ListView>
-</android.support.constraint.ConstraintLayout>
+        android:layout_height="50dp"
+        android:text="Save"
+        android:layout_gravity="left"/>
+        <Button
+            android:id="@+id/add_button"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="Add"
+            android:layout_gravity="center_horizontal"/>
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/add_field"
+            android:hint="Nhập tên field"/>
+    </LinearLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_field"></ListView>
+        <Button
+            android:id="@+id/attach_file_button"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="Attach File"
+            android:layout_gravity="bottom|right"/>
+    </FrameLayout>
+</LinearLayout>

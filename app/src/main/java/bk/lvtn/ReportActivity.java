@@ -15,19 +15,23 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import bk.lvtn.fragment_adapter.ReportAdapter;
 import bk.lvtn.fragment_adapter.Template;
 import bk.lvtn.fragment_adapter.TemplateAdapter;
+import dataService.DataService;
+import entity.PdfFile;
 import entity.Report;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class ReportActivity extends Fragment {
-
+    Dialog dialog;
     ListView listRp;
     FloatingActionButton add_b;
 
@@ -47,19 +51,35 @@ public class ReportActivity extends Fragment {
         add_b = (FloatingActionButton)view.findViewById(R.id.fab_rp);
         adapter = new ReportAdapter(getActivity(),arrRp,R.layout.item_inlist_report);
         listRp.setAdapter(adapter);
+
+        PdfFile pdfFile = new PdfFile();
+
+        DataService dataService = new DataService();
+        List<Report> lReport = dataService.getAllReport();
+//        pdfFile = dataService.getPdf(lReport.get(0).getId());
+//        File f = dataService.downloadFile(pdfFile);
+//
+        for (int i =0;i<lReport.size();i++){
+            Report test = new Report();
+            test.setUserName(lReport.get(i).getUserName());
+            test.setReportName(lReport.get(i).getReportName());
+            test.setCreateDate(lReport.get(i).getCreateDate());
+            arrRp.add(test);
+        }
+
         // Test listview
-        Report test = new Report();
-        test.setUserName("Phu");
-        test.setReportName("Báo cáo kết quả thường kỳ");
-        Date a = new Date();
-//        test.setCreate_date(a);
-        arrRp.add(test);
-        arrRp.add(test);
+//        Report test = new Report();
+//        test.setUserName("Phu");
+//        test.setReportName("Báo cáo kết quả thường kỳ");
+//        Date a = new Date();
+////        test.setCreate_date(a);
+//        arrRp.add(test);
+//        arrRp.add(test);
         adapter.notifyDataSetChanged();
         add_b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Dialog dialog = new Dialog(getActivity());
+                dialog = new Dialog(getActivity());
                 dialog.setContentView(R.layout.list_template_dialog);
                 GridView lv = (GridView ) dialog.findViewById(R.id.list_template_d);
                 ArrayList<Template> arrTp = new ArrayList<Template>();
@@ -69,7 +89,7 @@ public class ReportActivity extends Fragment {
 
                 Template test = new Template();
                 test.setTp_name("Báo cáo kết quả");
-                test.setImag_src(R.drawable.ic_note_black_24dp);
+                test.setImag_src(R.drawable.report_thumbnai);
                 arrTp.add(test);
                 arrTp.add(test);
                 adapter.notifyDataSetChanged();
@@ -81,7 +101,8 @@ public class ReportActivity extends Fragment {
                 rp_select.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final Intent myIntent = new Intent(getActivity(), FieldActivity.class);
+                        dialog.cancel();
+                        final Intent myIntent = new Intent(getActivity(), ReportDetailActivity.class);
                         final Bundle bundle = new Bundle();
                         AlertDialog alertbox = new AlertDialog.Builder(getActivity())
                                 .setMessage("Bạn có muốn thêm dữ liệu kèm theo?")

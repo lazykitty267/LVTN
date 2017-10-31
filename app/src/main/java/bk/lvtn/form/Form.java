@@ -35,8 +35,8 @@ import entity.Report;
 
 public class Form {
     //ArrayList<Map<String, String>> = new ArrayList<Map<String, String>>();
-    ArrayList<String> keyForm = new ArrayList<String>();
-    ArrayList<String> dataForm = new ArrayList<String>();
+    public ArrayList<String> keyForm = new ArrayList<String>();
+    public ArrayList<String> dataForm = new ArrayList<String>();
 
     private Report report = new Report();
 //

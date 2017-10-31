@@ -45,19 +45,21 @@ public class FieldActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         Bundle bundle = intent.getBundleExtra("Stream");
-
         if (bundle.getBoolean("isAdd")){
             getExcel();
             FileInputStream f = null;
             try {
                 f = new FileInputStream(new File (excel_name));
-                excelfile = new ExcelHandle(f,FieldActivity.this);
+                excelfile = new ExcelHandle(f);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-
         }
-
+        
+    }
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         Report report = getReport();
         if(report == null) {
             report = new Report();
@@ -111,8 +113,11 @@ public class FieldActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
+
+
+
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
