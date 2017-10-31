@@ -7,6 +7,7 @@ import android.speech.RecognizerIntent;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,15 +20,20 @@ import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 
+import org.apache.poi.ss.usermodel.DateUtil;
+
 import java.io.File;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import bk.lvtn.form.Form;
 import bk.lvtn.fragment_adapter.Field;
 import bk.lvtn.fragment_adapter.FieldAdapter;
 import dataService.DataService;
+import entity.AttachImage;
 import entity.PdfFile;
 import entity.Report;
 
@@ -113,7 +119,15 @@ public class ReportDetailActivity extends AppCompatActivity {
                     }
                     DataService dataService = new DataService();
                     dataService.saveReport(report);
-                    pdfFile.setId(report.getId());
+                    for (int index=0; index < fileList.length; index++) {
+                        File f = new File(fileList[index]);
+                        AttachImage attachImage = new AttachImage();
+                        attachImage.setReportId(report.getId());
+                        attachImage.setName( new  SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
+                        dataService.uploadAttachFile(f, attachImage);
+                    }
+
+                    pdfFile.setReportId(report.getId());
                     dataService.uploadFile(file, pdfFile);
 
 

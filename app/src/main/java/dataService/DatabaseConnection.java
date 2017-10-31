@@ -31,4 +31,13 @@ public class DatabaseConnection {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(Contants.USERS_PATH);
         return  databaseReference;
     }
+    public DatabaseReference connectAttachDatabase () {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(Contants.IMAGE_PATH);
+        return databaseReference;
+    }
+    public StorageReference connectAttachFileDatabase () {
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference(Contants.IMAGE_FILE_PATH
+        );
+        return storageReference;
+    }
 }
