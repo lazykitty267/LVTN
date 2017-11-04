@@ -46,6 +46,7 @@ dependencies {
     provided 'org.apache.xmlbeans:xmlbeans:2.6.0'
     provided 'org.apache.directory.studio:org.dom4j.dom4j:1.6.1'
     provided 'org.apache.poi:poi-ooxml-schemas:3.17'
+    provided 'org.apache.directory.studio:org.apache.commons.io:2.4'
 }
 
 

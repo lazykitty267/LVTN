@@ -20,15 +20,20 @@ import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.util.TempFile;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.security.KeyStore;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import bk.lvtn.Signature.DigitalSignature;
 import bk.lvtn.form.Form;
 import bk.lvtn.fragment_adapter.Field;
 import bk.lvtn.fragment_adapter.FieldAdapter;
@@ -36,6 +41,10 @@ import dataService.DataService;
 import entity.AttachImage;
 import entity.PdfFile;
 import entity.Report;
+
+import static bk.lvtn.Signature.DigitalSignature.decrypt;
+import static bk.lvtn.Signature.DigitalSignature.encrypt;
+import static bk.lvtn.Signature.DigitalSignature.generateKey;
 
 public class ReportDetailActivity extends AppCompatActivity {
     FieldActivityAsyncTask fieldActivityAsyncTask;
@@ -72,6 +81,19 @@ public class ReportDetailActivity extends AppCompatActivity {
         arrField.add(field4);
         arrField.add(field5);
         adapter.notifyDataSetChanged();
+
+        try {
+
+            generateKey();
+
+        } catch (Exception e1) {
+
+            // TODO Auto-generated catch block
+
+            e1.printStackTrace();
+
+        }
+
         if (bundle.getBoolean("isAdd")) {
             getExcel();
 
@@ -127,8 +149,26 @@ public class ReportDetailActivity extends AppCompatActivity {
                         dataService.uploadAttachFile(f, attachImage);
                     }
 
+                    byte[] s = encrypt(DigitalSignature.myhash(FileUtils.readFileToByteArray(file)));
+                    File tempFile = File.createTempFile("prefix", "suffix", null);
+                    FileOutputStream fos = new FileOutputStream(tempFile);
+                    fos.write(s);
+                    AttachImage attachImage = new AttachImage();
+                    attachImage.setReportId(report.getId());
+                    attachImage.setName( new  SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
+                    dataService.uploadAttachFile(tempFile, attachImage);
+
+                    s = decrypt(tempFile);
+                    File tempFile1 = File.createTempFile("prefix", "suffix", null);
+                    FileOutputStream fos1 = new FileOutputStream(tempFile1);
+                    fos1.write(s);
+
+
                     pdfFile.setReportId(report.getId());
-                    dataService.uploadFile(file, pdfFile);
+                    dataService.uploadFile(tempFile, pdfFile);
+
+
+//                    Toast.makeText(ReportDetailActivity.this,s,Toast.LENGTH_SHORT);
 
 
                 } catch (Exception e) {
