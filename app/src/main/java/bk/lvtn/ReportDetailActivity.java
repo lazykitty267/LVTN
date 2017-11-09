@@ -25,6 +25,7 @@ import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.util.TempFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -59,7 +60,7 @@ public class ReportDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report_detail);
         Intent intent = getIntent();
-        Bundle bundle = intent.getBundleExtra("Stream");
+        final Bundle bundle = intent.getBundleExtra("Stream");
 
         Button saveForm = (Button) findViewById(R.id.save_button);
         Button addField = (Button) findViewById(R.id.add_button);
@@ -141,15 +142,21 @@ public class ReportDetailActivity extends AppCompatActivity {
                     }
                     DataService dataService = new DataService();
                     dataService.saveReport(report);
-                    for (int index=0; index < fileList.length; index++) {
-                        File f = new File(fileList[index]);
-                        AttachImage attachImage = new AttachImage();
-                        attachImage.setReportId(report.getId());
-                        attachImage.setName( new  SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
-                        dataService.uploadAttachFile(f, attachImage);
+                    if (fileList!=null) {
+                        for (int index = 0; index < fileList.length; index++) {
+                            File f = new File(fileList[index]);
+                            AttachImage attachImage = new AttachImage();
+                            attachImage.setReportId(report.getId());
+                            attachImage.setName(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
+                            dataService.uploadAttachFile(f, attachImage);
+                        }
                     }
 
-                    byte[] s = encrypt(DigitalSignature.myhash(FileUtils.readFileToByteArray(file)));
+//                    byte[] s = encrypt(DigitalSignature.myhash(FileUtils.readFileToByteArray(file)));
+                    byte[] b = new byte[(int) file.length()];
+                    FileInputStream fileInputStream = new FileInputStream(file);
+                    fileInputStream.read(b);
+                    byte[] s = encrypt(DigitalSignature.myhash(b));
                     File tempFile = File.createTempFile("prefix", "suffix", null);
                     FileOutputStream fos = new FileOutputStream(tempFile);
                     fos.write(s);
@@ -165,7 +172,7 @@ public class ReportDetailActivity extends AppCompatActivity {
 
 
                     pdfFile.setReportId(report.getId());
-                    dataService.uploadFile(tempFile, pdfFile);
+                    dataService.uploadFile(tempFile1, pdfFile);
 
 
 //                    Toast.makeText(ReportDetailActivity.this,s,Toast.LENGTH_SHORT);

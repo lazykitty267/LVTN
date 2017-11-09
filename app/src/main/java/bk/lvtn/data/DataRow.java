@@ -11,6 +11,9 @@ import java.util.List;
 public class DataRow {
     private String key;
 
+    public DataRow() {
+    }
+
     public String getKey() {
         return key;
     }
