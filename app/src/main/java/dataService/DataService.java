@@ -1,5 +1,7 @@
 package dataService;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
@@ -20,6 +22,7 @@ import java.util.List;
 import entity.AttachImage;
 import entity.PdfFile;
 import entity.Report;
+import entity.User;
 
 /**
  * Created by lazyk on 10/3/2017.
@@ -249,5 +252,56 @@ public class DataService {
             }
         });
         return attachImageList;
+    }
+
+    public User getUser(final String id) {
+        DatabaseReference databaseReference = databaseConnection.connectUserDatabase();
+        final User[] user = new User[1];
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User tempuser = dataSnapshot.child(id).getValue(User.class);
+                user[0] = tempuser;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        return user[0];
+    }
+
+    public User checkLoginInfo(String username, String password) {
+        DatabaseReference reference = databaseConnection.connectUserDatabase();
+        DatabaseReference ref =  reference.orderByChild("username").equalTo(username).getRef();
+        final User[] user = new User[1];
+        if (ref.child("password").equals(password)) {
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    User tempuser = dataSnapshot.getValue(User.class);
+                    user[0] = tempuser;
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+        return  user[0];
+    }
+
+    public User getCurrentUser (Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("Login", 0);
+        User user = new User();
+        user.setId(sharedPreferences.getString("id", null));
+        user.setName(sharedPreferences.getString("name", null));
+        user.setManagerId(sharedPreferences.getString("managerid", null));
+        user.setPassword(sharedPreferences.getString("password", null));
+        user.setUsername(sharedPreferences.getString("username", null));
+        user.setPublicKey(sharedPreferences.getString("publickey", null));
+        return user;
     }
 }
