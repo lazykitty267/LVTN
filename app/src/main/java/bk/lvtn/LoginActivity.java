@@ -4,6 +4,7 @@ package bk.lvtn;
  * Created by Long on 31/10/2017.
  */
 import android.app.Application;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,8 +27,10 @@ import com.itextpdf.text.pdf.StringUtils;
 
 import org.apache.poi.util.StringUtil;
 
+import bk.lvtn.Signature.DigitalSignature;
 import dataService.DataService;
 import entity.User;
+
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -35,6 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private Button btnSignup, btnLogin, btnReset;
 
+    Dialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 } else {
                     SharedPreferences loginInfo = getSharedPreferences("Login", 0);
-                    SharedPreferences.Editor editor = loginInfo.edit();
+                    final SharedPreferences.Editor editor = loginInfo.edit();
                     editor.putString("id", user.getId());
                     editor.putString("managerId", user.getManagerId());
                     editor.putString("username", user.getUsername());
@@ -101,9 +106,44 @@ public class LoginActivity extends AppCompatActivity {
                     editor.putString("publickey", user.getPublicKey());
                     editor.putString("name", user.getName());
 
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
+
+                    if (loginInfo.contains("privatekey")) {
+                        dialog = new Dialog(LoginActivity.this);
+                        dialog.setContentView(R.layout.private_key_dialog);
+
+                        dialog.setCancelable(true);
+                        dialog.setTitle("Private key");
+                        dialog.show();
+                        Button pk_add = (Button) dialog.findViewById(R.id.pk_add);
+                        final EditText private_key = (EditText) dialog.findViewById(R.id.private_key);
+                        pk_add.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (private_key.getText().toString().contains("")) {
+                                    Toast.makeText(getApplicationContext(), "Mời bạn nhập từ khóa sinh key", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                else {
+                                    try {
+                                        DigitalSignature digi = new DigitalSignature();
+                                        digi.generateKey(private_key.getText().toString());
+                                        editor.putString("private key", digi.rk.toString());
+
+                                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                    catch (Exception e){
+                                        Log.d("aaa", e.toString());
+                                    }
+                                }
+                            }
+                        });
+                    } else{
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
                 }
             }
         });

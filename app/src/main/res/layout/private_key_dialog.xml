@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mời bạn nhập từ khóa để sinh private key"
+        android:textAlignment="center"
+        android:layout_gravity="center_horizontal"></TextView>
+    <EditText
+        android:id="@+id/private_key"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Example"
+        />
+    <Button
+        android:id="@+id/pk_add"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:text="OK"
+        android:layout_gravity="center_horizontal"/>
+</LinearLayout>

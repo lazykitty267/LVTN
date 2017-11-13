@@ -29,6 +29,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.security.KeyStoreSpi;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,9 +44,6 @@ import entity.AttachImage;
 import entity.PdfFile;
 import entity.Report;
 
-import static bk.lvtn.Signature.DigitalSignature.decrypt;
-import static bk.lvtn.Signature.DigitalSignature.encrypt;
-import static bk.lvtn.Signature.DigitalSignature.generateKey;
 
 public class ReportDetailActivity extends AppCompatActivity {
     FieldActivityAsyncTask fieldActivityAsyncTask;
@@ -83,9 +81,10 @@ public class ReportDetailActivity extends AppCompatActivity {
         arrField.add(field5);
         adapter.notifyDataSetChanged();
 
+        final DigitalSignature digi = new DigitalSignature();
         try {
 
-            generateKey();
+            digi.generateKey("Son Long");
 
         } catch (Exception e1) {
 
@@ -152,11 +151,13 @@ public class ReportDetailActivity extends AppCompatActivity {
                         }
                     }
 
-//                    byte[] s = encrypt(DigitalSignature.myhash(FileUtils.readFileToByteArray(file)));
+////                    byte[] s = encrypt(DigitalSignature.myhash(FileUtils.readFileToByteArray(file)));
+//                    DigitalSignature dSig = new DigitalSignature();
+//                    dSig.generateKey();
                     byte[] b = new byte[(int) file.length()];
                     FileInputStream fileInputStream = new FileInputStream(file);
                     fileInputStream.read(b);
-                    byte[] s = encrypt(DigitalSignature.myhash(b));
+                    byte[] s = digi.encrypt(digi.myhash(b),digi.rk.toString());
                     File tempFile = File.createTempFile("prefix", "suffix", null);
                     FileOutputStream fos = new FileOutputStream(tempFile);
                     fos.write(s);
@@ -165,7 +166,7 @@ public class ReportDetailActivity extends AppCompatActivity {
                     attachImage.setName( new  SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
                     dataService.uploadAttachFile(tempFile, attachImage);
 
-                    s = decrypt(tempFile);
+                    s = digi.decrypt(tempFile,digi.uk.toString());
                     File tempFile1 = File.createTempFile("prefix", "suffix", null);
                     FileOutputStream fos1 = new FileOutputStream(tempFile1);
                     fos1.write(s);

@@ -5,10 +5,12 @@ package bk.lvtn.Signature;
  */
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.security.KeyPair;
 
 import java.security.KeyPairGenerator;
 
+import java.security.KeyStore;
 import java.security.MessageDigest;
 
 import java.security.NoSuchAlgorithmException;
@@ -32,29 +34,22 @@ import android.view.MenuItem;
 import javax.crypto.Cipher;
 
 
+import java.io.*;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
-import android.widget.*;
-
-
-
-import android.view.View;
-
-import android.view.View.OnClickListener;
-
-
-
-import android.app.Activity;
-
-import android.os.Bundle;
-
-import org.apache.commons.io.FileUtils;
+import android.util.Base64;
 
 
 public class DigitalSignature {
 
     /** Called when the activity is first created. */
 
+    public DigitalSignature(){
 
+    }
 
 //    public void onCreate(Bundle savedInstanceState) {
 //
@@ -268,15 +263,15 @@ public class DigitalSignature {
 
     private final static String RSA = "RSA";
 
-    public static PublicKey uk;
+    public PublicKey uk;
 
-    public static PrivateKey rk;
+    public PrivateKey rk;
 
     public static int stepcount = 0;
 
-    public static void generateKey() throws Exception {
+    public void generateKey(String s) throws Exception {
 
-        KeyPairGenerator gen = KeyPairGenerator.getInstance(RSA,"Son Long");
+        KeyPairGenerator gen = KeyPairGenerator.getInstance(RSA,s);
 
         gen.initialize(512);
 
@@ -290,7 +285,7 @@ public class DigitalSignature {
 
 
 
-    public static final String myhash(byte[] by) throws NoSuchAlgorithmException {
+    public final String myhash(byte[] by) throws NoSuchAlgorithmException {
 
         byte[] output1;
 
@@ -338,7 +333,7 @@ public class DigitalSignature {
 
 
 
-    private static byte[] encrypt(String text, PrivateKey priRSA)
+    private byte[] encrypt(String text, PrivateKey priRSA)
 
             throws Exception {
 
@@ -357,10 +352,11 @@ public class DigitalSignature {
 
 
 
-    public final static byte[] encrypt(String text) {
+    public final byte[] encrypt(String text, String key) {
 
         try {
 
+            PrivateKey rk = getPrivateKey(key);
             return encrypt(text, rk);
 
         } catch (Exception e) {
@@ -375,11 +371,15 @@ public class DigitalSignature {
 
 
 
-    public final static byte[] decrypt(File file) {
+    public final byte[] decrypt(File file,String key) {
 
         try {
+			byte[] b = new byte[(int) file.length()];
+            FileInputStream fileInputStream = new FileInputStream(file);
+            fileInputStream.read(b);
 
-            return decrypt(FileUtils.readFileToByteArray(file));
+            PublicKey uk = getPublicKey(key);
+            return decrypt(b,uk);
 
         } catch (Exception e) {
 
@@ -393,66 +393,116 @@ public class DigitalSignature {
 
 
 
-    private static byte[] decrypt(byte[] src) throws Exception {
+    private byte[] decrypt(byte[] src,PublicKey pubRSA) throws Exception {
 
         Cipher cipher = Cipher.getInstance(RSA);
 
-        cipher.init(Cipher.DECRYPT_MODE, uk);
+        cipher.init(Cipher.DECRYPT_MODE, pubRSA);
 
         return cipher.doFinal(src);
 
     }
 
 
-
-    public static String byte2hex(byte[] b) {
-
-        String hs = "";
-
-        String stmp = "";
-
-        for (int n = 0; n < b.length; n++) {
-
-            stmp = Integer.toHexString(b[n] & 0xFF);
-
-            if (stmp.length() == 1)
-
-                hs += ("0" + stmp);
-
-            else
-
-                hs += stmp;
-
+    public PrivateKey getPrivateKey(String key) throws Exception{
+        StringBuilder pkcs8Lines = new StringBuilder();
+        BufferedReader rdr = new BufferedReader(new StringReader(key));
+        String line;
+        while ((line = rdr.readLine()) != null) {
+            pkcs8Lines.append(line);
         }
 
-        return hs.toUpperCase();
+        // Remove any whitespace
 
+        String pkcs8Pem = pkcs8Lines.toString();
+        pkcs8Pem = pkcs8Pem.replaceAll("\\s+","");
+
+        // Base64 decode the result
+
+        byte [] pkcs8EncodedBytes = Base64.decode(pkcs8Pem, Base64.DEFAULT);
+
+        // extract the private key
+
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8EncodedBytes);
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+        PrivateKey privKey = kf.generatePrivate(keySpec);
+        return privKey;
     }
 
-
-
-    public static byte[] hex2byte(byte[] b) {
-
-        if ((b.length % 2) != 0)
-
-            throw new IllegalArgumentException("hello");
-
-
-
-        byte[] b2 = new byte[b.length / 2];
-
-
-
-        for (int n = 0; n < b.length; n += 2) {
-
-            String item = new String(b, n, 2);
-
-            b2[n / 2] = (byte) Integer.parseInt(item, 16);
-
+    public PublicKey getPublicKey(String key) throws Exception{
+        StringBuilder x509Lines = new StringBuilder();
+        BufferedReader rdr = new BufferedReader(new StringReader(key));
+        String line;
+        while ((line = rdr.readLine()) != null) {
+            x509Lines.append(line);
         }
 
-        return b2;
+        // Remove any whitespace
 
+        String pkcs8Pem = x509Lines.toString();
+        pkcs8Pem = pkcs8Pem.replaceAll("\\s+","");
+
+        // Base64 decode the result
+
+        byte [] x509EncodedBytes = Base64.decode(pkcs8Pem, Base64.DEFAULT);
+
+        // extract the private key
+
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(x509EncodedBytes);
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+        PublicKey pubKey = kf.generatePublic(keySpec);
+        return pubKey;
     }
+
+//
+//    public static String byte2hex(byte[] b) {
+//
+//        String hs = "";
+//
+//        String stmp = "";
+//
+//        for (int n = 0; n < b.length; n++) {
+//
+//            stmp = Integer.toHexString(b[n] & 0xFF);
+//
+//            if (stmp.length() == 1)
+//
+//                hs += ("0" + stmp);
+//
+//            else
+//
+//                hs += stmp;
+//
+//        }
+//
+//        return hs.toUpperCase();
+//
+//    }
+//
+//
+//
+//    public static byte[] hex2byte(byte[] b) {
+//
+//        if ((b.length % 2) != 0)
+//
+//            throw new IllegalArgumentException("hello");
+//
+//
+//
+//        byte[] b2 = new byte[b.length / 2];
+//
+//
+//
+//        for (int n = 0; n < b.length; n += 2) {
+//
+//            String item = new String(b, n, 2);
+//
+//            b2[n / 2] = (byte) Integer.parseInt(item, 16);
+//
+//        }
+//
+//        return b2;
+//
+//    }
 
 }
