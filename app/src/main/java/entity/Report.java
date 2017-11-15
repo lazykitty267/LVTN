@@ -39,6 +39,8 @@ public class Report {
 
     private String createDate;
 
+    private String updateDate;
+
     private List<DataRow> fieldList;
 
     private String note;
@@ -47,6 +49,14 @@ public class Report {
 
     public String getId() {
         return id;
+    }
+
+    public String getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(String updateDate) {
+        this.updateDate = updateDate;
     }
 
     public void setId(String id) {
