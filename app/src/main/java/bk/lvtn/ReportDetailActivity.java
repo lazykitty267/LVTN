@@ -1,5 +1,6 @@
 package bk.lvtn;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Environment;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.support.v7.app.AlertDialog;
@@ -39,6 +41,8 @@ import bk.lvtn.Signature.DigitalSignature;
 import bk.lvtn.form.Form;
 import bk.lvtn.fragment_adapter.Field;
 import bk.lvtn.fragment_adapter.FieldAdapter;
+import bk.lvtn.fragment_adapter.Template;
+import bk.lvtn.fragment_adapter.TemplateAdapter;
 import dataService.DataService;
 import entity.AttachImage;
 import entity.PdfFile;
@@ -49,7 +53,7 @@ public class ReportDetailActivity extends AppCompatActivity {
     FieldActivityAsyncTask fieldActivityAsyncTask;
     ListView listField;
     ArrayList<Field> arrField = new ArrayList<Field>();
-    FieldAdapter adapter;
+    FieldAdapter adapter,adapterAdd=null;
     String excel_name = "";
     Form form;
     String[] fileList = null;
@@ -63,7 +67,6 @@ public class ReportDetailActivity extends AppCompatActivity {
         Button saveForm = (Button) findViewById(R.id.save_button);
         Button addField = (Button) findViewById(R.id.add_button);
         Button attachFile = (Button) findViewById(R.id.attach_file_button);
-        final EditText fieldAdd = (EditText) findViewById(R.id.add_field);
         listField = (ListView) findViewById(R.id.list_field);
         adapter = new FieldAdapter(this, arrField, R.layout.item_inlist_field);
 
@@ -101,10 +104,38 @@ public class ReportDetailActivity extends AppCompatActivity {
         addField.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Field f = new Field(fieldAdd.getText().toString());
-                fieldAdd.setText("");
-                arrField.add(f);
-                adapter.notifyDataSetChanged();
+                final Dialog dialog = new Dialog(ReportDetailActivity.this);
+                dialog.setContentView(R.layout.list_template_dialog);
+                GridView lv = (GridView ) dialog.findViewById(R.id.list_template_d);
+                ArrayList<Field> arrTp = new ArrayList<Field>();
+
+                adapterAdd = new FieldAdapter(ReportDetailActivity.this,arrTp,R.layout.item_inlist_field);
+                lv.setAdapter(adapterAdd);
+
+                final Field field1 = new Field("Tên Field");
+                arrTp.add(field1);
+                adapterAdd.notifyDataSetChanged();
+
+                dialog.setCancelable(true);
+                dialog.setTitle("ListView");
+                dialog.show();
+                Button rp_select = (Button) dialog.findViewById(R.id.rp_select);
+                rp_select.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(field1.getValue_field().equals("")){
+                            Toast.makeText(ReportDetailActivity.this,"Mời nhập field name!!",Toast.LENGTH_LONG);
+                            return;
+                        }
+                        else {
+                            Field f = new Field(field1.getValue_field());
+                            arrField.add(f);
+                            adapterAdd.notifyDataSetChanged();
+                            adapterAdd=null;
+                            dialog.dismiss();
+                        }
+                    }
+                });
             }
         });
         attachFile.setOnClickListener(new View.OnClickListener(){
@@ -199,9 +230,16 @@ public class ReportDetailActivity extends AppCompatActivity {
             ArrayList<String> result = data
                     .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             try {
-                Field field = adapter.getItem(position);
-                field.setValue_field(field.getValue_field() + result.get(0) + ".");
-                adapter.notifyDataSetChanged();
+                if (adapterAdd!=null){
+                    Field field = adapterAdd.getItem(position);
+                    field.setValue_field(field.getValue_field() + result.get(0) + ".");
+                    adapterAdd.notifyDataSetChanged();
+                }
+                else {
+                    Field field = adapter.getItem(position);
+                    field.setValue_field(field.getValue_field() + result.get(0) + ".");
+                    adapter.notifyDataSetChanged();
+                }
             } catch (Exception e) {
                 Toast.makeText(this, e.getMessage(),
                         Toast.LENGTH_SHORT).show();

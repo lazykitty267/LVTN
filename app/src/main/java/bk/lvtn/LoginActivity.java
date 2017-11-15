@@ -27,6 +27,14 @@ import com.itextpdf.text.pdf.StringUtils;
 
 import org.apache.poi.util.StringUtil;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import bk.lvtn.Signature.DigitalSignature;
 import dataService.DataService;
 import entity.User;
@@ -105,9 +113,18 @@ public class LoginActivity extends AppCompatActivity {
                     editor.putString("password", user.getPassword());
                     editor.putString("publickey", user.getPublicKey());
                     editor.putString("name", user.getName());
-
-
-                    if (loginInfo.contains("privatekey")) {
+                    if (isFilePresent("privatekey")){
+                        try {
+                            String vk = getvk("privatekey");
+                            editor.putString("privatekey", vk);
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } catch (Exception e){
+                            Log.d("aaa", e.toString());
+                        }
+                    }
+                    else {
                         dialog = new Dialog(LoginActivity.this);
                         dialog.setContentView(R.layout.private_key_dialog);
 
@@ -129,6 +146,13 @@ public class LoginActivity extends AppCompatActivity {
                                         digi.generateKey(private_key.getText().toString());
                                         editor.putString("private key", digi.rk.toString());
 
+                                        File secondFile = new File(getFilesDir().getAbsolutePath() + "/", "privatekey");
+                                        secondFile.createNewFile();
+                                        FileOutputStream fos = new FileOutputStream(secondFile);
+                                        fos.write(digi.rk.toString().getBytes());
+                                        fos.flush();
+                                        fos.close();
+
                                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                         startActivity(intent);
                                         finish();
@@ -139,13 +163,28 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                             }
                         });
-                    } else{
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
                     }
                 }
             }
         });
+    }
+
+    public boolean isFilePresent(String fileName) {
+        String path = getFilesDir().getAbsolutePath() + "/" + fileName;
+        File file = new File(path);
+        return file.exists();
+    }
+    public String getvk(String filename) throws Exception{
+        File secondInputFile = new File(getFilesDir().getAbsolutePath() + "/", filename);
+        InputStream secondInputStream = new BufferedInputStream(new FileInputStream(secondInputFile));
+        BufferedReader r = new BufferedReader(new InputStreamReader(secondInputStream));
+        StringBuilder total = new StringBuilder();
+        String line;
+        while ((line = r.readLine()) != null) {
+            total.append(line);
+        }
+        r.close();
+        secondInputStream.close();
+        return total.toString();
     }
 }
