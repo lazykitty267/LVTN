@@ -44,6 +44,25 @@ public class AttachImage {
     private String name;
     private String url;
 
+    public String getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
+
+    public String getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(String updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    private String createDate;
+    private String updateDate;
+
     public  AttachImage() {
     }
 
