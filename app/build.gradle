@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "bk.lvtn"
-        minSdkVersion 15
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -26,6 +26,9 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     //    compile 'com.itextpdf:pdfa:5.4.1'
+    testCompile 'junit:junit:4.12'
+    compile 'com.github.angads25:filepicker:1.1.1'
+    testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -35,18 +38,19 @@ dependencies {
     compile 'com.itextpdf:itextpdf:5.5.12'
     compile 'org.apache.poi:poi:3.17'
     compile 'com.github.angads25:filepicker:1.1.1'
-    testCompile 'junit:junit:4.12'
     compile 'com.google.firebase:firebase-storage:10.0.1'
     compile 'com.google.firebase:firebase-auth:10.0.1'
     compile 'com.google.firebase:firebase-database:10.0.1'
-    testCompile 'junit:junit:4.12'
     compile 'javax.inject:javax.inject:1'
-    compile 'com.github.angads25:filepicker:1.1.1'
     testCompile 'junit:junit:4.12'
     provided 'org.apache.xmlbeans:xmlbeans:2.6.0'
     provided 'org.apache.directory.studio:org.dom4j.dom4j:1.6.1'
     provided 'org.apache.poi:poi-ooxml-schemas:3.17'
+    compile 'org.lucasr.twowayview:twowayview:0.1.4'
+    compile 'de.hdodenhof:circleimageview:1.2.1'
+    compile 'com.android.support:recyclerview-v7:25.3.1-alpha1'
 }
+
 
 
 
