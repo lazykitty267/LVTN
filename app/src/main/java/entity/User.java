@@ -7,7 +7,15 @@ import java.util.List;
  */
 
 public class User {
-    private Long id;
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    private String id;
 
     private String name;
 
@@ -17,15 +25,25 @@ public class User {
 
     private String password;
 
-    private List<Long>  managerId;
+    private String managerId;
 
-    public Long getId() {
-        return id;
+    public String getManagerId() {
+        return managerId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setManagerId(String managerId) {
+        this.managerId = managerId;
     }
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+    }
+
+    private String  publicKey;
 
     public String getName() {
         return name;
@@ -59,11 +77,4 @@ public class User {
         this.password = password;
     }
 
-    public List<Long> getManagerId() {
-        return managerId;
-    }
-
-    public void setManagerId(List<Long> managerId) {
-        this.managerId = managerId;
-    }
 }

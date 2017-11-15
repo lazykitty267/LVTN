@@ -44,6 +44,7 @@
             android:name=".FieldActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ReportDetailActivity"></activity>
+        <activity android:name=".LoginActivity"></activity>
     </application>
 
 </manifest>

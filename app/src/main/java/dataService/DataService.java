@@ -1,5 +1,7 @@
 package dataService;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
@@ -17,10 +19,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
+import entity.AttachImage;
 import entity.PdfFile;
 import entity.Report;
+import entity.User;
 
 /**
  * Created by lazyk on 10/3/2017.
@@ -28,9 +30,6 @@ import entity.Report;
 public class DataService {
     private DatabaseConnection databaseConnection = new DatabaseConnection();
 
-    /**
-     * @param pdfFile có id băng với id của Report
-     */
     public void uploadFile(File file, final PdfFile pdfFile) {
         Uri data = Uri.fromFile(file);
         StorageReference storageReference = databaseConnection.connectPdfFileDatabase();
@@ -82,13 +81,13 @@ public class DataService {
 
     private boolean savePdf(final PdfFile pdfFile) {
         DatabaseReference databaseReference = databaseConnection.connectPdfDatabase();
-        pdfFile.setId(pdfFile.getId());
-        return databaseReference.child(pdfFile.getId()).setValue(pdfFile).isSuccessful();
+        pdfFile.setId(databaseReference.push().getKey());
+        return databaseReference.child(pdfFile.getReportId()).setValue(pdfFile).isSuccessful();
     }
 
-    private boolean updatePdf(PdfFile pdfFile) {
+    public boolean updatePdf(PdfFile pdfFile) {
         DatabaseReference databaseReference = databaseConnection.connectPdfDatabase();
-        return databaseReference.child(pdfFile.getId()).setValue(pdfFile).isSuccessful();
+        return databaseReference.child(pdfFile.getReportId()).setValue(pdfFile).isSuccessful();
     }
 
     public List<Report> getAllReport() {
@@ -134,7 +133,11 @@ public class DataService {
 
     public boolean deleteReport(String id) {
         PdfFile file = getPdf(id);
+        List<AttachImage> attachImageList = getAllAttach(id);
         deletePdf(file);
+        for (int index = 0; index < attachImageList.size(); index++) {
+            deleteAttach(attachImageList.get(index));
+        }
         DatabaseReference databaseReference = databaseConnection.connectReportDatabase();
         databaseReference.child(id).removeValue();
         return true;
@@ -160,13 +163,13 @@ public class DataService {
         return pdfList;
     }
 
-    public PdfFile getPdf(@NonNull final String id) {
+    public PdfFile getPdf(@NonNull final String reportId) {
         DatabaseReference databaseReference = databaseConnection.connectPdfDatabase();
         final List<PdfFile> pdfFileList = new ArrayList<>();
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                PdfFile pdfFile = dataSnapshot.child(id).getValue(PdfFile.class);
+                PdfFile pdfFile = dataSnapshot.child(reportId).getValue(PdfFile.class);
                 pdfFileList.add(pdfFile);
             }
 
@@ -183,9 +186,122 @@ public class DataService {
 
     public boolean deletePdf(PdfFile pdfFile) {
         DatabaseReference databaseReference = databaseConnection.connectPdfDatabase();
-        databaseReference.child(pdfFile.getId()).removeValue();
+        databaseReference.child(pdfFile.getReportId()).removeValue();
         StorageReference storageReference = databaseConnection.connectPdfFileDatabase();
         storageReference.child(pdfFile.getId() + "_" + pdfFile.getName() + ".pdf").delete();
         return true;
+    }
+
+    public void uploadAttachFile(File file, final AttachImage attachFile) {
+        Uri data = Uri.fromFile(file);
+        StorageReference storageReference = databaseConnection.connectAttachFileDatabase();
+        saveAttachFile(attachFile);
+        final StorageReference sRef = storageReference.child(attachFile.getId() + "_" + attachFile.getName() + ".jpg");
+        sRef.putFile(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @SuppressWarnings("VisitableForTests")
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                AttachImage file = new AttachImage(attachFile.getReportId(), attachFile.getId(), attachFile.getName());
+                //noinspection VisibleForTests
+                file.setUrl(taskSnapshot.getDownloadUrl().toString());
+                updateAttachFile(file);
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+    }
+
+    public boolean saveAttachFile(AttachImage attachImage) {
+        DatabaseReference databaseReference = databaseConnection.connectAttachDatabase();
+        attachImage.setId(databaseReference.push().getKey());
+        return databaseReference.child(attachImage.getReportId()).setValue(attachImage).isSuccessful();
+    }
+
+    public boolean updateAttachFile(AttachImage attachImage) {
+        DatabaseReference databaseReference = databaseConnection.connectAttachDatabase();
+        return databaseReference.child(attachImage.getReportId()).setValue(attachImage).isSuccessful();
+    }
+
+    public boolean deleteAttach(AttachImage attachImage) {
+        DatabaseReference databaseReference = databaseConnection.connectAttachDatabase();
+        databaseReference.child(attachImage.getReportId()).removeValue();
+        StorageReference storageReference = databaseConnection.connectPdfFileDatabase();
+        storageReference.child(attachImage.getId() + "_" + attachImage.getName() + ".pdf").delete();
+        return true;
+    }
+
+    public  List<AttachImage> getAllAttach(String reportId) {
+        DatabaseReference databaseReference = databaseConnection.connectAttachDatabase();
+        final List<AttachImage> attachImageList = new ArrayList<>();
+        databaseReference.child(reportId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    AttachImage attachImage = postSnapshot.getValue(AttachImage.class);
+                    attachImageList.add(attachImage);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        return attachImageList;
+    }
+
+    public User getUser(final String id) {
+        DatabaseReference databaseReference = databaseConnection.connectUserDatabase();
+        final User[] user = new User[1];
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User tempuser = dataSnapshot.child(id).getValue(User.class);
+                user[0] = tempuser;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        return user[0];
+    }
+
+    public User checkLoginInfo(String username, String password) {
+        DatabaseReference reference = databaseConnection.connectUserDatabase();
+        DatabaseReference ref =  reference.orderByChild("username").equalTo(username).getRef();
+        final User[] user = new User[1];
+        if (ref.child("password").equals(password)) {
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    User tempuser = dataSnapshot.getValue(User.class);
+                    user[0] = tempuser;
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+        return  user[0];
+    }
+
+    public User getCurrentUser (Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("Login", 0);
+        User user = new User();
+        user.setId(sharedPreferences.getString("id", null));
+        user.setName(sharedPreferences.getString("name", null));
+        user.setManagerId(sharedPreferences.getString("managerid", null));
+        user.setPassword(sharedPreferences.getString("password", null));
+        user.setUsername(sharedPreferences.getString("username", null));
+        user.setPublicKey(sharedPreferences.getString("publickey", null));
+        return user;
     }
 }
