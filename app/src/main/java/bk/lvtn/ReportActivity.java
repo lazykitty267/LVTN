@@ -55,7 +55,7 @@ public class ReportActivity extends Fragment {
         PdfFile pdfFile = new PdfFile();
 
         DataService dataService = new DataService();
-        List<Report> lReport = dataService.getAllReport();
+        List<Report> lReport = dataService.getAllReport("12345678");
 //        pdfFile = dataService.getPdf(lReport.get(0).getId());
 //        File f = dataService.downloadFile(pdfFile);
 //

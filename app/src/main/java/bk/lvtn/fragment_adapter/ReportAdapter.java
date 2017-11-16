@@ -35,11 +35,11 @@ public class ReportAdapter extends ArrayAdapter<Report> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         LayoutInflater layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = layoutInflater.inflate(resId,null);
-        TextView reportName = (TextView)convertView.findViewById(R.id.rpName);
-        TextView reportDetail = (TextView) convertView.findViewById(R.id.rpDetail);
+        TextView reportName = (TextView)convertView.findViewById(R.id.report_name);
+        TextView reportCreateDate = (TextView) convertView.findViewById(R.id.report_create_date);
         Report report = listReport.get(position);
         reportName.setText(report.getReportName());
-        reportDetail.setText(report.getCreateDate());
+        reportCreateDate.setText(report.getCreateDate());
 
 
         return convertView;
