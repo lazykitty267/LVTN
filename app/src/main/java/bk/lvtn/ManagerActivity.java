@@ -37,7 +37,7 @@ public class ManagerActivity extends Fragment {
         View view = inflater.inflate(R.layout.fragment_manager, container, false);
         //get user reports
         DataService dataService = new DataService();
-        arrRp=new ArrayList<>(dataService.getAllReport("12345678"));
+        arrRp=new ArrayList<>(dataService.getAllReport("123456789"));
         ListView listView = (ListView)view.findViewById(R.id.list_user_reports);
         adapter = new ReportAdapter(getActivity(), arrRp,R.layout.item_inlist_report);
         listView.setAdapter(adapter);
