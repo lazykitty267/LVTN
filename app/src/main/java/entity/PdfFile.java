@@ -27,6 +27,25 @@ public class PdfFile {
     private String id;
     private String url;
 
+    public String getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
+
+    public String getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(String updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    private String createDate;
+    private String updateDate;
+
     public PdfFile(String id, String name) {
         this.id = id;
         this.name = name;

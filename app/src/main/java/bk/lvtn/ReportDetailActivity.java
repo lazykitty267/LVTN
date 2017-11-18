@@ -3,17 +3,23 @@ package bk.lvtn;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Environment;
 import android.speech.RecognizerIntent;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.support.v7.app.AlertDialog;
@@ -22,14 +28,13 @@ import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.util.TempFile;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreSpi;
 import java.text.SimpleDateFormat;
@@ -39,6 +44,8 @@ import java.util.List;
 
 import bk.lvtn.Signature.DigitalSignature;
 import bk.lvtn.form.Form;
+import bk.lvtn.fragment_adapter.AttachImages;
+import bk.lvtn.fragment_adapter.AttachImgAdapter;
 import bk.lvtn.fragment_adapter.Field;
 import bk.lvtn.fragment_adapter.FieldAdapter;
 import bk.lvtn.fragment_adapter.Template;
@@ -57,6 +64,9 @@ public class ReportDetailActivity extends AppCompatActivity {
     String excel_name = "";
     Form form;
     String[] fileList = null;
+    ArrayList<AttachImages > listImgAttach = new ArrayList<AttachImages>();
+    RecyclerView mRecyclerView;
+    AttachImgAdapter mRcvAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,10 +76,17 @@ public class ReportDetailActivity extends AppCompatActivity {
 
         Button saveForm = (Button) findViewById(R.id.save_button);
         Button addField = (Button) findViewById(R.id.add_button);
-        Button attachFile = (Button) findViewById(R.id.attach_file_button);
+        Button attachFile = (Button) findViewById(R.id.add_attachimg_button);
         listField = (ListView) findViewById(R.id.list_field);
         adapter = new FieldAdapter(this, arrField, R.layout.item_inlist_field);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_attachfile);
+        adapter = new FieldAdapter(this, arrField, R.layout.item_inlist_field);
+        mRcvAdapter = new AttachImgAdapter(listImgAttach);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
 
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setAdapter(mRcvAdapter);
         listField.setAdapter(adapter);
         // Test listview
         Field field1 = new Field("Tên cơ quan");
@@ -141,7 +158,17 @@ public class ReportDetailActivity extends AppCompatActivity {
         attachFile.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                getAttachFile();
+                if (ContextCompat.checkSelfPermission(ReportDetailActivity.this, android.Manifest.permission.CAMERA)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    //TODO: Do somethings
+                } else {
+                    //Request camera permission
+                    ActivityCompat.requestPermissions(ReportDetailActivity.this, new String[] { android.Manifest.permission.CAMERA },
+                            1);
+                }
+//                getAttachFile();
+                AttachImageService a = new AttachImageService(ReportDetailActivity.this,getApplication());
+                a.takePicture();
             }
         });
 
@@ -172,9 +199,9 @@ public class ReportDetailActivity extends AppCompatActivity {
                     }
                     DataService dataService = new DataService();
                     dataService.saveReport(report);
-                    if (fileList!=null) {
-                        for (int index = 0; index < fileList.length; index++) {
-                            File f = new File(fileList[index]);
+                    if (listImgAttach!=null) {
+                        for (int index = 0; index < listImgAttach.size(); index++) {
+                            File f = new File(listImgAttach.get(index).getPath());
                             AttachImage attachImage = new AttachImage();
                             attachImage.setReportId(report.getId());
                             attachImage.setName(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
@@ -230,31 +257,54 @@ public class ReportDetailActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onActivityResult(int position, int resultCode, Intent data) {
-
-
-        if (resultCode == RESULT_OK && null != data) {
-
-            ArrayList<String> result = data
-                    .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+    protected void onActivityResult (int position, int resultCode, Intent data){
+        if(position==999){
+            AttachImageService a = new AttachImageService(ReportDetailActivity.this,getApplication());
+            File photoFile =null;
             try {
-                if (adapterAdd!=null){
-                    Field field = adapterAdd.getItem(position);
-                    field.setValue_field(field.getValue_field() + result.get(0) + ".");
-                    adapterAdd.notifyDataSetChanged();
-                }
-                else {
+                photoFile = a.createImageFile();
+                Log.d("image path",photoFile.getAbsolutePath());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+            AttachImages attachImages = new AttachImages(String.valueOf(photoFile.getAbsolutePath()),imageBitmap);
+            listImgAttach.add(attachImages);
+            adapter.notifyDataSetChanged();
+            Toast.makeText(this,String.valueOf(listImgAttach.size()), Toast.LENGTH_SHORT).show();
+
+            OutputStream os;
+            try {
+                os = new FileOutputStream(photoFile);
+                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                os.flush();
+                os.close();
+            } catch (Exception e) {
+                Toast.makeText(this, "erorrrrr",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+        else{
+            if (resultCode == RESULT_OK && null != data) {
+
+                ArrayList<String> result = data
+                        .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                try {
                     Field field = adapter.getItem(position);
                     field.setValue_field(field.getValue_field() + result.get(0) + ".");
                     adapter.notifyDataSetChanged();
+                } catch (Exception e) {
+                    Toast.makeText(this, e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
                 }
-            } catch (Exception e) {
-                Toast.makeText(this, e.getMessage(),
-                        Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "null cmnr", Toast.LENGTH_SHORT).show();
             }
-        } else {
-            Toast.makeText(this, "null cmnr", Toast.LENGTH_SHORT).show();
         }
+
 
     }
 
