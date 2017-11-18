@@ -104,7 +104,8 @@ public class LoginActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
                     }
-                } else {
+                } else
+                {
                     SharedPreferences loginInfo = getSharedPreferences("Login", 0);
                     final SharedPreferences.Editor editor = loginInfo.edit();
                     editor.putString("id", user.getId());
@@ -115,12 +116,14 @@ public class LoginActivity extends AppCompatActivity {
                     editor.putString("name", user.getName());
                     final File keyFileDirectory = new File(getFilesDir(), "rsa/");
                     final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
+                    Toast.makeText(LoginActivity.this,"before",Toast.LENGTH_LONG);
                     if (privateKeyFile.exists()){
                         try {
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
                         } catch (Exception e){
+                            Toast.makeText(LoginActivity.this,"error",Toast.LENGTH_LONG);
                             Log.d("aaa", e.toString());
                         }
                     }
@@ -136,7 +139,7 @@ public class LoginActivity extends AppCompatActivity {
                         pk_add.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                if (private_key.getText().toString().contains("")) {
+                                if (private_key.getText().toString().equals("")) {
                                     Toast.makeText(getApplicationContext(), "Mời bạn nhập từ khóa sinh key", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
@@ -152,6 +155,9 @@ public class LoginActivity extends AppCompatActivity {
 //                                        fos.write(digi.rk.toString().getBytes());
 //                                        fos.flush();
 //                                        fos.close();
+
+                                        // upload publickey
+
 
                                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                         startActivity(intent);
