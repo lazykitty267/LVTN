@@ -40,9 +40,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".FieldActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ReportDetailActivity"></activity>
         <activity android:name=".MainActivity"></activity>
     </application>
