@@ -7,6 +7,17 @@ import java.util.List;
  */
 
 public class User {
+
+    public User(String name, String userRole, String username, String password) {
+        this.name = name;
+        this.userRole = userRole;
+        this.username = username;
+        this.password = password;
+    }
+
+    public User() {
+    }
+
     public String getId() {
         return id;
     }

@@ -41,15 +41,15 @@ import entity.User;
 
 
 public class LoginActivity extends AppCompatActivity {
-
+    private LoginActivityAsyncTask loginActivityAsyncTask;
     private EditText inputEmail, inputPassword;
     private FirebaseAuth auth;
     private ProgressBar progressBar;
     private Button btnSignup, btnLogin, btnReset;
-
     Dialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         //Get Firebase auth instance
@@ -96,81 +96,76 @@ public class LoginActivity extends AppCompatActivity {
                 DataService dataService = new DataService();
                 //authenticate user
                 progressBar.setVisibility(View.GONE);
-                User user = dataService.checkLoginInfo(email, password);
-                if (user != null && !("").equals(user.getId()) && user.getId() != null) {
-                    // there was an error
-                    if (password.length() < 6) {
-                        inputPassword.setError(getString(R.string.minimum_password));
-                    } else {
-                        Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
-                    }
-                } else
-                {
-                    SharedPreferences loginInfo = getSharedPreferences("Login", 0);
-                    final SharedPreferences.Editor editor = loginInfo.edit();
-                    editor.putString("id", user.getId());
-                    editor.putString("managerId", user.getManagerId());
-                    editor.putString("username", user.getUsername());
-                    editor.putString("password", user.getPassword());
-                    editor.putString("publickey", user.getPublicKey());
-                    editor.putString("name", user.getName());
-                    final File keyFileDirectory = new File(getFilesDir(), "rsa/");
-                    final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
-                    Toast.makeText(LoginActivity.this,"before",Toast.LENGTH_LONG);
-                    if (privateKeyFile.exists()){
-                        try {
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } catch (Exception e){
-                            Toast.makeText(LoginActivity.this,"error",Toast.LENGTH_LONG);
-                            Log.d("aaa", e.toString());
-                        }
-                    }
-                    else {
-                        dialog = new Dialog(LoginActivity.this);
-                        dialog.setContentView(R.layout.private_key_dialog);
-
-                        dialog.setCancelable(true);
-                        dialog.setTitle("Private key");
-                        dialog.show();
-                        Button pk_add = (Button) dialog.findViewById(R.id.pk_add);
-                        final EditText private_key = (EditText) dialog.findViewById(R.id.private_key);
-                        pk_add.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (private_key.getText().toString().equals("")) {
-                                    Toast.makeText(getApplicationContext(), "Mời bạn nhập từ khóa sinh key", Toast.LENGTH_SHORT).show();
-                                    return;
-                                }
-                                else {
-                                    try {
-                                        DigitalSignature digi = new DigitalSignature();
-                                        digi.generateKey(LoginActivity.this);
-//                                        editor.putString("private key", digi.rk.toString());
+                dataService.mCheckInforInServer(email,LoginActivity.this,email,password);
+//                User user=dataService.mCheckInforInServer(email);
+//                if (!(user != null && !("").equals(user.getId()) && user.getId() != null)) {
+//                    // there was an error
+//                    if (password.length() < 6) {
+//                        inputPassword.setError(getString(R.string.minimum_password));
+//                    } else {
+//                        Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
+//                    }
+//                } else {
+//                    SharedPreferences loginInfo = getSharedPreferences("Login", 0);
+//                    final SharedPreferences.Editor editor = loginInfo.edit();
+//                    editor.putString("id", user.getId());
+//                    editor.putString("managerId", user.getManagerId());
+//                    editor.putString("username", user.getUsername());
+//                    editor.putString("password", user.getPassword());
+//                    editor.putString("publickey", user.getPublicKey());
+//                    editor.putString("name", user.getName());
+//                    final File keyFileDirectory = new File(getFilesDir(), "rsa/");
+//                    final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
+//                    if (privateKeyFile.exists()){
+//                        try {
+//                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//                            startActivity(intent);
+//                            finish();
+//                        } catch (Exception e){
+//                            Log.d("aaa", e.toString());
+//                        }
+//                    }
+//                    else {
+//                        dialog = new Dialog(LoginActivity.this);
+//                        dialog.setContentView(R.layout.private_key_dialog);
 //
-//                                        File secondFile = new File(getFilesDir().getAbsolutePath() + "/", "privatekey");
-//                                        secondFile.createNewFile();
-//                                        FileOutputStream fos = new FileOutputStream(secondFile);
-//                                        fos.write(digi.rk.toString().getBytes());
-//                                        fos.flush();
-//                                        fos.close();
-
-                                        // upload publickey
-
-
-                                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    }
-                                    catch (Exception e){
-                                        Log.d("aaa", e.toString());
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }
+//                        dialog.setCancelable(true);
+//                        dialog.setTitle("Private key");
+//                        dialog.show();
+//                        Button pk_add = (Button) dialog.findViewById(R.id.pk_add);
+//                        final EditText private_key = (EditText) dialog.findViewById(R.id.private_key);
+//                        pk_add.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                if (private_key.getText().toString().equals("")) {
+//                                    Toast.makeText(getApplicationContext(), "Mời bạn nhập từ khóa sinh key", Toast.LENGTH_SHORT).show();
+//                                    return;
+//                                }
+//                                else {
+//                                    try {
+//                                        DigitalSignature digi = new DigitalSignature();
+//                                        digi.generateKey(LoginActivity.this);
+////                                        editor.putString("private key", digi.rk.toString());
+////
+////                                        File secondFile = new File(getFilesDir().getAbsolutePath() + "/", "privatekey");
+////                                        secondFile.createNewFile();
+////                                        FileOutputStream fos = new FileOutputStream(secondFile);
+////                                        fos.write(digi.rk.toString().getBytes());
+////                                        fos.flush();
+////                                        fos.close();
+//
+//                                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//                                        startActivity(intent);
+//                                        finish();
+//                                    }
+//                                    catch (Exception e){
+//                                        Log.d("aaa", e.toString());
+//                                    }
+//                                }
+//                            }
+//                        });
+//                    }
+//                }
             }
         });
     }
