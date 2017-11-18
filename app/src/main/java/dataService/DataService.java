@@ -1,19 +1,16 @@
 package dataService;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -25,10 +22,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import bk.lvtn.LoginActivity;
-import bk.lvtn.LoginActivityAsyncTask;
-import bk.lvtn.R;
-import bk.lvtn.fragment_adapter.OnGetDataListener;
 import entity.AttachImage;
 import entity.PdfFile;
 import entity.Report;
@@ -342,16 +335,16 @@ public class DataService {
 
     /**
      * Lấy thôn gtin user trên server theo id
-     * @param id    id user
+     * @param username    username
      * @return thông tin user
      */
-    public User getUser(final String id) {
+    public User getUser(final String username) {
         DatabaseReference databaseReference = databaseConnection.connectUserDatabase();
         final User[] user = new User[1];
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.child(username).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                User tempuser = dataSnapshot.child(id).getValue(User.class);
+                User tempuser = dataSnapshot.getValue(User.class);
                 user[0] = tempuser;
             }
 
@@ -364,100 +357,15 @@ public class DataService {
     }
 
     /**
-     * kiẻm tra đăng nhập
-     * @param username
-     * @param password
-     * @return
-     */
-    public User checkLoginInfo(@NonNull final String username, @NonNull final String password) {
-        DatabaseReference reference = databaseConnection.connectUserDatabase();
-        DatabaseReference ref =  reference.orderByChild("username").equalTo(username).getRef();
-
-        final User[] user = new User[1];
-        if (ref.child("password").equals(password)) {
-            ref.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    User tempuser = dataSnapshot.getValue(User.class);
-                    user[0] = tempuser;
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
-        return  user[0];
-    }
-    public User mCheckInforInServer(String child, final Activity contextParent, final String username, final String password) {
-        final User[] user = new User[1];
-        user[0]= null;
-        new DataService().mReadDataOnce(child, new OnGetDataListener() {
-            @Override
-            public void onStart() {
-
-                //DO SOME THING WHEN START GET DATA HERE
-
-
-            }
-
-            @Override
-            public void onSuccess(DataSnapshot data) {
-                //DO SOME THING WHEN GET DATA SUCCESS HERE
-                User abc = data.getValue(User.class);
-//                user[0] = tempuser;
-                user[0]= new User();
-                user[0] =abc;
-                if(abc!=null) {
-                    if (abc.getPassword().equals(password)) {
-                        LoginActivityAsyncTask loginActivityAsyncTask;
-                        loginActivityAsyncTask = new LoginActivityAsyncTask(contextParent, username, password, user[0]);
-                        loginActivityAsyncTask.execute();
-                    } else {
-                        Toast.makeText(contextParent, contextParent.getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
-                    }
-                }
-                else {
-                    Toast.makeText(contextParent, contextParent.getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
-
-                }
-            }
-
-            @Override
-            public void onFailed(DatabaseError databaseError) {
-                //DO SOME THING WHEN GET DATA FAILED HERE
-            }
-        });
-        return user[0];
-    }
-    public void mReadDataOnce(String child, final OnGetDataListener listener) {
-        listener.onStart();
-        FirebaseDatabase.getInstance().getReference("Users/").child(child).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                listener.onSuccess(dataSnapshot);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                listener.onFailed(databaseError);
-            }
-        });
-    }
-
-    /**
      * lấy thông tin user đang đăng nhập
      * @param context
      * @return thông tin user
      */
     public User getCurrentUser (Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("Login", 0);
-        User user = new User("","","","");
-        user.setId(sharedPreferences.getString("id", null));
+        User user = new User();
         user.setName(sharedPreferences.getString("name", null));
-        user.setManagerId(sharedPreferences.getString("managerid", null));
+        user.setManagerName(sharedPreferences.getString("managername", null));
         user.setPassword(sharedPreferences.getString("password", null));
         user.setUsername(sharedPreferences.getString("username", null));
         user.setPublicKey(sharedPreferences.getString("publickey", null));

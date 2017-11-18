@@ -13,17 +13,17 @@ public class PdfFile {
         this.reportId = reportId;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     private String name;
     private String reportId;
-    private String userId;
+    private String userName;
     private String id;
     private String url;
 

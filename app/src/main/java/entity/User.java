@@ -7,27 +7,6 @@ import java.util.List;
  */
 
 public class User {
-
-    public User(String name, String userRole, String username, String password) {
-        this.name = name;
-        this.userRole = userRole;
-        this.username = username;
-        this.password = password;
-    }
-
-    public User() {
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    private String id;
-
     private String name;
 
     private String userRole;
@@ -36,14 +15,18 @@ public class User {
 
     private String password;
 
-    private String managerId;
+    private String managerName;
 
-    public String getManagerId() {
-        return managerId;
+    public String getManagerName() {
+        return managerName;
     }
 
-    public void setManagerId(String managerId) {
-        this.managerId = managerId;
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
+    }
+
+    public User() {
+
     }
 
     public String getPublicKey() {
