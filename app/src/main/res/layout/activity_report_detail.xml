@@ -25,12 +25,6 @@
             android:layout_gravity="center_horizontal"
             android:text="Add" />
 
-        <EditText
-            android:id="@+id/add_field"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="Nhập tên field" />
-
     </LinearLayout>
 
 

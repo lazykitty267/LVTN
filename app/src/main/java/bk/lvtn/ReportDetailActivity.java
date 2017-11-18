@@ -67,6 +67,7 @@ public class ReportDetailActivity extends AppCompatActivity {
     ArrayList<AttachImages > listImgAttach = new ArrayList<AttachImages>();
     RecyclerView mRecyclerView;
     AttachImgAdapter mRcvAdapter;
+    Dialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,17 +103,17 @@ public class ReportDetailActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
 
         final DigitalSignature digi = new DigitalSignature();
-        try {
-
-            digi.generateKey(this);
-
-        } catch (Exception e1) {
-
-            // TODO Auto-generated catch block
-
-            e1.printStackTrace();
-
-        }
+//        try {
+//
+//            digi.generateKey(this);
+//
+//        } catch (Exception e1) {
+//
+//            // TODO Auto-generated catch block
+//
+//            e1.printStackTrace();
+//
+//        }
 
         if (bundle.getBoolean("isAdd")) {
             getExcel();
@@ -175,80 +176,111 @@ public class ReportDetailActivity extends AppCompatActivity {
         saveForm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Report report = new Report();
-                for (int i = 0; i < adapter.getCount(); i++) {
-                    final String s = adapter.getItem(i).getValue_field();
-                    report.addValue(adapter.getItem(i).getKey_field(), new ArrayList<String>() {{
-                        add(s);
-                    }});
-                }
-                form = new Form(report);
-                try {
+                {
+                    dialog = new Dialog(ReportDetailActivity.this);
+                    dialog.setContentView(R.layout.private_key_dialog);
 
-                    ActivityCompat.requestPermissions(ReportDetailActivity.this,
-                            new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            1);
+                    dialog.setCancelable(true);
+                    dialog.setTitle("Private key");
+                    dialog.show();
+                    Button name_add = (Button) dialog.findViewById(R.id.pk_add);
+                    final EditText report_name = (EditText) dialog.findViewById(R.id.private_key);
+                    name_add.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (report_name.getText().toString().equals("")) {
+                                Toast.makeText(getApplicationContext(), "Mời bạn nhập tên báo cáo", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            else {
+                                Report report = new Report();
+                                for (int i = 0; i < adapter.getCount(); i++) {
+                                    final String s = adapter.getItem(i).getValue_field();
+                                    report.addValue(adapter.getItem(i).getKey_field(), new ArrayList<String>() {{
+                                        add(s);
+                                    }});
+                                }
+                                report.setReportName(report_name.getText().toString());
+                                form = new Form(report);
+                                try {
 
-                    InputStream is = getAssets().open("vuArial.ttf");
+                                    ActivityCompat.requestPermissions(ReportDetailActivity.this,
+                                            new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                            1);
 
-                    PdfFile pdfFile = new PdfFile();
+                                    InputStream is = getAssets().open("vuArial.ttf");
 
-                    File file = form.createForm1(Environment.getExternalStorageDirectory().getAbsolutePath().toString(), is, pdfFile);
-                    if (file == null) {
-                        return;
-                    }
-                    DataService dataService = new DataService();
-                    dataService.saveReport(report);
-                    if (listImgAttach!=null) {
-                        for (int index = 0; index < listImgAttach.size(); index++) {
-                            File f = new File(listImgAttach.get(index).getPath());
-                            AttachImage attachImage = new AttachImage();
-                            attachImage.setReportId(report.getId());
-                            attachImage.setName(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
-                            dataService.uploadAttachFile(f, attachImage);
+                                    PdfFile pdfFile = new PdfFile();
+
+                                    File file = form.createForm1(Environment.getExternalStorageDirectory().getAbsolutePath().toString(), is, pdfFile);
+                                    if (file == null) {
+                                        return;
+                                    }
+                                    DataService dataService = new DataService();
+                                    dataService.saveReport(report);
+                                    if (listImgAttach!=null) {
+                                        for (int index = 0; index < listImgAttach.size(); index++) {
+                                            File f = new File(listImgAttach.get(index).getPath());
+                                            AttachImage attachImage = new AttachImage();
+                                            attachImage.setReportId(report.getId());
+                                            attachImage.setName(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
+                                            dataService.uploadAttachFile(f, attachImage);
+                                        }
+                                    }
+
+//                                    byte[] s = encrypt(DigitalSignature.myhash(FileUtils.readFileToByteArray(file)));
+//                                    DigitalSignature dSig = new DigitalSignature();
+//                                    dSig.generateKey();
+
+                                    final File keyFileDirectory = new File(getFilesDir(), "rsa/");
+                                    final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
+                                    final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
+                                    byte[] b = new byte[(int) file.length()];
+                                    FileInputStream fileInputStream = new FileInputStream(file);
+                                    fileInputStream.read(b);
+                                    String k = digi.myhash(b);
+                                    byte[] s = digi.rsaSign(k.getBytes(),digi.getPrivateKey(privateKeyFile));
+//                                    File tempFile = File.createTempFile("prefix", "suffix", null);
+//                                    FileOutputStream fos = new FileOutputStream(tempFile);
+//                                    fos.write(s);
+//                                    AttachImage attachImage = new AttachImage();
+//                                    attachImage.setReportId(report.getId());
+//                                    attachImage.setName( new  SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
+//                                    dataService.uploadAttachFile(tempFile, attachImage);
+//
+//                                    s = digi.decrypt(tempFile,digi.uk);
+//                                    //File tempFile1 = File.createTempFile("prefix", "suffix", null);
+//                                    File tempFile1 = new File(new File(Environment.getExternalStorageDirectory().getAbsolutePath().toString(),"pdfdemo"),"encrypt.pdf");
+//
+//                                    FileOutputStream fos1 = new FileOutputStream(tempFile1);
+//                                    fos1.write(s);
+                                    if (digi.rsaVerify(k.getBytes(),s,digi.getPublicKey(publicKeyFile)) & publicKeyFile.isFile() & privateKeyFile.isFile()) {
+                                        if (publicKeyFile.exists()) {
+                                            publicKeyFile.delete();
+                                        }
+
+                                        if (privateKeyFile.exists()) {
+                                            privateKeyFile.delete();
+                                        }
+                                        finish();
+                                    }
+                                    pdfFile.setReportId(report.getId());
+                                    dataService.uploadFile(file, pdfFile);
+//                                    fos1.close();
+//                                    fos.close();
+//
+//                                    Toast.makeText(ReportDetailActivity.this,s,Toast.LENGTH_SHORT);
+
+
+                                } catch (Exception e) {
+                                    Toast.makeText(ReportDetailActivity.this,e.toString(),Toast.LENGTH_SHORT);
+                                    Log.d("aaa", e.toString());
+                                }
+                                showSuccessDialog();
+                            }
                         }
-                    }
-
-////                    byte[] s = encrypt(DigitalSignature.myhash(FileUtils.readFileToByteArray(file)));
-//                    DigitalSignature dSig = new DigitalSignature();
-//                    dSig.generateKey();
-
-                    final File keyFileDirectory = new File(getFilesDir(), "rsa/");
-                    final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
-                    final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
-                    byte[] b = new byte[(int) file.length()];
-                    FileInputStream fileInputStream = new FileInputStream(file);
-                    fileInputStream.read(b);
-                    String k = digi.myhash(b);
-                    byte[] s = digi.rsaSign(k.getBytes(),digi.getPrivateKey(privateKeyFile));
-//                    File tempFile = File.createTempFile("prefix", "suffix", null);
-//                    FileOutputStream fos = new FileOutputStream(tempFile);
-//                    fos.write(s);
-//                    AttachImage attachImage = new AttachImage();
-//                    attachImage.setReportId(report.getId());
-//                    attachImage.setName( new  SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
-//                    dataService.uploadAttachFile(tempFile, attachImage);
-//
-//                    s = digi.decrypt(tempFile,digi.uk);
-//                    //File tempFile1 = File.createTempFile("prefix", "suffix", null);
-//                    File tempFile1 = new File(new File(Environment.getExternalStorageDirectory().getAbsolutePath().toString(),"pdfdemo"),"encrypt.pdf");
-//
-//                    FileOutputStream fos1 = new FileOutputStream(tempFile1);
-//                    fos1.write(s);
-                    if (digi.rsaVerify(k.getBytes(),s,digi.getPublicKey(publicKeyFile)) & publicKeyFile.isFile() & privateKeyFile.isFile()) finish();
-                    pdfFile.setReportId(report.getId());
-                    dataService.uploadFile(file, pdfFile);
-//                    fos1.close();
-//                    fos.close();
-
-//                    Toast.makeText(ReportDetailActivity.this,s,Toast.LENGTH_SHORT);
-
-
-                } catch (Exception e) {
-                    Toast.makeText(ReportDetailActivity.this,e.toString(),Toast.LENGTH_SHORT);
-                    Log.d("aaa", e.toString());
+                    });
                 }
-                showSuccessDialog();
             }
         });
 
@@ -315,6 +347,7 @@ public class ReportDetailActivity extends AppCompatActivity {
                     public void onClick(DialogInterface arg0, int arg1) {
                         Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(myIntent);
+                        finish();
                     }
                 }).show();
     }
