@@ -23,6 +23,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.itextpdf.text.pdf.StringUtils;
 
 import org.apache.poi.util.StringUtil;
@@ -37,6 +41,7 @@ import java.io.InputStreamReader;
 
 import bk.lvtn.Signature.DigitalSignature;
 import dataService.DataService;
+import dataService.DatabaseConnection;
 import entity.User;
 
 
@@ -93,57 +98,76 @@ public class LoginActivity extends AppCompatActivity {
 
                 progressBar.setVisibility(View.VISIBLE);
 
-                DataService dataService = new DataService();
+                DatabaseConnection databaseConnection = new DatabaseConnection();
                 //authenticate user
                 progressBar.setVisibility(View.GONE);
-                User user = dataService.checkLoginInfo(email, password);
-                if (user != null && !("").equals(user.getId()) && user.getId() != null) {
-                    // there was an error
-                    if (password.length() < 6) {
-                        inputPassword.setError(getString(R.string.minimum_password));
-                    } else {
-                        Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
+                DatabaseReference databaseReference = databaseConnection.connectUserDatabase();
+                databaseReference.child(email).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        User tempuser = dataSnapshot.getValue(User.class);
+                        checkLogin(password, tempuser);
                     }
-                } else {
-                    SharedPreferences loginInfo = getSharedPreferences("Login", 0);
-                    final SharedPreferences.Editor editor = loginInfo.edit();
-                    editor.putString("id", user.getId());
-                    editor.putString("managerId", user.getManagerId());
-                    editor.putString("username", user.getUsername());
-                    editor.putString("password", user.getPassword());
-                    editor.putString("publickey", user.getPublicKey());
-                    editor.putString("name", user.getName());
-                    final File keyFileDirectory = new File(getFilesDir(), "rsa/");
-                    final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
-                    if (privateKeyFile.exists()){
-                        try {
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } catch (Exception e){
-                            Log.d("aaa", e.toString());
-                        }
-                    }
-                    else {
-                        dialog = new Dialog(LoginActivity.this);
-                        dialog.setContentView(R.layout.private_key_dialog);
 
-                        dialog.setCancelable(true);
-                        dialog.setTitle("Private key");
-                        dialog.show();
-                        Button pk_add = (Button) dialog.findViewById(R.id.pk_add);
-                        final EditText private_key = (EditText) dialog.findViewById(R.id.private_key);
-                        pk_add.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (private_key.getText().toString().contains("")) {
-                                    Toast.makeText(getApplicationContext(), "Mời bạn nhập từ khóa sinh key", Toast.LENGTH_SHORT).show();
-                                    return;
-                                }
-                                else {
-                                    try {
-                                        DigitalSignature digi = new DigitalSignature();
-                                        digi.generateKey(LoginActivity.this);
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+        });
+    }
+
+    private void checkLogin(String password, User user) {
+        if (user == null) {
+            // there was an error
+            Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
+
+        } else {
+            if (!password.equals(user.getPassword())) {
+                if (password.length() < 6) {
+                    inputPassword.setError(getString(R.string.minimum_password));
+                } else {
+                    Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
+                }
+            } else {
+            SharedPreferences loginInfo = getSharedPreferences("Login", 0);
+            final SharedPreferences.Editor editor = loginInfo.edit();
+            editor.putString("managername", user.getManagerName());
+            editor.putString("username", user.getUsername());
+            editor.putString("password", user.getPassword());
+            editor.putString("publickey", user.getPublicKey());
+            editor.putString("name", user.getName());
+            final File keyFileDirectory = new File(getFilesDir(), "rsa/");
+            final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
+            if (privateKeyFile.exists()) {
+                try {
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                } catch (Exception e) {
+                    Log.d("aaa", e.toString());
+                }
+            } else {
+                dialog = new Dialog(LoginActivity.this);
+                dialog.setContentView(R.layout.private_key_dialog);
+
+                dialog.setCancelable(true);
+                dialog.setTitle("Private key");
+                dialog.show();
+                Button pk_add = (Button) dialog.findViewById(R.id.pk_add);
+                final EditText private_key = (EditText) dialog.findViewById(R.id.private_key);
+                pk_add.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (private_key.getText().toString().contains("")) {
+                            Toast.makeText(getApplicationContext(), "Mời bạn nhập từ khóa sinh key", Toast.LENGTH_SHORT).show();
+                            return;
+                        } else {
+                            try {
+                                DigitalSignature digi = new DigitalSignature();
+                                digi.generateKey(LoginActivity.this);
 //                                        editor.putString("private key", digi.rk.toString());
 //
 //                                        File secondFile = new File(getFilesDir().getAbsolutePath() + "/", "privatekey");
@@ -153,20 +177,18 @@ public class LoginActivity extends AppCompatActivity {
 //                                        fos.flush();
 //                                        fos.close();
 
-                                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    }
-                                    catch (Exception e){
-                                        Log.d("aaa", e.toString());
-                                    }
-                                }
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            } catch (Exception e) {
+                                Log.d("aaa", e.toString());
                             }
-                        });
+                        }
                     }
-                }
+                });
             }
-        });
+        }
+        }
     }
 
 //    public boolean isFilePresent(String fileName) {

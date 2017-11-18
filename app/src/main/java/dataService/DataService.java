@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -334,16 +335,16 @@ public class DataService {
 
     /**
      * Lấy thôn gtin user trên server theo id
-     * @param id    id user
+     * @param username    username
      * @return thông tin user
      */
-    public User getUser(final String id) {
+    public User getUser(final String username) {
         DatabaseReference databaseReference = databaseConnection.connectUserDatabase();
         final User[] user = new User[1];
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.child(username).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                User tempuser = dataSnapshot.child(id).getValue(User.class);
+                User tempuser = dataSnapshot.getValue(User.class);
                 user[0] = tempuser;
             }
 
@@ -356,33 +357,6 @@ public class DataService {
     }
 
     /**
-     * kiẻm tra đăng nhập
-     * @param username
-     * @param password
-     * @return
-     */
-    public User checkLoginInfo(@NonNull final String username, @NonNull final String password) {
-        DatabaseReference reference = databaseConnection.connectUserDatabase();
-        DatabaseReference ref =  reference.orderByChild("username").equalTo(username).getRef();
-        final User[] user = new User[1];
-        if (ref.child("password").equals(password)) {
-            ref.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    User tempuser = dataSnapshot.getValue(User.class);
-                    user[0] = tempuser;
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
-        return  user[0];
-    }
-
-    /**
      * lấy thông tin user đang đăng nhập
      * @param context
      * @return thông tin user
@@ -390,9 +364,8 @@ public class DataService {
     public User getCurrentUser (Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("Login", 0);
         User user = new User();
-        user.setId(sharedPreferences.getString("id", null));
         user.setName(sharedPreferences.getString("name", null));
-        user.setManagerId(sharedPreferences.getString("managerid", null));
+        user.setManagerName(sharedPreferences.getString("managername", null));
         user.setPassword(sharedPreferences.getString("password", null));
         user.setUsername(sharedPreferences.getString("username", null));
         user.setPublicKey(sharedPreferences.getString("publickey", null));

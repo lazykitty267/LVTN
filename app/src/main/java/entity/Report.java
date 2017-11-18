@@ -35,8 +35,6 @@ public class Report {
 
     private String templateId;
 
-    private String createUserId;
-
     private String createDate;
 
     private String updateDate;
@@ -69,14 +67,6 @@ public class Report {
 
     public void setTemplateId(String templateId) {
         this.templateId = templateId;
-    }
-
-    public String getCreateUserId() {
-        return createUserId;
-    }
-
-    public void setCreateUserId(String createUserId) {
-        this.createUserId = createUserId;
     }
 
     public String getCreateDate() {
