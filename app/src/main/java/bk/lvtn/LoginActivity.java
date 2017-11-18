@@ -113,10 +113,10 @@ public class LoginActivity extends AppCompatActivity {
                     editor.putString("password", user.getPassword());
                     editor.putString("publickey", user.getPublicKey());
                     editor.putString("name", user.getName());
-                    if (isFilePresent("privatekey")){
+                    final File keyFileDirectory = new File(getFilesDir(), "rsa/");
+                    final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
+                    if (privateKeyFile.exists()){
                         try {
-                            String vk = getvk("privatekey");
-                            editor.putString("privatekey", vk);
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
@@ -143,15 +143,15 @@ public class LoginActivity extends AppCompatActivity {
                                 else {
                                     try {
                                         DigitalSignature digi = new DigitalSignature();
-                                        digi.generateKey(private_key.getText().toString());
-                                        editor.putString("private key", digi.rk.toString());
-
-                                        File secondFile = new File(getFilesDir().getAbsolutePath() + "/", "privatekey");
-                                        secondFile.createNewFile();
-                                        FileOutputStream fos = new FileOutputStream(secondFile);
-                                        fos.write(digi.rk.toString().getBytes());
-                                        fos.flush();
-                                        fos.close();
+                                        digi.generateKey(LoginActivity.this);
+//                                        editor.putString("private key", digi.rk.toString());
+//
+//                                        File secondFile = new File(getFilesDir().getAbsolutePath() + "/", "privatekey");
+//                                        secondFile.createNewFile();
+//                                        FileOutputStream fos = new FileOutputStream(secondFile);
+//                                        fos.write(digi.rk.toString().getBytes());
+//                                        fos.flush();
+//                                        fos.close();
 
                                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                         startActivity(intent);
@@ -169,22 +169,22 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    public boolean isFilePresent(String fileName) {
-        String path = getFilesDir().getAbsolutePath() + "/" + fileName;
-        File file = new File(path);
-        return file.exists();
-    }
-    public String getvk(String filename) throws Exception{
-        File secondInputFile = new File(getFilesDir().getAbsolutePath() + "/", filename);
-        InputStream secondInputStream = new BufferedInputStream(new FileInputStream(secondInputFile));
-        BufferedReader r = new BufferedReader(new InputStreamReader(secondInputStream));
-        StringBuilder total = new StringBuilder();
-        String line;
-        while ((line = r.readLine()) != null) {
-            total.append(line);
-        }
-        r.close();
-        secondInputStream.close();
-        return total.toString();
-    }
+//    public boolean isFilePresent(String fileName) {
+//        String path = getFilesDir().getAbsolutePath() + "/" + fileName;
+//        File file = new File(path);
+//        return file.exists();
+//    }
+//    public String getvk(String filename) throws Exception{
+//        File secondInputFile = new File(getFilesDir().getAbsolutePath() + "/", filename);
+//        InputStream secondInputStream = new BufferedInputStream(new FileInputStream(secondInputFile));
+//        BufferedReader r = new BufferedReader(new InputStreamReader(secondInputStream));
+//        StringBuilder total = new StringBuilder();
+//        String line;
+//        while ((line = r.readLine()) != null) {
+//            total.append(line);
+//        }
+//        r.close();
+//        secondInputStream.close();
+//        return total.toString();
+//    }
 }

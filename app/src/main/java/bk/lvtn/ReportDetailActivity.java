@@ -87,7 +87,7 @@ public class ReportDetailActivity extends AppCompatActivity {
         final DigitalSignature digi = new DigitalSignature();
         try {
 
-            digi.generateKey("Son Long");
+            digi.generateKey(this);
 
         } catch (Exception e1) {
 
@@ -185,32 +185,40 @@ public class ReportDetailActivity extends AppCompatActivity {
 ////                    byte[] s = encrypt(DigitalSignature.myhash(FileUtils.readFileToByteArray(file)));
 //                    DigitalSignature dSig = new DigitalSignature();
 //                    dSig.generateKey();
+
+                    final File keyFileDirectory = new File(getFilesDir(), "rsa/");
+                    final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
+                    final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
                     byte[] b = new byte[(int) file.length()];
                     FileInputStream fileInputStream = new FileInputStream(file);
                     fileInputStream.read(b);
-                    byte[] s = digi.encrypt(digi.myhash(b),digi.rk.toString());
-                    File tempFile = File.createTempFile("prefix", "suffix", null);
-                    FileOutputStream fos = new FileOutputStream(tempFile);
-                    fos.write(s);
-                    AttachImage attachImage = new AttachImage();
-                    attachImage.setReportId(report.getId());
-                    attachImage.setName( new  SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
-                    dataService.uploadAttachFile(tempFile, attachImage);
-
-                    s = digi.decrypt(tempFile,digi.uk.toString());
-                    File tempFile1 = File.createTempFile("prefix", "suffix", null);
-                    FileOutputStream fos1 = new FileOutputStream(tempFile1);
-                    fos1.write(s);
-
-
+                    String k = digi.myhash(b);
+                    byte[] s = digi.rsaSign(k.getBytes(),digi.getPrivateKey(privateKeyFile));
+//                    File tempFile = File.createTempFile("prefix", "suffix", null);
+//                    FileOutputStream fos = new FileOutputStream(tempFile);
+//                    fos.write(s);
+//                    AttachImage attachImage = new AttachImage();
+//                    attachImage.setReportId(report.getId());
+//                    attachImage.setName( new  SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
+//                    dataService.uploadAttachFile(tempFile, attachImage);
+//
+//                    s = digi.decrypt(tempFile,digi.uk);
+//                    //File tempFile1 = File.createTempFile("prefix", "suffix", null);
+//                    File tempFile1 = new File(new File(Environment.getExternalStorageDirectory().getAbsolutePath().toString(),"pdfdemo"),"encrypt.pdf");
+//
+//                    FileOutputStream fos1 = new FileOutputStream(tempFile1);
+//                    fos1.write(s);
+                    if (digi.rsaVerify(k.getBytes(),s,digi.getPublicKey(publicKeyFile)) & publicKeyFile.isFile() & privateKeyFile.isFile()) finish();
                     pdfFile.setReportId(report.getId());
-                    dataService.uploadFile(tempFile1, pdfFile);
-
+                    dataService.uploadFile(file, pdfFile);
+//                    fos1.close();
+//                    fos.close();
 
 //                    Toast.makeText(ReportDetailActivity.this,s,Toast.LENGTH_SHORT);
 
 
                 } catch (Exception e) {
+                    Toast.makeText(ReportDetailActivity.this,e.toString(),Toast.LENGTH_SHORT);
                     Log.d("aaa", e.toString());
                 }
                 showSuccessDialog();

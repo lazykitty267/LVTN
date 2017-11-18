@@ -6,6 +6,7 @@ package bk.lvtn.Signature;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
 
 import java.security.KeyPairGenerator;
@@ -22,7 +23,7 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 
 
-
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 
 import android.os.Bundle;
@@ -37,6 +38,8 @@ import javax.crypto.Cipher;
 import java.io.*;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
@@ -269,11 +272,11 @@ public class DigitalSignature {
 
     public static int stepcount = 0;
 
-    public void generateKey(String s) throws Exception {
+    public void generateKey(Context context) throws Exception {
 
-        KeyPairGenerator gen = KeyPairGenerator.getInstance(RSA,s);
-
-        gen.initialize(512);
+        KeyPairGenerator gen = KeyPairGenerator.getInstance(RSA);
+        SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+        gen.initialize(1024, random);
 
         KeyPair keyPair = gen.generateKeyPair();
 
@@ -281,6 +284,25 @@ public class DigitalSignature {
 
         rk = keyPair.getPrivate();
 
+        final File keyFileDirectory = new File(context.getFilesDir(), "rsa/");
+        final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
+        final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
+        if (publicKeyFile.exists()) {
+            publicKeyFile.delete();
+        }
+
+        if (privateKeyFile.exists()) {
+            privateKeyFile.delete();
+        }
+
+        if (!publicKeyFile.getParentFile().exists()) {
+            publicKeyFile.getParentFile().mkdirs();
+        }
+
+        publicKeyFile.createNewFile();
+        privateKeyFile.createNewFile();
+        saveByteDataToFile(publicKeyFile, keyPair.getPublic().getEncoded());
+        saveByteDataToFile(privateKeyFile, keyPair.getPrivate().getEncoded());
     }
 
 
@@ -332,8 +354,68 @@ public class DigitalSignature {
     }
 
 
+    public byte[] rsaSign (byte[] data,PrivateKey priRSA) {
 
-    private byte[] encrypt(String text, PrivateKey priRSA)
+        byte[] cipherData = null;
+
+        try {
+
+            Signature s = Signature.getInstance("SHA1withRSA");
+            s.initSign(priRSA);
+
+            s.update(data);
+            byte[] signature = s.sign();
+            return signature;
+
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (SignatureException e) {
+            e.printStackTrace();
+        }
+
+        return cipherData;
+    }
+
+    public boolean rsaVerify (byte[] data, byte[] signature,PublicKey pubRSA) {
+
+        boolean success = false;
+
+        try {
+
+            Signature s = Signature.getInstance("SHA1withRSA");
+            s.initVerify(pubRSA);
+
+            s.update(data);
+
+            success = s.verify(signature);
+
+//            if(success == true) {
+//                Log.i("yeay", "yay");
+//            }
+//            else {
+//                Log.i("nay", "nay");
+//            }
+
+            return success;
+
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (SignatureException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+
+
+    public byte[] encrypt(String text, PrivateKey priRSA)
 
             throws Exception {
 
@@ -356,8 +438,8 @@ public class DigitalSignature {
 
         try {
 
-            PrivateKey rk = getPrivateKey(key);
-            return encrypt(text, rk);
+//            PrivateKey rk = getPrivateKey(key);
+            //return encrypt(text.getBytes(), rk);
 
         } catch (Exception e) {
 
@@ -371,15 +453,15 @@ public class DigitalSignature {
 
 
 
-    public final byte[] decrypt(File file,String key) {
+    public final byte[] decrypt(File file,PublicKey key) {
 
         try {
 			byte[] b = new byte[(int) file.length()];
             FileInputStream fileInputStream = new FileInputStream(file);
             fileInputStream.read(b);
 
-            PublicKey uk = getPublicKey(key);
-            return decrypt(b,uk);
+            //PublicKey uk = getPublicKey(key);
+            return decrypt(b,key);
 
         } catch (Exception e) {
 
@@ -404,56 +486,75 @@ public class DigitalSignature {
     }
 
 
-    public PrivateKey getPrivateKey(String key) throws Exception{
-        StringBuilder pkcs8Lines = new StringBuilder();
-        BufferedReader rdr = new BufferedReader(new StringReader(key));
-        String line;
-        while ((line = rdr.readLine()) != null) {
-            pkcs8Lines.append(line);
-        }
+    public PrivateKey getPrivateKey(File privateKeyFile) throws Exception{
+//        StringBuilder pkcs8Lines = new StringBuilder();
+//        BufferedReader rdr = new BufferedReader(new StringReader(key));
+//        String line;
+//        while ((line = rdr.readLine()) != null) {
+//            pkcs8Lines.append(line);
+//        }
 
         // Remove any whitespace
-
-        String pkcs8Pem = pkcs8Lines.toString();
-        pkcs8Pem = pkcs8Pem.replaceAll("\\s+","");
-
-        // Base64 decode the result
-
-        byte [] pkcs8EncodedBytes = Base64.decode(pkcs8Pem, Base64.DEFAULT);
+//
+//        String pkcs8Pem = pkcs8Lines.toString();
+//        pkcs8Pem = pkcs8Pem.replaceAll("\\s+","");
+//
+//        // Base64 decode the result
+//
+//        byte [] pkcs8EncodedBytes = Base64.decode(pkcs8Pem, Base64.DEFAULT);
 
         // extract the private key
 
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8EncodedBytes);
+        byte[] privateKey = readByteDataFromFile(privateKeyFile);
+
+
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKey);
         KeyFactory kf = KeyFactory.getInstance("RSA");
         PrivateKey privKey = kf.generatePrivate(keySpec);
         return privKey;
     }
 
-    public PublicKey getPublicKey(String key) throws Exception{
-        StringBuilder x509Lines = new StringBuilder();
-        BufferedReader rdr = new BufferedReader(new StringReader(key));
-        String line;
-        while ((line = rdr.readLine()) != null) {
-            x509Lines.append(line);
-        }
-
-        // Remove any whitespace
-
-        String pkcs8Pem = x509Lines.toString();
-        pkcs8Pem = pkcs8Pem.replaceAll("\\s+","");
-
-        // Base64 decode the result
-
-        byte [] x509EncodedBytes = Base64.decode(pkcs8Pem, Base64.DEFAULT);
+    public PublicKey getPublicKey(File publicKeyFile) throws Exception{
+//        StringBuilder x509Lines = new StringBuilder();
+//        BufferedReader rdr = new BufferedReader(new StringReader(key));
+//        String line;
+//        while ((line = rdr.readLine()) != null) {
+//            x509Lines.append(line);
+//        }
+//
+//        // Remove any whitespace
+//
+//        String pkcs8Pem = x509Lines.toString();
+//        pkcs8Pem = pkcs8Pem.replaceAll("\\s+","");
+//
+//        // Base64 decode the result
+//
+//        byte [] x509EncodedBytes = Base64.decode(pkcs8Pem, Base64.DEFAULT);
 
         // extract the private key
 
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(x509EncodedBytes);
+        byte[] publicKey = readByteDataFromFile(publicKeyFile);
+
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKey);
         KeyFactory kf = KeyFactory.getInstance("RSA");
         PublicKey pubKey = kf.generatePublic(keySpec);
         return pubKey;
     }
 
+    private static void saveByteDataToFile(File file, byte[] data) throws IOException {
+        DataOutputStream dos = new DataOutputStream(new FileOutputStream(file));
+        dos.write(data);
+        dos.flush();
+        dos.close();
+    }
+
+    private static byte[] readByteDataFromFile(File file) throws IOException {
+        DataInputStream dis = new DataInputStream(new FileInputStream(file));
+        byte[] read = new byte[dis.available()];
+        dis.readFully(read);
+        dis.close();
+        return read;
+    }
 //
 //    public static String byte2hex(byte[] b) {
 //
