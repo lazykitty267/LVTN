@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private Button btnSignup, btnLogin, btnReset;
 
-    Dialog dialog;
+//    Dialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,24 +150,9 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d("aaa", e.toString());
                 }
             } else {
-                dialog = new Dialog(LoginActivity.this);
-                dialog.setContentView(R.layout.private_key_dialog);
-
-                dialog.setCancelable(true);
-                dialog.setTitle("Private key");
-                dialog.show();
-                Button pk_add = (Button) dialog.findViewById(R.id.pk_add);
-                final EditText private_key = (EditText) dialog.findViewById(R.id.private_key);
-                pk_add.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (private_key.getText().toString().equals("")) {
-                            Toast.makeText(getApplicationContext(), "Mời bạn nhập từ khóa sinh key", Toast.LENGTH_SHORT).show();
-                            return;
-                        } else {
-                            try {
-                                DigitalSignature digi = new DigitalSignature();
-                                digi.generateKey(LoginActivity.this);
+                try {
+                    DigitalSignature digi = new DigitalSignature();
+                    digi.generateKey(LoginActivity.this);
 //                                        editor.putString("private key", digi.rk.toString());
 //
 //                                        File secondFile = new File(getFilesDir().getAbsolutePath() + "/", "privatekey");
@@ -177,15 +162,12 @@ public class LoginActivity extends AppCompatActivity {
 //                                        fos.flush();
 //                                        fos.close();
 
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(intent);
-                                finish();
-                            } catch (Exception e) {
-                                Log.d("aaa", e.toString());
-                            }
-                        }
-                    }
-                });
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                } catch (Exception e) {
+                    Log.d("aaa", e.toString());
+                }
             }
         }
         }
