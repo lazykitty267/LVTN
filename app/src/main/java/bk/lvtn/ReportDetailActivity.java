@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
 import android.os.Environment;
 import android.speech.RecognizerIntent;
 import android.support.v4.app.ActivityCompat;
@@ -29,6 +30,7 @@ import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -51,10 +53,10 @@ import bk.lvtn.fragment_adapter.FieldAdapter;
 import bk.lvtn.fragment_adapter.Template;
 import bk.lvtn.fragment_adapter.TemplateAdapter;
 import dataService.DataService;
+import dataService.OfflineDataService;
 import entity.AttachImage;
 import entity.PdfFile;
 import entity.Report;
-import entity.User;
 
 
 public class ReportDetailActivity extends AppCompatActivity {
@@ -69,7 +71,6 @@ public class ReportDetailActivity extends AppCompatActivity {
     RecyclerView mRecyclerView;
     AttachImgAdapter mRcvAdapter;
     Dialog dialog;
-    User user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,8 +88,6 @@ public class ReportDetailActivity extends AppCompatActivity {
         mRcvAdapter = new AttachImgAdapter(listImgAttach);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        DataService dataService = new DataService();
-        user = dataService.getCurrentUser(ReportDetailActivity.this);
 
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mRcvAdapter);
@@ -220,68 +219,86 @@ public class ReportDetailActivity extends AppCompatActivity {
                                     if (file == null) {
                                         return;
                                     }
-                                    DataService dataService = new DataService();
-                                    report.setUserName(user.getUsername());
-                                    dataService.saveReport(report);
-                                    if (listImgAttach!=null) {
-                                        for (int index = 0; index < listImgAttach.size(); index++) {
-                                            File f = new File(listImgAttach.get(index).getPath());
-                                            AttachImage attachImage = new AttachImage();
-                                            attachImage.setReportId(report.getId());
-                                            attachImage.setName(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
-                                            dataService.uploadAttachFile(f, attachImage);
-                                        }
+                                    if (!isOnline()){
+                                        OfflineDataService offData = new OfflineDataService();
+                                        offData.doCreateDb(ReportDetailActivity.this);
+                                        offData.doInsertReport(report);
+
+                                        byte[] b = new byte[(int) file.length()];
+                                        FileInputStream fileInputStream = new FileInputStream(file);
+                                        fileInputStream.read(b);
+
+                                        DataOutputStream dos = new DataOutputStream(openFileOutput(report.getReportName(),ReportDetailActivity.this.MODE_PRIVATE));
+                                        dos.write(b);
+                                        dos.flush();
+                                        dos.close();
+                                        Toast.makeText(ReportDetailActivity.this,"OFFLINE MODE",Toast.LENGTH_SHORT);
                                     }
+                                    else {
 
-//                                    byte[] s = encrypt(DigitalSignature.myhash(FileUtils.readFileToByteArray(file)));
-//                                    DigitalSignature dSig = new DigitalSignature();
-//                                    dSig.generateKey();
-
-                                    final File keyFileDirectory = new File(getFilesDir(), "rsa/");
-                                    final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
-                                    final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
-                                    byte[] b = new byte[(int) file.length()];
-                                    FileInputStream fileInputStream = new FileInputStream(file);
-                                    fileInputStream.read(b);
-                                    String k = digi.myhash(b);
-                                    byte[] s = digi.rsaSign(k.getBytes(),digi.getPrivateKey(privateKeyFile));
-//                                    File tempFile = File.createTempFile("prefix", "suffix", null);
-//                                    FileOutputStream fos = new FileOutputStream(tempFile);
-//                                    fos.write(s);
-//                                    AttachImage attachImage = new AttachImage();
-//                                    attachImage.setReportId(report.getId());
-//                                    attachImage.setName( new  SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
-//                                    dataService.uploadAttachFile(tempFile, attachImage);
-//
-//                                    s = digi.decrypt(tempFile,digi.uk);
-//                                    //File tempFile1 = File.createTempFile("prefix", "suffix", null);
-//                                    File tempFile1 = new File(new File(Environment.getExternalStorageDirectory().getAbsolutePath().toString(),"pdfdemo"),"encrypt.pdf");
-//
-//                                    FileOutputStream fos1 = new FileOutputStream(tempFile1);
-//                                    fos1.write(s);
-                                    if (digi.rsaVerify(k.getBytes(),s,digi.getPublicKey(publicKeyFile)) & publicKeyFile.isFile() & privateKeyFile.isFile()) {
-                                        if (publicKeyFile.exists()) {
-                                            publicKeyFile.delete();
+                                        DataService dataService = new DataService();
+                                        dataService.saveReport(report);
+                                        if (listImgAttach != null) {
+                                            for (int index = 0; index < listImgAttach.size(); index++) {
+                                                File f = new File(listImgAttach.get(index).getPath());
+                                                AttachImage attachImage = new AttachImage();
+                                                attachImage.setReportId(report.getId());
+                                                attachImage.setName(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
+                                                dataService.uploadAttachFile(f, attachImage);
+                                            }
                                         }
 
-                                        if (privateKeyFile.exists()) {
-                                            privateKeyFile.delete();
-                                        }
-                                        finish();
-                                    }
-                                    pdfFile.setReportId(report.getId());
-                                    dataService.uploadFile(file, pdfFile);
+//                                        byte[] s = encrypt(DigitalSignature.myhash(FileUtils.readFileToByteArray(file)));
+//                                        DigitalSignature dSig = new DigitalSignature();
+//                                        dSig.generateKey();
+
+                                        final File keyFileDirectory = new File(getFilesDir(), "rsa/");
+                                        final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
+                                        final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
+                                        byte[] b = new byte[(int) file.length()];
+                                        FileInputStream fileInputStream = new FileInputStream(file);
+                                        fileInputStream.read(b);
+                                        String k = digi.myhash(b);
+                                        byte[] s = digi.rsaSign(k.getBytes(), digi.getPrivateKey(privateKeyFile));
+
+
+                                        pdfFile.setReportId(report.getId());
+                                        dataService.uploadFile(file, pdfFile);
+                                        Toast.makeText(ReportDetailActivity.this,"ONLINE MODE",Toast.LENGTH_SHORT);
+//                                        File tempFile = File.createTempFile("prefix", "suffix", null);
+//                                        FileOutputStream fos = new FileOutputStream(tempFile);
+//                                        fos.write(s);
+//                                        AttachImage attachImage = new AttachImage();
+//                                        attachImage.setReportId(report.getId());
+//                                        attachImage.setName( new  SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
+//                                        dataService.uploadAttachFile(tempFile, attachImage);
+//
+//                                        s = digi.decrypt(tempFile,digi.uk);
+//                                        //File tempFile1 = File.createTempFile("prefix", "suffix", null);
+//                                        File tempFile1 = new File(new File(Environment.getExternalStorageDirectory().getAbsolutePath().toString(),"pdfdemo"),"encrypt.pdf");
+//
+//                                        FileOutputStream fos1 = new FileOutputStream(tempFile1);
+//                                        fos1.write(s);
+//                                        if (digi.rsaVerify(k.getBytes(),s,digi.getPublicKey(publicKeyFile)) & publicKeyFile.isFile() & privateKeyFile.isFile()) {
+//                                            if (publicKeyFile.exists()) {
+//                                                publicKeyFile.delete();
+//                                            }
+//
+//                                            if (privateKeyFile.exists()) {
+//                                                privateKeyFile.delete();
+//                                            }
+//                                            finish();
+//                                        }
 //                                    fos1.close();
 //                                    fos.close();
 //
 //                                    Toast.makeText(ReportDetailActivity.this,s,Toast.LENGTH_SHORT);
-
-
+                                        showSuccessDialog();
+                                    }
                                 } catch (Exception e) {
                                     Toast.makeText(ReportDetailActivity.this,e.toString(),Toast.LENGTH_SHORT);
                                     Log.d("aaa", e.toString());
                                 }
-                                showSuccessDialog();
                             }
                         }
                     });
@@ -406,5 +423,28 @@ public class ReportDetailActivity extends AppCompatActivity {
             }
         });
         dialog.show();
+    }
+
+    private boolean isConnectInternet(){
+        ConnectivityManager conMgr = (ConnectivityManager) getSystemService (this.CONNECTIVITY_SERVICE);
+        // ARE WE CONNECTED TO THE NET
+        if (conMgr.getActiveNetworkInfo() != null
+                && conMgr.getActiveNetworkInfo().isAvailable()
+                && conMgr.getActiveNetworkInfo().isConnected()) {
+            return true;
+        }
+        else return false;
+    }
+    public boolean isOnline() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int     exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        }
+        catch (IOException e)          { e.printStackTrace(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+
+        return false;
     }
 }

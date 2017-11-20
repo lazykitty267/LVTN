@@ -23,6 +23,10 @@ import entity.Report;
 
 public class OfflineDataService {
     private SQLiteDatabase database;
+
+    public OfflineDataService() {
+    }
+
     public void doCreateDb(Context context){
         database = context.openOrCreateDatabase("offlineReport.db",Context.MODE_PRIVATE,null);
         doCreateReportTable();
