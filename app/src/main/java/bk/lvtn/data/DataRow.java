@@ -1,5 +1,6 @@
 package bk.lvtn.data;
 
+import java.io.Serializable;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
  * Created by Phupc on 10/05/17.
  */
 
-public class DataRow {
+public class DataRow implements Serializable {
     private String key;
 
     public DataRow() {

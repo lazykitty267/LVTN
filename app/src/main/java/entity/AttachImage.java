@@ -66,6 +66,12 @@ public class AttachImage {
     public  AttachImage() {
     }
 
+    public  AttachImage(String reportId, String id, String name, String url) {
+        this.id = id;
+        this.name = name;
+        this.reportId = reportId;
+        this.url = url;
+    }
     public  AttachImage(String reportId, String id, String name) {
         this.id = id;
         this.name = name;

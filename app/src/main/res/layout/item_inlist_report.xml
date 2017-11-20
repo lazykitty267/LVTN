@@ -28,7 +28,7 @@
             android:layout_height="match_parent">
 
             <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fix_button"
+                android:id="@+id/modify_report_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
@@ -38,7 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentTop="true"
-                android:layout_toLeftOf="@+id/fix_button"
+                android:layout_toLeftOf="@+id/modify_report_button"
                 android:orientation="vertical">
 
                 <TextView
