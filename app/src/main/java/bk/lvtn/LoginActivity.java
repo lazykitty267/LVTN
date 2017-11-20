@@ -161,7 +161,7 @@ public class LoginActivity extends AppCompatActivity {
                 pk_add.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (private_key.getText().toString().contains("")) {
+                        if (private_key.getText().toString().equals("")) {
                             Toast.makeText(getApplicationContext(), "Mời bạn nhập từ khóa sinh key", Toast.LENGTH_SHORT).show();
                             return;
                         } else {
