@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,7 +34,8 @@ public class DataService {
 
     /**
      * Upload pdf file lên server
-     * @param file file được upload lên server
+     *
+     * @param file    file được upload lên server
      * @param pdfFile thông tin file upload lên server
      */
     public void uploadFile(@NonNull final File file, @NonNull final PdfFile pdfFile) {
@@ -62,15 +62,16 @@ public class DataService {
     }
 
     /**
-     *  download file pdf từ server
-     * @param pdfFile   Thông tin file được download
+     * download file pdf từ server
+     *
+     * @param pdfFile Thông tin file được download
      * @return file pdf
      */
     public File downloadFile(@NonNull final PdfFile pdfFile) {
         try {
             StorageReference storageReference = databaseConnection.connectPdfFileDatabase();
-            File localFIle = File.createTempFile(pdfFile.getId()+"_"+pdfFile.getName(),"pdf");
-            storageReference.child(pdfFile.getId()+"_"+pdfFile.getName()+".pdf").getFile(localFIle);
+            File localFIle = File.createTempFile(pdfFile.getId() + "_" + pdfFile.getName(), "pdf");
+            storageReference.child(pdfFile.getId() + "_" + pdfFile.getName() + ".pdf").getFile(localFIle);
             return localFIle;
         } catch (IOException e) {
             e.printStackTrace();
@@ -79,9 +80,10 @@ public class DataService {
     }
 
     /**
-     *  Lưu thông tin report lên server
-     * @param report    Thông tin report
-     * @return  Lưu có thành công hay không
+     * Lưu thông tin report lên server
+     *
+     * @param report Thông tin report
+     * @return Lưu có thành công hay không
      */
     public boolean saveReport(@NonNull final Report report) {
         DatabaseReference databaseReference = databaseConnection.connectReportDatabase();
@@ -93,8 +95,9 @@ public class DataService {
 
     /**
      * Cập nhật thông tin report
-     * @param report    thông tin report sau khi sửa
-     * @return  lưu có thành công hay không
+     *
+     * @param report thông tin report sau khi sửa
+     * @return lưu có thành công hay không
      */
     public boolean updateReport(Report report) {
         PdfFile file = getPdf(report.getId());
@@ -105,8 +108,9 @@ public class DataService {
     }
 
     /**
-     *  Lưu thông tin file pdf được tạo ra
-     * @param pdfFile   thông tin file pdf
+     * Lưu thông tin file pdf được tạo ra
+     *
+     * @param pdfFile thông tin file pdf
      * @return lưu có thành công hay không
      */
     private boolean savePdf(@NonNull final PdfFile pdfFile) {
@@ -118,8 +122,9 @@ public class DataService {
 
     /**
      * Cập nhật thông tin file pdf
-     * @param pdfFile   Thông tin file pdf cần cập nhật
-     * @return  cập nhật thành công hay không
+     *
+     * @param pdfFile Thông tin file pdf cần cập nhật
+     * @return cập nhật thành công hay không
      */
     public boolean updatePdf(@NonNull final PdfFile pdfFile) {
         DatabaseReference databaseReference = databaseConnection.connectPdfDatabase();
@@ -129,7 +134,8 @@ public class DataService {
 
     /**
      * lấy thông tin tất cả report của user
-     * @param userId    id của user
+     *
+     * @param userId id của user
      * @return List các thông tin report
      */
     public List<Report> getAllReport(@NonNull final String userId) {
@@ -154,8 +160,9 @@ public class DataService {
 
     /**
      * Lấy thông tin của report trên server theo id
-     * @param id    id của report
-     * @return  Thông tin report cần tìm
+     *
+     * @param id id của report
+     * @return Thông tin report cần tìm
      */
     public Report getReport(@NonNull final String id) {
         DatabaseReference databaseReference = databaseConnection.connectReportDatabase();
@@ -180,8 +187,9 @@ public class DataService {
 
     /**
      * Xóa thông tin report
-     * @param id    id report cần xóa
-     * @return  Xóa thành công hay không
+     *
+     * @param id id report cần xóa
+     * @return Xóa thành công hay không
      */
     public boolean deleteReport(@NonNull final String id) {
         PdfFile file = getPdf(id);
@@ -197,6 +205,7 @@ public class DataService {
 
     /**
      * Lấy tất cả file pdf của report
+     *
      * @param reportId
      * @return lấy thành công hay không
      */
@@ -222,6 +231,7 @@ public class DataService {
 
     /**
      * Lấy file pdf từ server
+     *
      * @param reportId
      * @return file pdf
      */
@@ -248,6 +258,7 @@ public class DataService {
 
     /**
      * Xóa file pdf trên server
+     *
      * @param pdfFile
      * @return xóa thành công hay không
      */
@@ -261,7 +272,8 @@ public class DataService {
 
     /**
      * uplaod ảnh đính kèm lên server
-     * @param file file ảnh được upload lên server
+     *
+     * @param file       file ảnh được upload lên server
      * @param attachFile thông tin file đính kèm
      */
     public void uploadAttachFile(@NonNull final File file, @NonNull final AttachImage attachFile) {
@@ -277,6 +289,46 @@ public class DataService {
                 //noinspection VisibleForTests
                 file.setUrl(taskSnapshot.getDownloadUrl().toString());
                 updateAttachFile(file);
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+    }
+
+    public void savePublicKey(@NonNull final File file, @NonNull final String username) {
+        Uri data = Uri.fromFile(file);
+        StorageReference storageReference = databaseConnection.connectPublicKeyDatabase();
+        final StorageReference sRef = storageReference.child(username + ".publicKey");
+        sRef.putFile(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @SuppressWarnings("VisitableForTests")
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+    }
+
+
+
+    public void saveSignature(@NonNull final File file, @NonNull final String reportId) {
+        Uri data = Uri.fromFile(file);
+        StorageReference storageReference = databaseConnection.connectSignatureDatabase();
+        final StorageReference sRef = storageReference.child(reportId + ".signature");
+        sRef.putFile(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @SuppressWarnings("VisitableForTests")
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
@@ -310,10 +362,11 @@ public class DataService {
 
     /**
      * Lấy tất cả thông tin của file đính kèm theo report
+     *
      * @param reportId
-     * @return  List thông tin file đính kèm
+     * @return List thông tin file đính kèm
      */
-    public  List<AttachImage> getAllAttach(String reportId) {
+    public List<AttachImage> getAllAttach(String reportId) {
         DatabaseReference databaseReference = databaseConnection.connectAttachDatabase();
         final List<AttachImage> attachImageList = new ArrayList<>();
         databaseReference.child(reportId).addValueEventListener(new ValueEventListener() {
@@ -335,7 +388,8 @@ public class DataService {
 
     /**
      * Lấy thôn gtin user trên server theo id
-     * @param username    username
+     *
+     * @param username username
      * @return thông tin user
      */
     public User getUser(final String username) {
@@ -358,10 +412,11 @@ public class DataService {
 
     /**
      * lấy thông tin user đang đăng nhập
+     *
      * @param context
      * @return thông tin user
      */
-    public User getCurrentUser (Context context) {
+    public User getCurrentUser(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("Login", 0);
         User user = new User();
         user.setName(sharedPreferences.getString("name", null));
@@ -373,6 +428,6 @@ public class DataService {
     }
 
     private String getCurdateTime() {
-       return new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+        return new SimpleDateFormat("yyyy/MM/dd").format(new Date());
     }
 }
