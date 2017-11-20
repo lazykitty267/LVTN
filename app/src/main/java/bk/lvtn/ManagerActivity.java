@@ -9,13 +9,21 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ListView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import bk.lvtn.fragment_adapter.ReportAdapter;
 import bk.lvtn.fragment_adapter.Template;
 import bk.lvtn.fragment_adapter.TemplateAdapter;
 import dataService.DataService;
+import dataService.DatabaseConnection;
 import entity.Report;
+import entity.User;
 
 
 /**
@@ -34,31 +42,32 @@ public class ManagerActivity extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_manager, container, false);
+        final View view = inflater.inflate(R.layout.fragment_manager, container, false);
         //get user reports
+        DatabaseConnection databaseConnection = new DatabaseConnection();
+        DatabaseReference databaseReference = databaseConnection.connectReportDatabase();
         DataService dataService = new DataService();
-        arrRp=new ArrayList<>(dataService.getAllReport("12345678"));
+        User user = dataService.getCurrentUser(getActivity());
+        arrRp = new ArrayList<>();
+        databaseReference.child(user.getUsername()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Report report = postSnapshot.getValue(Report.class);
+                    arrRp.add(report);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         ListView listView = (ListView)view.findViewById(R.id.list_user_reports);
         adapter = new ReportAdapter(getActivity(), arrRp,R.layout.item_inlist_report);
         listView.setAdapter(adapter);
-
-        // Test listview
-        Report a = new Report();
-        a.setReportName("Báo cáo nhiệm kỳ ABCDEFASSDGDFGFD");
-        a.setCreateDate("18/11/2017");
-        arrRp.add(a);
-        arrRp.add(a);
-        arrRp.add(a);
-        arrRp.add(a);
-        arrRp.add(a);
-        arrRp.add(a);
-        arrRp.add(a);
-        arrRp.add(a);
-        arrRp.add(a);
-        arrRp.add(a);
-        arrRp.add(a);
-
-        adapter.notifyDataSetChanged();
         return view;
     }
 

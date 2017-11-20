@@ -54,6 +54,7 @@ import dataService.DataService;
 import entity.AttachImage;
 import entity.PdfFile;
 import entity.Report;
+import entity.User;
 
 
 public class ReportDetailActivity extends AppCompatActivity {
@@ -68,6 +69,7 @@ public class ReportDetailActivity extends AppCompatActivity {
     RecyclerView mRecyclerView;
     AttachImgAdapter mRcvAdapter;
     Dialog dialog;
+    User user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +87,8 @@ public class ReportDetailActivity extends AppCompatActivity {
         mRcvAdapter = new AttachImgAdapter(listImgAttach);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        DataService dataService = new DataService();
+        user = dataService.getCurrentUser(ReportDetailActivity.this);
 
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mRcvAdapter);
@@ -217,6 +221,7 @@ public class ReportDetailActivity extends AppCompatActivity {
                                         return;
                                     }
                                     DataService dataService = new DataService();
+                                    report.setUserName(user.getUsername());
                                     dataService.saveReport(report);
                                     if (listImgAttach!=null) {
                                         for (int index = 0; index < listImgAttach.size(); index++) {
