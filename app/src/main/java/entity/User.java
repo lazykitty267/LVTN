@@ -37,7 +37,7 @@ public class User {
         this.publicKey = publicKey;
     }
 
-    private String  publicKey;
+    private String publicKey;
 
     public String getName() {
         return name;

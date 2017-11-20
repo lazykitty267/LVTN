@@ -15,29 +15,44 @@ import entity.Contants;
 
 public class DatabaseConnection {
 
-    public DatabaseReference connectReportDatabase () {
+    public DatabaseReference connectReportDatabase() {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(Contants.REPORT_PATH);
-        return  databaseReference;
+        return databaseReference;
     }
-    public StorageReference connectPdfFileDatabase () {
+
+    public StorageReference connectPdfFileDatabase() {
         StorageReference storageReference = FirebaseStorage.getInstance().getReference(Contants.PDF_FILE_PATH);
         return storageReference;
     }
-    public DatabaseReference connectPdfDatabase () {
+
+    public DatabaseReference connectPdfDatabase() {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(Contants.PDF_PATH);
         return databaseReference;
     }
-    public DatabaseReference connectUserDatabase () {
+
+    public DatabaseReference connectUserDatabase() {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(Contants.USERS_PATH);
-        return  databaseReference;
+        return databaseReference;
     }
-    public DatabaseReference connectAttachDatabase () {
+
+    public DatabaseReference connectAttachDatabase() {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(Contants.IMAGE_PATH);
         return databaseReference;
     }
-    public StorageReference connectAttachFileDatabase () {
+
+    public StorageReference connectAttachFileDatabase() {
         StorageReference storageReference = FirebaseStorage.getInstance().getReference(Contants.IMAGE_FILE_PATH
         );
+        return storageReference;
+    }
+
+    public StorageReference connectPublicKeyDatabase() {
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference(Contants.PUBLIC_KEY_PATH);
+        return storageReference;
+    }
+
+    public StorageReference connectSignatureDatabase() {
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference(Contants.SIGNATURE_PATH);
         return storageReference;
     }
 }
