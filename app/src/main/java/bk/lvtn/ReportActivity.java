@@ -15,6 +15,11 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,8 +29,10 @@ import bk.lvtn.fragment_adapter.ReportAdapter;
 import bk.lvtn.fragment_adapter.Template;
 import bk.lvtn.fragment_adapter.TemplateAdapter;
 import dataService.DataService;
+import dataService.DatabaseConnection;
 import entity.PdfFile;
 import entity.Report;
+import entity.User;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,7 +53,7 @@ public class ReportActivity extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_report, container, false);
+        final View view = inflater.inflate(R.layout.fragment_report, container, false);
         listRp = (ListView)view.findViewById(R.id.listRp);
         add_b = (FloatingActionButton)view.findViewById(R.id.fab_rp);
         adapter = new ReportAdapter(getActivity(),arrRp,R.layout.item_inlist_report);
@@ -55,18 +62,23 @@ public class ReportActivity extends Fragment {
         PdfFile pdfFile = new PdfFile();
 
         DataService dataService = new DataService();
-        List<Report> lReport = dataService.getAllReport("12345678");
-//        pdfFile = dataService.getPdf(lReport.get(0).getId());
-//        File f = dataService.downloadFile(pdfFile);
-//
-        for (int i =0;i<lReport.size();i++){
-            Report test = new Report();
-            test.setUserName(lReport.get(i).getUserName());
-            test.setReportName(lReport.get(i).getReportName());
-            test.setCreateDate(lReport.get(i).getCreateDate());
-            arrRp.add(test);
-        }
+        DatabaseConnection databaseConnection = new DatabaseConnection();
+        DatabaseReference databaseReference = databaseConnection.connectReportDatabase();
+        User user = dataService.getCurrentUser(getActivity());
+        databaseReference.child(user.getUsername()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Report report = postSnapshot.getValue(Report.class);
+                    arrRp.add(report);
+                }
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         // Test listview
 //        Report test = new Report();
 //        test.setUserName("Phu");

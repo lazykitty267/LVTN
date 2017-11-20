@@ -141,6 +141,7 @@ public class LoginActivity extends AppCompatActivity {
                 editor.putString("password", user.getPassword());
                 editor.putString("publickey", user.getPublicKey());
                 editor.putString("name", user.getName());
+                editor.commit();
                 final File keyFileDirectory = new File(getFilesDir(), "rsa/");
                 final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
                 if (privateKeyFile.exists()) {

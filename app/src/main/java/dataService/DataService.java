@@ -90,7 +90,7 @@ public class DataService {
         String id = databaseReference.push().getKey();
         report.setId(id);
         report.setCreateDate(getCurdateTime());
-        return databaseReference.child(id).setValue(report).isSuccessful();
+        return databaseReference.child(report.getUserName()).child(id).setValue(report).isSuccessful();
     }
 
     /**
@@ -104,7 +104,7 @@ public class DataService {
         deletePdf(file);
         report.setUpdateDate(getCurdateTime());
         DatabaseReference databaseReference = databaseConnection.connectReportDatabase();
-        return databaseReference.child(report.getId()).setValue(report).isSuccessful();
+        return databaseReference.child(report.getUserName()).child(report.getId()).setValue(report).isSuccessful();
     }
 
     /**
@@ -132,31 +132,31 @@ public class DataService {
         return databaseReference.child(pdfFile.getReportId()).setValue(pdfFile).isSuccessful();
     }
 
-    /**
-     * lấy thông tin tất cả report của user
-     *
-     * @param userId id của user
-     * @return List các thông tin report
-     */
-    public List<Report> getAllReport(@NonNull final String userId) {
-        DatabaseReference databaseReference = databaseConnection.connectReportDatabase();
-        final List<Report> reportList = new ArrayList<>();
-        databaseReference.child(userId).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Report report = postSnapshot.getValue(Report.class);
-                    reportList.add(report);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        return reportList;
-    }
+//    /**
+//     * lấy thông tin tất cả report của user
+//     *
+//     * @param userId id của user
+//     * @return List các thông tin report
+//     */
+//    public List<Report> getAllReport(@NonNull final String userId) {
+//        DatabaseReference databaseReference = databaseConnection.connectReportDatabase();
+//        final List<Report> reportList = new ArrayList<>();
+//        databaseReference.child(userId).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+//                    Report report = postSnapshot.getValue(Report.class);
+//                    reportList.add(report);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//        return reportList;
+//    }
 
     /**
      * Lấy thông tin của report trên server theo id
