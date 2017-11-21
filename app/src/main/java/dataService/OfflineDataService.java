@@ -42,7 +42,7 @@ public class OfflineDataService {
         database.execSQL(sql);
     }
     public void doCreateFieldTable(){
-        String sql = "CREATE TABLE field (fieldID INTRGER primary key, fieldName TEXT, fieldvalue TEXT, Id TEXT NOT NULL" +
+        String sql = "CREATE TABLE field (fieldID INTEGER primary key, fieldName TEXT, fieldValue TEXT, Id TEXT NOT NULL" +
                 "CONSTRAINT Id REFERENCES report(Id) ON DELETE CASCADE)";
         database.execSQL(sql);
     }
@@ -67,7 +67,7 @@ public class OfflineDataService {
             ContentValues values = new ContentValues();
             values.put("fieldID",i+1);
             values.put("fieldName",fieldList.get(i).getKey());
-            values.put("fieldName",changeToString(fieldList.get(i).getValue()));
+            values.put("fieldValue",changeToString(fieldList.get(i).getValue()));
             values.put("Id",reportId);
             database.insert("field",null,values);
         }

@@ -151,7 +151,7 @@ public class ReportDetailActivity extends AppCompatActivity {
                         else {
                             Field f = new Field(field1.getValue_field());
                             arrField.add(f);
-                            adapterAdd.notifyDataSetChanged();
+                            adapter.notifyDataSetChanged();
                             adapterAdd=null;
                             dialog.dismiss();
                         }
@@ -221,6 +221,7 @@ public class ReportDetailActivity extends AppCompatActivity {
                                     }
                                     if (!isOnline()){
                                         OfflineDataService offData = new OfflineDataService();
+                                        offData.doDeleteDB(ReportDetailActivity.this);
                                         offData.doCreateDb(ReportDetailActivity.this);
                                         offData.doInsertReport(report);
 
@@ -232,6 +233,7 @@ public class ReportDetailActivity extends AppCompatActivity {
                                         dos.write(b);
                                         dos.flush();
                                         dos.close();
+                                        finish();
                                         Toast.makeText(ReportDetailActivity.this,"OFFLINE MODE",Toast.LENGTH_SHORT);
                                     }
                                     else {
@@ -347,9 +349,16 @@ public class ReportDetailActivity extends AppCompatActivity {
                 ArrayList<String> result = data
                         .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                 try {
-                    Field field = adapter.getItem(position);
-                    field.setValue_field(field.getValue_field() + result.get(0) + ".");
-                    adapter.notifyDataSetChanged();
+                    if (adapterAdd == null) {
+                        Field field = adapter.getItem(position);
+                        field.setValue_field(field.getValue_field() + result.get(0) + ".");
+                        adapter.notifyDataSetChanged();
+                    }
+                    else {
+                        Field field = adapterAdd.getItem(position);
+                        field.setValue_field(field.getValue_field() + result.get(0));
+                        adapterAdd.notifyDataSetChanged();
+                    }
                 } catch (Exception e) {
                     Toast.makeText(this, e.getMessage(),
                             Toast.LENGTH_SHORT).show();
