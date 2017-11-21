@@ -28,6 +28,10 @@ import com.github.angads25.filepicker.controller.DialogSelectionListener;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 
 import java.io.DataOutputStream;
@@ -54,6 +58,7 @@ import bk.lvtn.fragment_adapter.FieldAdapter;
 import bk.lvtn.fragment_adapter.Template;
 import bk.lvtn.fragment_adapter.TemplateAdapter;
 import dataService.DataService;
+import dataService.DatabaseConnection;
 import dataService.OfflineDataService;
 import entity.AttachImage;
 import entity.PdfFile;
@@ -82,7 +87,24 @@ public class ModifyReportActivity extends AppCompatActivity {
         ArrayList<DataRow> fieldsData= new ArrayList<DataRow>(report.getFieldList());
         DataService dataService = new DataService();
         // listImgAttached trả về null
-        listImgAttached = new ArrayList<AttachImage> (dataService.getAllAttach(report.getId()));
+        DatabaseConnection databaseConnection = new DatabaseConnection();
+        DatabaseReference databaseReference = databaseConnection.connectAttachDatabase();
+        listImgAttached = new ArrayList<AttachImage> ();
+        databaseReference.child(report.getId()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    AttachImage attachImage = postSnapshot.getValue(AttachImage.class);
+                    listImgAttached.add(attachImage);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         // todo : convert AttachImage to AttachImages
         Button saveForm = (Button) findViewById(R.id.save_button);
         Button addField = (Button) findViewById(R.id.add_button);
@@ -98,17 +120,6 @@ public class ModifyReportActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mRcvAdapter);
         listField.setAdapter(adapter);
-        // Test listview
-//        Field field1 = new Field("Tên cơ quan");
-//        Field field2 = new Field("Thời gian bắt đầu");
-//        Field field3 = new Field("Địa điểm");
-//        Field field4 = new Field("Thành phần tham dự");
-//        Field field5 = new Field("Nội dung");
-//        arrField.add(field1);
-//        arrField.add(field2);
-//        arrField.add(field3);
-//        arrField.add(field4);
-//        arrField.add(field5);
         for( DataRow item :fieldsData){
             Field tmp = new Field(item.getKey(),item.getValue().get(0));
             arrField.add(tmp);
