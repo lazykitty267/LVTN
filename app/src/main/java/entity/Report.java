@@ -1,5 +1,6 @@
 package entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import bk.lvtn.data.DataRow;
  * Created by lazyk on 7/24/2017.
  */
 
-public class Report {
+public class Report implements Serializable {
 
     private String id;
 
