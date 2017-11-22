@@ -272,7 +272,7 @@ public class DigitalSignature {
 
     public static int stepcount = 0;
 
-    public void generateKey(Context context) throws Exception {
+    public void generateKey(Context context,String username) throws Exception {
 
         KeyPairGenerator gen = KeyPairGenerator.getInstance(RSA);
         SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
@@ -286,7 +286,7 @@ public class DigitalSignature {
 
         final File keyFileDirectory = new File(context.getFilesDir(), "rsa/");
         final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
-        final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
+        final File privateKeyFile = new File(keyFileDirectory, username + "_priv_key");
         if (publicKeyFile.exists()) {
             publicKeyFile.delete();
         }

@@ -27,7 +27,8 @@ import entity.Report;
 
 public class OfflineDataService {
     private SQLiteDatabase database;
-
+    public static final String UPDATE_MODE = "update";
+    public static final String CREATE_MODE = "create";
     public OfflineDataService() {
     }
 

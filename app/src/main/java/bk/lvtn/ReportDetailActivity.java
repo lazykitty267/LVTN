@@ -226,6 +226,7 @@ public class ReportDetailActivity extends AppCompatActivity {
                                     report.setUserName(user.getUsername());
                                     if (!isOnline()){
                                         report.setId(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
+                                        report.setNote(OfflineDataService.CREATE_MODE);
                                         OfflineDataService offData = new OfflineDataService();
                                         offData.doCreateDb(ReportDetailActivity.this);
                                         offData.doCreateReportTable();
@@ -243,7 +244,7 @@ public class ReportDetailActivity extends AppCompatActivity {
                                         File pdf = new File(userDir,report.getId()+".pdf");
                                         file.renameTo(pdf);
                                         if (listImgAttach != null) {
-                                            File attachDir = new File(userDir.getAbsolutePath(),report.getId());
+                                            File attachDir = new File(userDir,report.getId());
                                             if (!attachDir.exists()) {
                                                 attachDir.mkdir();
                                             }
@@ -273,7 +274,7 @@ public class ReportDetailActivity extends AppCompatActivity {
 //                                        dSig.generateKey();
 
                                         final File keyFileDirectory = new File(getFilesDir(), "rsa/");
-                                        final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
+                                        final File privateKeyFile = new File(keyFileDirectory, user.getUsername() + "_priv_key");
                                         final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
                                         byte[] b = new byte[(int) file.length()];
                                         FileInputStream fileInputStream = new FileInputStream(file);

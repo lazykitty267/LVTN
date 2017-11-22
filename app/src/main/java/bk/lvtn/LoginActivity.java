@@ -165,7 +165,7 @@ public class LoginActivity extends AppCompatActivity {
                 editor.putString("name", user.getName());
                 editor.commit();
                 final File keyFileDirectory = new File(getFilesDir(), "rsa/");
-                final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
+                final File privateKeyFile = new File(keyFileDirectory, user.getUsername() + "_priv_key");
                 if (privateKeyFile.exists()) {
                     try {
                         OfflineDataService offData = new OfflineDataService();
@@ -198,7 +198,7 @@ public class LoginActivity extends AppCompatActivity {
                                 public void onClick(DialogInterface arg0, int arg1) {
                                     try {
                                         DigitalSignature digi = new DigitalSignature();
-                                        digi.generateKey(LoginActivity.this);
+                                        digi.generateKey(LoginActivity.this,userName);
 //                                        editor.putString("private key", digi.rk.toString());
 //
 //                                        File secondFile = new File(getFilesDir().getAbsolutePath() + "/", "privatekey");
@@ -236,10 +236,12 @@ public class LoginActivity extends AppCompatActivity {
             pdfFile.setName(report.getId());
             File file = new File(userDir,report.getId()+".pdf");
             File attachDir = new File(userDir,report.getId());
-            User user = dataService.getCurrentUser(LoginActivity.this);
-            report.setUserName(user.getUsername());
-            dataService.saveReport(report);
-            if (attachDir.listFiles() == null) {
+//            User user = dataService.getCurrentUser(LoginActivity.this);
+//            report.setUserName(user.getUsername());
+            if(report.getNote().equals(OfflineDataService.CREATE_MODE))
+                dataService.saveReport(report);
+            else dataService.updateReport(report);
+            if (attachDir.listFiles() != null) {
                 for (File f : attachDir.listFiles()) {
                     AttachImage attachImage = new AttachImage();
                     attachImage.setReportId(report.getId());
@@ -249,7 +251,7 @@ public class LoginActivity extends AppCompatActivity {
             }
             final DigitalSignature digi = new DigitalSignature();
             final File keyFileDirectory = new File(getFilesDir(), "rsa/");
-            final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
+            final File privateKeyFile = new File(keyFileDirectory, report.getUserName() + "_priv_key");
             final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
             byte[] b = new byte[(int) file.length()];
             FileInputStream fileInputStream = new FileInputStream(file);

@@ -342,8 +342,9 @@ public class DataService {
     public boolean saveAttachFile(@NonNull final AttachImage attachImage) {
         DatabaseReference databaseReference = databaseConnection.connectAttachDatabase();
         attachImage.setCreateDate(getCurdateTime());
-        attachImage.setId(databaseReference.push().getKey());
-        return databaseReference.child(attachImage.getReportId()).setValue(attachImage).isSuccessful();
+        String id = databaseReference.push().getKey();
+        attachImage.setId(id);
+        return databaseReference.child(attachImage.getReportId()).child(id).setValue(attachImage).isSuccessful();
     }
 
     public boolean updateAttachFile(AttachImage attachImage) {
