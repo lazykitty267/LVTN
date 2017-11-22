@@ -47,10 +47,9 @@ public class DataService {
             @SuppressWarnings("VisitableForTests")
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                PdfFile file = new PdfFile(pdfFile.getId(), pdfFile.getName());
                 //noinspection VisibleForTests
-                file.setUrl(taskSnapshot.getDownloadUrl().toString());
-                updatePdf(file);
+                pdfFile.setUrl(taskSnapshot.getDownloadUrl().toString());
+                updatePdf(pdfFile);
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
@@ -285,10 +284,9 @@ public class DataService {
             @SuppressWarnings("VisitableForTests")
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                AttachImage file = new AttachImage(attachFile.getReportId(), attachFile.getId(), attachFile.getName());
                 //noinspection VisibleForTests
-                file.setUrl(taskSnapshot.getDownloadUrl().toString());
-                updateAttachFile(file);
+                attachFile.setUrl(taskSnapshot.getDownloadUrl().toString());
+                updateAttachFile(attachFile);
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
@@ -350,7 +348,7 @@ public class DataService {
     public boolean updateAttachFile(AttachImage attachImage) {
         DatabaseReference databaseReference = databaseConnection.connectAttachDatabase();
         attachImage.setUpdateDate(getCurdateTime());
-        return databaseReference.child(attachImage.getReportId()).setValue(attachImage).isSuccessful();
+        return databaseReference.child(attachImage.getReportId()).child(attachImage.getId()).setValue(attachImage).isSuccessful();
     }
 
     public boolean deleteAttach(AttachImage attachImage) {
