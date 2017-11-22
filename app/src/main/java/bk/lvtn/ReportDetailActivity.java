@@ -1,6 +1,7 @@
 package bk.lvtn;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -57,6 +58,7 @@ import dataService.OfflineDataService;
 import entity.AttachImage;
 import entity.PdfFile;
 import entity.Report;
+import entity.User;
 
 
 public class ReportDetailActivity extends AppCompatActivity {
@@ -219,26 +221,42 @@ public class ReportDetailActivity extends AppCompatActivity {
                                     if (file == null) {
                                         return;
                                     }
+                                    DataService dataService = new DataService();
+                                    User user = dataService.getCurrentUser(ReportDetailActivity.this);
+                                    report.setUserName(user.getUsername());
                                     if (!isOnline()){
+                                        report.setId(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
                                         OfflineDataService offData = new OfflineDataService();
-                                        offData.doDeleteDB(ReportDetailActivity.this);
                                         offData.doCreateDb(ReportDetailActivity.this);
+                                        offData.doCreateReportTable();
+                                        offData.doCreateFieldTable();
                                         offData.doInsertReport(report);
-
                                         byte[] b = new byte[(int) file.length()];
                                         FileInputStream fileInputStream = new FileInputStream(file);
                                         fileInputStream.read(b);
 
-                                        DataOutputStream dos = new DataOutputStream(openFileOutput(report.getReportName(),ReportDetailActivity.this.MODE_PRIVATE));
-                                        dos.write(b);
-                                        dos.flush();
-                                        dos.close();
-                                        finish();
+                                        String path = Environment.getExternalStorageDirectory().getAbsolutePath().toString();
+                                        File userDir = new File(path,report.getId());
+                                        if (!userDir.exists()) {
+                                            userDir.mkdir();
+                                        }
+                                        File pdf = new File(userDir,report.getId()+".pdf");
+                                        file.renameTo(pdf);
+                                        if (listImgAttach != null) {
+                                            File attachDir = new File(userDir.getAbsolutePath(),report.getId());
+                                            if (!attachDir.exists()) {
+                                                attachDir.mkdir();
+                                            }
+                                            for (int index = 0; index < listImgAttach.size(); index++) {
+                                                File f = new File(listImgAttach.get(index).getPath());
+                                                f.renameTo(new File(attachDir,f.getName()));
+                                            }
+                                        }
+                                        showOfflineDialog();
                                         Toast.makeText(ReportDetailActivity.this,"OFFLINE MODE",Toast.LENGTH_SHORT);
                                     }
                                     else {
 
-                                        DataService dataService = new DataService();
                                         dataService.saveReport(report);
                                         if (listImgAttach != null) {
                                             for (int index = 0; index < listImgAttach.size(); index++) {
@@ -262,6 +280,15 @@ public class ReportDetailActivity extends AppCompatActivity {
                                         fileInputStream.read(b);
                                         String k = digi.myhash(b);
                                         byte[] s = digi.rsaSign(k.getBytes(), digi.getPrivateKey(privateKeyFile));
+
+                                        final File signal = new File(getFilesDir(), "signal");
+                                        signal.createNewFile();
+                                        DataOutputStream dos = new DataOutputStream(new FileOutputStream(signal));
+                                        dos.write(s);
+                                        dos.flush();
+                                        dos.close();
+                                        dataService.saveSignature(signal,report.getId());
+                                        signal.delete();
 
 
                                         pdfFile.setReportId(report.getId());
@@ -374,6 +401,17 @@ public class ReportDetailActivity extends AppCompatActivity {
     private void showSuccessDialog() {
         AlertDialog alertbox = new AlertDialog.Builder(ReportDetailActivity.this).setTitle("Success")
                 .setMessage("Báo cáo đã được tạo")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(myIntent);
+                        finish();
+                    }
+                }).show();
+    }
+    private void showOfflineDialog() {
+        AlertDialog alertbox = new AlertDialog.Builder(ReportDetailActivity.this).setTitle("Success")
+                .setMessage("Bạn đang ngoại tuyến!! Báo cáo sẽ được upload sau khi bạn đăng nhập lại!!")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface arg0, int arg1) {
                         Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);

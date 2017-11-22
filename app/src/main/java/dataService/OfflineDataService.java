@@ -4,8 +4,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
+import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,28 +32,32 @@ public class OfflineDataService {
     }
 
     public void doCreateDb(Context context){
-        database = context.openOrCreateDatabase("offlineReport.db",Context.MODE_PRIVATE,null);
-        doCreateReportTable();
-        doCreateFieldTable();
+        File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath().toString(),"offlineReport.db");
+//        database = context.openOrCreateDatabase("offlineReport.db",Context.MODE_PRIVATE,null);
+        database = SQLiteDatabase.openDatabase(f.getAbsolutePath(),null,SQLiteDatabase.CREATE_IF_NECESSARY);
+    }
+
+    public void doOpenDb(Context context){
+        File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath().toString(),"offlineReport.db");
+        database = SQLiteDatabase.openDatabase(f.getAbsolutePath(),null,SQLiteDatabase.OPEN_READWRITE);
     }
     public boolean doDeleteDB(Context context){
-        return context.deleteDatabase("offlineReport.db");
+        File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath().toString(),"offlineReport.db");
+        return f.delete();
     }
 
     public void doCreateReportTable(){
-        String sql = "CREATE TABLE report (Id TEXT primary key, reportName TEXT, userName TEXT, templateId TEXT" +
+        String sql = "CREATE TABLE IF NOT EXISTS report (Id TEXT PRIMARY KEY, reportName TEXT, userName TEXT, templateId TEXT" +
                 ", createDate TEXT, updateDate TEXT, note TEXT, managerId TEXT)";
         database.execSQL(sql);
     }
     public void doCreateFieldTable(){
-        String sql = "CREATE TABLE field (fieldID INTEGER primary key, fieldName TEXT, fieldValue TEXT, Id TEXT NOT NULL" +
-                "CONSTRAINT Id REFERENCES report(Id) ON DELETE CASCADE)";
+        String sql = "CREATE TABLE IF NOT EXISTS field (fieldID INTEGER PRIMARY KEY, fieldName TEXT, fieldValue TEXT, Id TEXT NOT NULL)";
         database.execSQL(sql);
     }
 
     public void doInsertReport(Report report){
         ContentValues values = new ContentValues();
-        report.setId(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
         values.put("Id",report.getId());
         values.put("reportName",report.getReportName());
         values.put("userName",report.getUserName());
