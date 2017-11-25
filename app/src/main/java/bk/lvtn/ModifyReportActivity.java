@@ -5,8 +5,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Looper;
 import android.speech.RecognizerIntent;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -24,6 +27,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.support.v7.app.AlertDialog;
+
+import com.bumptech.glide.Glide;
 import com.github.angads25.filepicker.controller.DialogSelectionListener;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
@@ -41,12 +46,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.KeyStore;
 import java.security.KeyStoreSpi;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import bk.lvtn.Signature.DigitalSignature;
 import bk.lvtn.data.DataRow;
@@ -66,42 +74,77 @@ import entity.Report;
 
 
 public class ModifyReportActivity extends AppCompatActivity {
+    Bitmap theBitmap;
     FieldActivityAsyncTask fieldActivityAsyncTask;
     ListView listField;
     ArrayList<Field> arrField = new ArrayList<Field>();
-    FieldAdapter adapter,adapterAdd=null;
+    FieldAdapter adapter, adapterAdd = null;
     String excel_name = "";
     Form form;
     String[] fileList = null;
-    ArrayList<AttachImages > listImgAttach = new ArrayList<AttachImages>();
-    ArrayList<AttachImage > listImgAttached = new ArrayList<AttachImage>();
+    ArrayList<AttachImages> listImgAttach = new ArrayList<AttachImages>();
+    ArrayList<AttachImage> listImgAttached = new ArrayList<AttachImage>();
     RecyclerView mRecyclerView;
     AttachImgAdapter mRcvAdapter;
     Dialog dialog;
+
+    public static Bitmap getBitmapFromURL(String src) {
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report_detail);
         Intent intent = getIntent();
-        Report report = (Report) intent.getExtras().getSerializable("CURREPORT");
-        ArrayList<DataRow> fieldsData= new ArrayList<DataRow>(report.getFieldList());
+        final Report curreport = (Report) intent.getExtras().getSerializable("CURREPORT");
+        ArrayList<DataRow> fieldsData = new ArrayList<DataRow>(curreport.getFieldList());
         DataService dataService = new DataService();
         // listImgAttached trả về null
         DatabaseConnection databaseConnection = new DatabaseConnection();
         DatabaseReference databaseReference = databaseConnection.connectAttachDatabase();
-        listImgAttached = new ArrayList<AttachImage> ();
-        databaseReference.child(report.getId()).addValueEventListener(new ValueEventListener() {
+        listImgAttached = new ArrayList<AttachImage>();
+        databaseReference.child(curreport.getId()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    AttachImage attachImage = postSnapshot.getValue(AttachImage.class);
-                    listImgAttached.add(attachImage);
+//todo tạm thời filter attachimg theo rpid
+                    AttachImage attachImage = dataSnapshot.getValue(AttachImage.class);
+                    if (attachImage.getReportId().equals(curreport.getId())) {
+//                        try {
+//
+//                            theBitmap = Glide.
+//                                    with(ModifyReportActivity.this).
+//                                    load(attachImage.getUrl()).
+//                                    asBitmap().
+//                                    into(-1,-1).
+//                                    get();
+//                            AttachImages attachImages = new AttachImages();
+//                            attachImages.setBitmap(theBitmap);
+//                            listImgAttach.add(attachImages);
+//                        } catch (final ExecutionException e) {
+//                            e.printStackTrace();
+//                        } catch (final InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+                    }
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                databaseError.getMessage();
             }
         });
 
@@ -120,8 +163,8 @@ public class ModifyReportActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mRcvAdapter);
         listField.setAdapter(adapter);
-        for( DataRow item :fieldsData){
-            Field tmp = new Field(item.getKey(),item.getValue().get(0));
+        for (DataRow item : fieldsData) {
+            Field tmp = new Field(item.getKey(), item.getValue().get(0));
             arrField.add(tmp);
         }
         adapter.notifyDataSetChanged();
@@ -139,15 +182,15 @@ public class ModifyReportActivity extends AppCompatActivity {
 //
 //        }
 
-        addField.setOnClickListener(new View.OnClickListener(){
+        addField.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final Dialog dialog = new Dialog(ModifyReportActivity.this);
                 dialog.setContentView(R.layout.list_template_dialog);
-                GridView lv = (GridView ) dialog.findViewById(R.id.list_template_d);
+                GridView lv = (GridView) dialog.findViewById(R.id.list_template_d);
                 ArrayList<Field> arrTp = new ArrayList<Field>();
 
-                adapterAdd = new FieldAdapter(ModifyReportActivity.this,arrTp,R.layout.item_inlist_field);
+                adapterAdd = new FieldAdapter(ModifyReportActivity.this, arrTp, R.layout.item_inlist_field);
                 lv.setAdapter(adapterAdd);
 
                 final Field field1 = new Field("Tên Field");
@@ -161,22 +204,21 @@ public class ModifyReportActivity extends AppCompatActivity {
                 rp_select.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(field1.getValue_field().equals("")){
-                            Toast.makeText(ModifyReportActivity.this,"Mời nhập field name!!",Toast.LENGTH_LONG);
+                        if (field1.getValue_field().equals("")) {
+                            Toast.makeText(ModifyReportActivity.this, "Mời nhập field name!!", Toast.LENGTH_LONG);
                             return;
-                        }
-                        else {
+                        } else {
                             Field f = new Field(field1.getValue_field());
                             arrField.add(f);
                             adapterAdd.notifyDataSetChanged();
-                            adapterAdd=null;
+                            adapterAdd = null;
                             dialog.dismiss();
                         }
                     }
                 });
             }
         });
-        attachFile.setOnClickListener(new View.OnClickListener(){
+        attachFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (ContextCompat.checkSelfPermission(ModifyReportActivity.this, android.Manifest.permission.CAMERA)
@@ -184,142 +226,77 @@ public class ModifyReportActivity extends AppCompatActivity {
                     //TODO: Do somethings
                 } else {
                     //Request camera permission
-                    ActivityCompat.requestPermissions(ModifyReportActivity.this, new String[] { android.Manifest.permission.CAMERA },
+                    ActivityCompat.requestPermissions(ModifyReportActivity.this, new String[]{android.Manifest.permission.CAMERA},
                             1);
                 }
 //                getAttachFile();
-                AttachImageService a = new AttachImageService(ModifyReportActivity.this,getApplication());
+                AttachImageService a = new AttachImageService(ModifyReportActivity.this, getApplication());
                 a.takePicture();
             }
         });
-        // // TODO: 11/20/17 update report on database 
+        // // TODO: 11/20/17 update curreport on database
         saveForm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 {
-                    dialog = new Dialog(ModifyReportActivity.this);
-                    dialog.setContentView(R.layout.private_key_dialog);
+                    curreport.getFieldList().clear();
+                    for (int i = 0; i < adapter.getCount(); i++) {
+                        final String s = adapter.getItem(i).getValue_field();
+                        curreport.addValue(adapter.getItem(i).getKey_field(), new ArrayList<String>() {{
+                            add(s);
+                        }});
+                    }
+                    form = new Form(curreport);
+                    try {
 
-                    dialog.setCancelable(true);
-                    dialog.setTitle("Private key");
-                    dialog.show();
-                    Button name_add = (Button) dialog.findViewById(R.id.pk_add);
-                    final EditText report_name = (EditText) dialog.findViewById(R.id.private_key);
-                    name_add.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (report_name.getText().toString().equals("")) {
-                                // // TODO: 11/20/17 ko cần nhập tên báo cáo 
-                                Toast.makeText(getApplicationContext(), "Mời bạn nhập tên báo cáo", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                            else {
-                                Report report = new Report();
-                                for (int i = 0; i < adapter.getCount(); i++) {
-                                    final String s = adapter.getItem(i).getValue_field();
-                                    report.addValue(adapter.getItem(i).getKey_field(), new ArrayList<String>() {{
-                                        add(s);
-                                    }});
-                                }
-                                report.setReportName(report_name.getText().toString());
-                                form = new Form(report);
-                                try {
+                        ActivityCompat.requestPermissions(ModifyReportActivity.this,
+                                new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                1);
 
-                                    ActivityCompat.requestPermissions(ModifyReportActivity.this,
-                                            new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                            1);
+                        InputStream is = getAssets().open("vuArial.ttf");
 
-                                    InputStream is = getAssets().open("vuArial.ttf");
+                        PdfFile pdfFile = new PdfFile();
 
-                                    PdfFile pdfFile = new PdfFile();
-
-                                    File file = form.createForm1(Environment.getExternalStorageDirectory().getAbsolutePath().toString(), is, pdfFile);
-                                    if (file == null) {
-                                        return;
-                                    }
-                                    if (!isOnline()){
-                                        OfflineDataService offData = new OfflineDataService();
-                                        offData.doCreateDb(ModifyReportActivity.this);
-                                        offData.doInsertReport(report);
-
-                                        byte[] b = new byte[(int) file.length()];
-                                        FileInputStream fileInputStream = new FileInputStream(file);
-                                        fileInputStream.read(b);
-
-                                        DataOutputStream dos = new DataOutputStream(openFileOutput(report.getReportName(),ModifyReportActivity.this.MODE_PRIVATE));
-                                        dos.write(b);
-                                        dos.flush();
-                                        dos.close();
-                                        Toast.makeText(ModifyReportActivity.this,"OFFLINE MODE",Toast.LENGTH_SHORT);
-                                    }
-                                    else {
-
-                                        DataService dataService = new DataService();
-                                        dataService.saveReport(report);
-                                        if (listImgAttach != null) {
-                                            for (int index = 0; index < listImgAttach.size(); index++) {
-                                                File f = new File(listImgAttach.get(index).getPath());
-                                                AttachImage attachImage = new AttachImage();
-                                                attachImage.setReportId(report.getId());
-                                                attachImage.setName(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
-                                                dataService.uploadAttachFile(f, attachImage);
-                                            }
-                                        }
-
-//                                        byte[] s = encrypt(DigitalSignature.myhash(FileUtils.readFileToByteArray(file)));
-//                                        DigitalSignature dSig = new DigitalSignature();
-//                                        dSig.generateKey();
-
-                                        final File keyFileDirectory = new File(getFilesDir(), "rsa/");
-                                        final File privateKeyFile = new File(keyFileDirectory, "sikkr_priv_key");
-                                        final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
-                                        byte[] b = new byte[(int) file.length()];
-                                        FileInputStream fileInputStream = new FileInputStream(file);
-                                        fileInputStream.read(b);
-                                        String k = digi.myhash(b);
-                                        byte[] s = digi.rsaSign(k.getBytes(), digi.getPrivateKey(privateKeyFile));
-
-
-                                        pdfFile.setReportId(report.getId());
-                                        dataService.uploadFile(file, pdfFile);
-                                        Toast.makeText(ModifyReportActivity.this,"ONLINE MODE",Toast.LENGTH_SHORT);
-//                                        File tempFile = File.createTempFile("prefix", "suffix", null);
-//                                        FileOutputStream fos = new FileOutputStream(tempFile);
-//                                        fos.write(s);
-//                                        AttachImage attachImage = new AttachImage();
-//                                        attachImage.setReportId(report.getId());
-//                                        attachImage.setName( new  SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
-//                                        dataService.uploadAttachFile(tempFile, attachImage);
+                        File file = form.createForm1(Environment.getExternalStorageDirectory().getAbsolutePath().toString(), is, pdfFile);
+                        if (file == null) {
+                            return;
+                        }
+//                        if (!isOnline()) {
+//                            OfflineDataService offData = new OfflineDataService();
+//                            offData.doCreateDb(ModifyReportActivity.this);
+//                            offData.doInsertReport(curreport);
 //
-//                                        s = digi.decrypt(tempFile,digi.uk);
-//                                        //File tempFile1 = File.createTempFile("prefix", "suffix", null);
-//                                        File tempFile1 = new File(new File(Environment.getExternalStorageDirectory().getAbsolutePath().toString(),"pdfdemo"),"encrypt.pdf");
+//                            byte[] b = new byte[(int) file.length()];
+//                            FileInputStream fileInputStream = new FileInputStream(file);
+//                            fileInputStream.read(b);
 //
-//                                        FileOutputStream fos1 = new FileOutputStream(tempFile1);
-//                                        fos1.write(s);
-//                                        if (digi.rsaVerify(k.getBytes(),s,digi.getPublicKey(publicKeyFile)) & publicKeyFile.isFile() & privateKeyFile.isFile()) {
-//                                            if (publicKeyFile.exists()) {
-//                                                publicKeyFile.delete();
-//                                            }
-//
-//                                            if (privateKeyFile.exists()) {
-//                                                privateKeyFile.delete();
-//                                            }
-//                                            finish();
-//                                        }
-//                                    fos1.close();
-//                                    fos.close();
-//
-//                                    Toast.makeText(ReportDetailActivity.this,s,Toast.LENGTH_SHORT);
-                                        showSuccessDialog();
-                                    }
-                                } catch (Exception e) {
-                                    Toast.makeText(ModifyReportActivity.this,e.toString(),Toast.LENGTH_SHORT);
-                                    Log.d("aaa", e.toString());
-                                }
+//                            DataOutputStream dos = new DataOutputStream(openFileOutput(curreport.getReportName(), ModifyReportActivity.this.MODE_PRIVATE));
+//                            dos.write(b);
+//                            dos.flush();
+//                            dos.close();
+//                            Toast.makeText(ModifyReportActivity.this, "OFFLINE MODE", Toast.LENGTH_SHORT);
+//                        } else {
+
+                        DataService dataService = new DataService();
+                        dataService.updateReport(curreport);
+                        if (listImgAttach != null) {
+                            for (int index = 0; index < listImgAttach.size(); index++) {
+                                File f = new File(listImgAttach.get(index).getPath());
+                                AttachImage attachImage = new AttachImage();
+                                attachImage.setReportId(curreport.getId());
+                                attachImage.setName(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
+                                dataService.uploadAttachFile(f, attachImage);
                             }
                         }
-                    });
+
+                        showSuccessDialog();
+//                        }
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    ;
                 }
             }
         });
@@ -327,15 +304,14 @@ public class ModifyReportActivity extends AppCompatActivity {
     }
 
 
-
     @Override
-    protected void onActivityResult (int position, int resultCode, Intent data){
-        if(position==999){
-            AttachImageService a = new AttachImageService(ModifyReportActivity.this,getApplication());
-            File photoFile =null;
+    protected void onActivityResult(int position, int resultCode, Intent data) {
+        if (position == 999) {
+            AttachImageService a = new AttachImageService(ModifyReportActivity.this, getApplication());
+            File photoFile = null;
             try {
                 photoFile = a.createImageFile();
-                Log.d("image path",photoFile.getAbsolutePath());
+                Log.d("image path", photoFile.getAbsolutePath());
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -343,10 +319,11 @@ public class ModifyReportActivity extends AppCompatActivity {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
 
-            AttachImages attachImages = new AttachImages(String.valueOf(photoFile.getAbsolutePath()),imageBitmap);
+            AttachImages attachImages = new AttachImages(String.valueOf(photoFile.getAbsolutePath()), imageBitmap);
             listImgAttach.add(attachImages);
-            adapter.notifyDataSetChanged();
-            Toast.makeText(this,String.valueOf(listImgAttach.size()), Toast.LENGTH_SHORT).show();
+//            adapter.notifyDataSetChanged();
+            mRcvAdapter.update(listImgAttach);
+            Toast.makeText(this, String.valueOf(listImgAttach.size()), Toast.LENGTH_SHORT).show();
 
             OutputStream os;
             try {
@@ -358,8 +335,7 @@ public class ModifyReportActivity extends AppCompatActivity {
                 Toast.makeText(this, "erorrrrr",
                         Toast.LENGTH_SHORT).show();
             }
-        }
-        else{
+        } else {
             if (resultCode == RESULT_OK && null != data) {
 
                 ArrayList<String> result = data
@@ -412,7 +388,7 @@ public class ModifyReportActivity extends AppCompatActivity {
             public void onSelectedFilePaths(String[] files) {
 
                 excel_name = files[0].toString();
-                fieldActivityAsyncTask = new FieldActivityAsyncTask(ModifyReportActivity.this,excel_name,adapter);
+                fieldActivityAsyncTask = new FieldActivityAsyncTask(ModifyReportActivity.this, excel_name, adapter);
                 fieldActivityAsyncTask.execute();
             }
         });
@@ -443,25 +419,27 @@ public class ModifyReportActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private boolean isConnectInternet(){
-        ConnectivityManager conMgr = (ConnectivityManager) getSystemService (this.CONNECTIVITY_SERVICE);
+    private boolean isConnectInternet() {
+        ConnectivityManager conMgr = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
         // ARE WE CONNECTED TO THE NET
         if (conMgr.getActiveNetworkInfo() != null
                 && conMgr.getActiveNetworkInfo().isAvailable()
                 && conMgr.getActiveNetworkInfo().isConnected()) {
             return true;
-        }
-        else return false;
+        } else return false;
     }
+
     public boolean isOnline() {
         Runtime runtime = Runtime.getRuntime();
         try {
             Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
-            int     exitValue = ipProcess.waitFor();
+            int exitValue = ipProcess.waitFor();
             return (exitValue == 0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        catch (IOException e)          { e.printStackTrace(); }
-        catch (InterruptedException e) { e.printStackTrace(); }
 
         return false;
     }

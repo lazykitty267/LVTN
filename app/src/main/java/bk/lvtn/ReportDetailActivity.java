@@ -357,7 +357,8 @@ public class ReportDetailActivity extends AppCompatActivity {
 
             AttachImages attachImages = new AttachImages(String.valueOf(photoFile.getAbsolutePath()),imageBitmap);
             listImgAttach.add(attachImages);
-            adapter.notifyDataSetChanged();
+//            adapter.notifyDataSetChanged();
+            mRcvAdapter.update(listImgAttach);
             Toast.makeText(this,String.valueOf(listImgAttach.size()), Toast.LENGTH_SHORT).show();
 
             OutputStream os;
