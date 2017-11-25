@@ -71,6 +71,7 @@ public class ReportActivity extends Fragment {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Report report = postSnapshot.getValue(Report.class);
                     arrRp.add(report);
+                    adapter.notifyDataSetChanged();
                 }
             }
 

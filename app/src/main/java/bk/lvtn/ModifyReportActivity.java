@@ -28,7 +28,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.support.v7.app.AlertDialog;
 
-import com.bumptech.glide.Glide;
+
 import com.github.angads25.filepicker.controller.DialogSelectionListener;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
