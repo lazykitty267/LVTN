@@ -58,9 +58,9 @@ public class AttachImgAdapter extends RecyclerView.Adapter<AttachImgAdapter.Recy
     public int getItemCount() {
         return data.size();
     }
-    public void update(ArrayList<AttachImages> data) {
-        data.clear();
-        data.addAll(data);
-        notifyDataSetChanged();
-    }
+//    public void update(ArrayList<AttachImages> newdata) {
+//        data.clear();
+//        data.addAll(newdata);
+//        notifyDataSetChanged();
+//    }
 }
