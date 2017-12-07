@@ -3,6 +3,7 @@ package bk.lvtn;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,7 @@ public class TemplateActivity extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_template, container, false);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Mẫu báo cáo");
         GridView gridView = (GridView)view.findViewById(R.id.gridview);
         adapter = new TemplateAdapter(getActivity(), arrTp,R.layout.item_inlist_template);
         gridView.setAdapter(adapter);

@@ -7,6 +7,7 @@ package bk.lvtn;
 import android.*;
 import android.app.Application;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -65,8 +66,9 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private ProgressBar progressBar;
     private Button btnSignup, btnLogin, btnReset;
-
+    ProgressDialog progress;
     Dialog dialog;
+    String prefname = "my_data";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +121,10 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
+                progress = new ProgressDialog(LoginActivity.this);
+                progress.setMessage("Đang xác thực...");
+                progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progress.show();
                 progressBar.setVisibility(View.VISIBLE);
 
                 DatabaseConnection databaseConnection = new DatabaseConnection();
@@ -143,16 +148,68 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        savingLoginInfoPreferences();
+    }
+
+    /**
+     * Lưu trạng thái đăng nhập
+     */
+    private void savingLoginInfoPreferences() {
+        //tạo đối tượng getSharedPreferences
+        SharedPreferences pre = getSharedPreferences
+                (prefname, MODE_PRIVATE);
+        //tạo đối tượng Editor để lưu thay đổi
+        SharedPreferences.Editor editor = pre.edit();
+        String email = inputEmail.getText().toString();
+        String pwd = inputPassword.getText().toString();
+        //lưu vào editor
+        editor.putString("email", email);
+        editor.putString("pwd", pwd);
+        //chấp nhận lưu xuống file
+        editor.commit();
+    }
+
+    @Override
+    protected void onResume() {
+        // TODO Auto-generated method stub
+        super.onResume();
+        //gọi hàm đọc trạng thái ở đây
+        restoringLoginInfoPreferences();
+    }
+    /**
+     * Tự động đăng nhập
+     */
+    public void restoringLoginInfoPreferences() {
+        SharedPreferences pre = getSharedPreferences
+                (prefname, MODE_PRIVATE);
+        //lấy giá trị checked ra, nếu không thấy thì giá trị mặc định là false
+        boolean isLogin = pre.getBoolean("isLogin", false);
+        if (isLogin) {
+            //lấy user, pwd, nếu không thấy giá trị mặc định là rỗng
+            String user = pre.getString("email", "");
+            String pwd = pre.getString("pwd", "");
+            inputEmail.setText(user);
+            inputPassword.setText(pwd);
+            btnLogin.callOnClick();
+        }
+    }
+
     private void checkLogin(String password, User user) {
         if (user == null) {
             // there was an error
+            progress.cancel();
             Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
 
         } else {
             if (!password.equals(user.getPassword())) {
                 if (password.length() < 6) {
+                    progress.cancel();
                     inputPassword.setError(getString(R.string.minimum_password));
                 } else {
+                    progress.cancel();
                     Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
                 }
             } else {
@@ -170,21 +227,27 @@ public class LoginActivity extends AppCompatActivity {
                     try {
                         OfflineDataService offData = new OfflineDataService();
                         offData.doOpenDb(LoginActivity.this);
-                        AlertDialog uploadAlert = new AlertDialog.Builder(LoginActivity.this).setTitle("Success")
-                                .setMessage("Upload báo cáo được tạo lúc bạn ngoại tuyến!!")
-                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface arg0, int arg1) {
-                                        try {
-                                            uploadOfffile();
-                                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                            startActivity(intent);
-                                            finish();
-                                        } catch (Exception e) {
-                                            Log.d("aaa", e.toString());
-                                        }
-                                    }
-                                }).show();
+                        progress.cancel();
+                        startService(new Intent(getBaseContext(), UploadOfflineService.class));
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+//                        AlertDialog uploadAlert = new AlertDialog.Builder(LoginActivity.this).setTitle("Success")
+//                                .setMessage("Upload báo cáo được tạo lúc bạn ngoại tuyến!!")
+//                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//                                    public void onClick(DialogInterface arg0, int arg1) {
+//                                        try {
+//                                            uploadOfffile();
+//                                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//                                            startActivity(intent);
+//                                            finish();
+//                                        } catch (Exception e) {
+//                                            Log.d("aaa", e.toString());
+//                                        }
+//                                    }
+//                                }).show();
                     } catch (Exception e) {
+                        progress.cancel();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();
@@ -192,24 +255,17 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 } else {
                     final String userName = user.getUsername();
+                    progress.cancel();
                     AlertDialog alertbox = new AlertDialog.Builder(LoginActivity.this).setTitle("Success")
                             .setMessage("Private key đã được tạo")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface arg0, int arg1) {
                                     try {
                                         DigitalSignature digi = new DigitalSignature();
-                                        digi.generateKey(LoginActivity.this,userName);
-//                                        editor.putString("private key", digi.rk.toString());
-//
-//                                        File secondFile = new File(getFilesDir().getAbsolutePath() + "/", "privatekey");
-//                                        secondFile.createNewFile();
-//                                        FileOutputStream fos = new FileOutputStream(secondFile);
-//                                        fos.write(digi.rk.toString().getBytes());
-//                                        fos.flush();
-//                                        fos.close();
+                                        digi.generateKey(LoginActivity.this, userName);
                                         final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
                                         DataService dataService = new DataService();
-                                        dataService.savePublicKey(publicKeyFile,userName);
+                                        dataService.savePublicKey(publicKeyFile, userName);
 
                                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                         startActivity(intent);
@@ -224,56 +280,57 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void uploadOfffile() throws Exception{
-        OfflineDataService offData = new OfflineDataService();
-        offData.doOpenDb(LoginActivity.this);
-        List<Report> listReport = offData.loadReport();
-        DataService dataService = new DataService();
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath().toString();
-        for (Report report : listReport) {
-            File userDir = new File(path,report.getId());
-            PdfFile pdfFile = new PdfFile();
-            pdfFile.setName(report.getId());
-            File file = new File(userDir,report.getId()+".pdf");
-            File attachDir = new File(userDir,report.getId());
-//            User user = dataService.getCurrentUser(LoginActivity.this);
-//            report.setUserName(user.getUsername());
-            if(report.getNote().equals(OfflineDataService.CREATE_MODE))
-                dataService.saveReport(report);
-            else dataService.updateReport(report);
-            if (attachDir.listFiles() != null) {
-                for (File f : attachDir.listFiles()) {
-                    AttachImage attachImage = new AttachImage();
-                    attachImage.setReportId(report.getId());
-                    attachImage.setName(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
-                    dataService.uploadAttachFile(f, attachImage);
-                }
-            }
-            final DigitalSignature digi = new DigitalSignature();
-            final File keyFileDirectory = new File(getFilesDir(), "rsa/");
-            final File privateKeyFile = new File(keyFileDirectory, report.getUserName() + "_priv_key");
-            final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
-            byte[] b = new byte[(int) file.length()];
-            FileInputStream fileInputStream = new FileInputStream(file);
-            fileInputStream.read(b);
-            String k = digi.myhash(b);
-            byte[] s = digi.rsaSign(k.getBytes(), digi.getPrivateKey(privateKeyFile));
-            final File signal = new File(getFilesDir(), "signal");
-            signal.createNewFile();
-            DataOutputStream dos = new DataOutputStream(new FileOutputStream(signal));
-            dos.write(s);
-            dos.flush();
-            dos.close();
-            dataService.saveSignature(signal,report.getId());
-            signal.delete();
+//    public void uploadOfffile() throws Exception {
+//        OfflineDataService offData = new OfflineDataService();
+//        offData.doOpenDb(LoginActivity.this);
+//        List<Report> listReport = offData.loadReport();
+//        DataService dataService = new DataService();
+//        String path = Environment.getExternalStorageDirectory().getAbsolutePath().toString();
+//        for (Report report : listReport) {
+//            File userDir = new File(path, report.getId());
+//            PdfFile pdfFile = new PdfFile();
+//            pdfFile.setName(report.getId());
+//            File file = new File(userDir, report.getId() + ".pdf");
+//            File attachDir = new File(userDir, report.getId());
+////            User user = dataService.getCurrentUser(LoginActivity.this);
+////            report.setUserName(user.getUsername());
+//            if (report.getNote().equals(OfflineDataService.CREATE_MODE))
+//                dataService.saveReport(report);
+//            else dataService.updateReport(report);
+//            if (attachDir.listFiles() != null) {
+//                for (File f : attachDir.listFiles()) {
+//                    AttachImage attachImage = new AttachImage();
+//                    attachImage.setReportId(report.getId());
+//                    attachImage.setName(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
+//                    dataService.uploadAttachFile(f, attachImage);
+//                }
+//            }
+//            final DigitalSignature digi = new DigitalSignature();
+//            final File keyFileDirectory = new File(getFilesDir(), "rsa/");
+//            final File privateKeyFile = new File(keyFileDirectory, report.getUserName() + "_priv_key");
+//            final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
+//            byte[] b = new byte[(int) file.length()];
+//            FileInputStream fileInputStream = new FileInputStream(file);
+//            fileInputStream.read(b);
+//            String k = digi.myhash(b);
+//            byte[] s = digi.rsaSign(k.getBytes(), digi.getPrivateKey(privateKeyFile));
+//            final File signal = new File(getFilesDir(), "signal");
+//            signal.createNewFile();
+//            DataOutputStream dos = new DataOutputStream(new FileOutputStream(signal));
+//            dos.write(s);
+//            dos.flush();
+//            dos.close();
+//            dataService.saveSignature(signal, report.getId());
+//            signal.delete();
+//
+//            pdfFile.setReportId(report.getId());
+//            dataService.uploadFile(file, pdfFile);
+//
+//            offData.doDeleteDB(LoginActivity.this);
+////            Toast.makeText(LoginActivity.this, "OFFLINE MODE", Toast.LENGTH_SHORT);
+//        }
+//    }
 
-            pdfFile.setReportId(report.getId());
-            dataService.uploadFile(file, pdfFile);
-            
-            offData.doDeleteDB(LoginActivity.this);
-//            Toast.makeText(LoginActivity.this, "OFFLINE MODE", Toast.LENGTH_SHORT);
-        }
-    }
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
@@ -286,22 +343,4 @@ public class LoginActivity extends AppCompatActivity {
                 break;
         }
     }
-//    public boolean isFilePresent(String fileName) {
-//        String path = getFilesDir().getAbsolutePath() + "/" + fileName;
-//        File file = new File(path);
-//        return file.exists();
-//    }
-//    public String getvk(String filename) throws Exception{
-//        File secondInputFile = new File(getFilesDir().getAbsolutePath() + "/", filename);
-//        InputStream secondInputStream = new BufferedInputStream(new FileInputStream(secondInputFile));
-//        BufferedReader r = new BufferedReader(new InputStreamReader(secondInputStream));
-//        StringBuilder total = new StringBuilder();
-//        String line;
-//        while ((line = r.readLine()) != null) {
-//            total.append(line);
-//        }
-//        r.close();
-//        secondInputStream.close();
-//        return total.toString();
-//    }
 }

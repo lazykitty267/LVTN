@@ -82,8 +82,6 @@ public class ModifyReportActivity extends AppCompatActivity {
     String excel_name = "";
     Form form;
     String[] fileList = null;
-    ArrayList<AttachImages> listImgAttach = new ArrayList<AttachImages>();
-    ArrayList<AttachImage> listImgAttached = new ArrayList<AttachImage>();
     RecyclerView mRecyclerView;
     AttachImgAdapter mRcvAdapter;
     Dialog dialog;
@@ -106,7 +104,7 @@ public class ModifyReportActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_report_detail);
+        setContentView(R.layout.activity_modify_report_detail);
         Intent intent = getIntent();
         final Report curreport = (Report) intent.getExtras().getSerializable("CURREPORT");
         ArrayList<DataRow> fieldsData = new ArrayList<DataRow>(curreport.getFieldList());
@@ -114,39 +112,7 @@ public class ModifyReportActivity extends AppCompatActivity {
         // listImgAttached trả về null
         DatabaseConnection databaseConnection = new DatabaseConnection();
         DatabaseReference databaseReference = databaseConnection.connectAttachDatabase();
-        listImgAttached = new ArrayList<AttachImage>();
-        databaseReference.child(curreport.getId()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-//todo tạm thời filter attachimg theo rpid
-                    AttachImage attachImage = dataSnapshot.getValue(AttachImage.class);
-                    if (attachImage.getReportId().equals(curreport.getId())) {
-//                        try {
 //
-//                            theBitmap = Glide.
-//                                    with(ModifyReportActivity.this).
-//                                    load(attachImage.getUrl()).
-//                                    asBitmap().
-//                                    into(-1,-1).
-//                                    get();
-//                            AttachImages attachImages = new AttachImages();
-//                            attachImages.setBitmap(theBitmap);
-//                            listImgAttach.add(attachImages);
-//                        } catch (final ExecutionException e) {
-//                            e.printStackTrace();
-//                        } catch (final InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                databaseError.getMessage();
-            }
-        });
 
         // todo : convert AttachImage to AttachImages
         Button saveForm = (Button) findViewById(R.id.save_button);
@@ -154,14 +120,6 @@ public class ModifyReportActivity extends AppCompatActivity {
         Button attachFile = (Button) findViewById(R.id.add_attachimg_button);
         listField = (ListView) findViewById(R.id.list_field);
         adapter = new FieldAdapter(this, arrField, R.layout.item_inlist_field);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_attachfile);
-        adapter = new FieldAdapter(this, arrField, R.layout.item_inlist_field);
-        mRcvAdapter = new AttachImgAdapter(listImgAttach);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setAdapter(mRcvAdapter);
         listField.setAdapter(adapter);
         for (DataRow item : fieldsData) {
             Field tmp = new Field(item.getKey(), item.getValue().get(0));
@@ -218,22 +176,22 @@ public class ModifyReportActivity extends AppCompatActivity {
                 });
             }
         });
-        attachFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(ModifyReportActivity.this, android.Manifest.permission.CAMERA)
-                        == PackageManager.PERMISSION_GRANTED) {
-                    //TODO: Do somethings
-                } else {
-                    //Request camera permission
-                    ActivityCompat.requestPermissions(ModifyReportActivity.this, new String[]{android.Manifest.permission.CAMERA},
-                            1);
-                }
-//                getAttachFile();
-                AttachImageService a = new AttachImageService(ModifyReportActivity.this, getApplication());
-                a.takePicture();
-            }
-        });
+//        attachFile.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (ContextCompat.checkSelfPermission(ModifyReportActivity.this, android.Manifest.permission.CAMERA)
+//                        == PackageManager.PERMISSION_GRANTED) {
+//                    //TODO: Do somethings
+//                } else {
+//                    //Request camera permission
+//                    ActivityCompat.requestPermissions(ModifyReportActivity.this, new String[]{android.Manifest.permission.CAMERA},
+//                            1);
+//                }
+////                getAttachFile();
+//                AttachImageService a = new AttachImageService(ModifyReportActivity.this, getApplication());
+//                a.takePicture();
+//            }
+//        });
         // // TODO: 11/20/17 update curreport on database
         saveForm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -279,15 +237,6 @@ public class ModifyReportActivity extends AppCompatActivity {
 
                         DataService dataService = new DataService();
                         dataService.updateReport(curreport);
-                        if (listImgAttach != null) {
-                            for (int index = 0; index < listImgAttach.size(); index++) {
-                                File f = new File(listImgAttach.get(index).getPath());
-                                AttachImage attachImage = new AttachImage();
-                                attachImage.setReportId(curreport.getId());
-                                attachImage.setName(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
-                                dataService.uploadAttachFile(f, attachImage);
-                            }
-                        }
 
                         showSuccessDialog();
 //                        }
@@ -306,54 +255,23 @@ public class ModifyReportActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int position, int resultCode, Intent data) {
-        if (position == 999) {
-            AttachImageService a = new AttachImageService(ModifyReportActivity.this, getApplication());
-            File photoFile = null;
+        if (resultCode == RESULT_OK && null != data) {
+
+            ArrayList<String> result = data
+                    .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             try {
-                photoFile = a.createImageFile();
-                Log.d("image path", photoFile.getAbsolutePath());
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-
-            AttachImages attachImages = new AttachImages(String.valueOf(photoFile.getAbsolutePath()), imageBitmap);
-            listImgAttach.add(attachImages);
-            mRcvAdapter.notifyDataSetChanged();
-            Toast.makeText(this, String.valueOf(listImgAttach.size()), Toast.LENGTH_SHORT).show();
-
-            OutputStream os;
-            try {
-                os = new FileOutputStream(photoFile);
-                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
-                os.flush();
-                os.close();
+                Field field = adapter.getItem(position);
+                field.setValue_field(field.getValue_field() + result.get(0) + ".");
+                adapter.notifyDataSetChanged();
             } catch (Exception e) {
-                Toast.makeText(this, "erorrrrr",
+                Toast.makeText(this, e.getMessage(),
                         Toast.LENGTH_SHORT).show();
             }
         } else {
-            if (resultCode == RESULT_OK && null != data) {
-
-                ArrayList<String> result = data
-                        .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                try {
-                    Field field = adapter.getItem(position);
-                    field.setValue_field(field.getValue_field() + result.get(0) + ".");
-                    adapter.notifyDataSetChanged();
-                } catch (Exception e) {
-                    Toast.makeText(this, e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(this, "null cmnr", Toast.LENGTH_SHORT).show();
-            }
+            Toast.makeText(this, "null cmnr", Toast.LENGTH_SHORT).show();
         }
-
-
     }
+
 
     private void showSuccessDialog() {
         AlertDialog alertbox = new AlertDialog.Builder(ModifyReportActivity.this).setTitle("Success")
@@ -389,30 +307,6 @@ public class ModifyReportActivity extends AppCompatActivity {
                 excel_name = files[0].toString();
                 fieldActivityAsyncTask = new FieldActivityAsyncTask(ModifyReportActivity.this, excel_name, adapter);
                 fieldActivityAsyncTask.execute();
-            }
-        });
-        dialog.show();
-    }
-
-    private void getAttachFile() {
-        DialogProperties properties = new DialogProperties();
-        properties.selection_mode = DialogConfigs.MULTI_MODE;
-        properties.selection_type = DialogConfigs.FILE_SELECT;
-        properties.root = new File(DialogConfigs.DEFAULT_DIR);
-        properties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
-        properties.offset = new File(DialogConfigs.DEFAULT_DIR);
-        properties.extensions = null;
-
-        //final EditText valueField = (EditText) findViewById(R.id.company_name_input);
-//        excelfile = null;
-        //ExcelHandle excelfile = null;
-
-        FilePickerDialog dialog = new FilePickerDialog(ModifyReportActivity.this, properties);
-        dialog.setTitle("Select a File");
-        dialog.setDialogSelectionListener(new DialogSelectionListener() {
-            @Override
-            public void onSelectedFilePaths(String[] files) {
-                fileList = files;
             }
         });
         dialog.show();

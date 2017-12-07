@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +55,7 @@ public class ReportActivity extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_report, container, false);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Báo cáo");
         listRp = (ListView)view.findViewById(R.id.listRp);
         add_b = (FloatingActionButton)view.findViewById(R.id.fab_rp);
         adapter = new ReportAdapter(getActivity(),arrRp,R.layout.item_inlist_report);

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -44,110 +45,18 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
-    //Test file chooser
-    private static final int FILE_SELECT_CODE = 0;
-//    private void showFileChooser() {
-//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//        intent.setType("*/*");
-//        intent.addCategory(Intent.CATEGORY_OPENABLE);
-//
-//        try {
-//            startActivityForResult(
-//                    Intent.createChooser(intent, "Select a File to Upload"),
-//                    FILE_SELECT_CODE);
-//        } catch (android.content.ActivityNotFoundException ex) {
-//            // Potentially direct the user to the Market with a Dialog
-//            Toast.makeText(this, "Please install a File Manager.",
-//                    Toast.LENGTH_SHORT).show();
-//        }
-//    }
-//
-//    public static String getPath(Context context, Uri uri) throws URISyntaxException {
-//        if ("content".equalsIgnoreCase(uri.getScheme())) {
-//            String[] projection = { "_data" };
-//            Cursor cursor = null;
-//
-//            try {
-//                cursor = context.getContentResolver().query(uri, projection, null, null, null);
-//                int column_index = cursor.getColumnIndexOrThrow("_data");
-//                if (cursor.moveToFirst()) {
-//                    String bb= cursor.getString(column_index);
-//                    return cursor.getString(column_index);
-//                }
-//            } catch (Exception e) {
-//                // Eat it
-//                e.printStackTrace();
-//            }
-//        }
-//        else if ("file".equalsIgnoreCase(uri.getScheme())) {
-//            return uri.getPath();
-//        }
-//
-//        return null;
-//    }
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        switch (requestCode) {
-//            case FILE_SELECT_CODE:
-//                if (resultCode == RESULT_OK) {
-//                    // Get the Uri of the selected file
-//                    Uri uri = data.getData();
-//                    String a = data.getDataString();
-//
-//                    String path1 = uri.getPath();
-//
-//                    Toast.makeText(this, "Path: "+uri.getPath(),
-//                            Toast.LENGTH_SHORT).show();
-//                    // Get the path
-//                    String path="";
-//                    try {
-//                        File file = new File(uri.getPath());
-//                        boolean aaa=file.isFile();
-//                        path = getPath(this, uri);
-//                    }
-//                    catch (URISyntaxException e){
-//                        Log.d("",e.toString());
-//                    }
-//
-//                    // Get the file instance
-//                    // File file = new File(path);
-//                    // Initiate the upload
-//                }
-//                break;
-//        }
-//        super.onActivityResult(requestCode, resultCode, data);
-//    }
-
- /*   private void test(){
-        DialogProperties properties = new DialogProperties();
-        properties.selection_mode = DialogConfigs.SINGLE_MODE;
-        properties.selection_type = DialogConfigs.FILE_SELECT;
-        properties.root = new File(DialogConfigs.DEFAULT_DIR);
-        properties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
-        properties.offset = new File(DialogConfigs.DEFAULT_DIR);
-        properties.extensions = null;
-        FilePickerDialog dialog = new FilePickerDialog(MainActivity.this,properties);
-        dialog.setTitle("Select a File");
-        dialog.setDialogSelectionListener(new DialogSelectionListener() {
-            @Override
-            public void onSelectedFilePaths(String[] files) {
-                //files is the array of the paths of files selected by the Application User.
-                Log.d("path",files[0].toString());
-                File file = new File(files[0].toString());
-                boolean aaa=file.isFile();
-                boolean b=file.isFile();
-                ExcelHandle excelfile = new ExcelHandle(files[0].toString());
-            }
-
-        });
-        dialog.show();
-
-    }
-*/
-    //end of test
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences pre = getSharedPreferences
+                ("my_data", MODE_PRIVATE);
+        //tạo đối tượng Editor để lưu thay đổi
+        SharedPreferences.Editor editor = pre.edit();
+        boolean isLogin = true;
+        //lưu vào editor
+        editor.putBoolean("isLogin", isLogin);
+        //chấp nhận lưu xuống file
+        editor.commit();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -297,6 +206,15 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
 
+        }
+        else if (id == R.id.nav_logout) {
+            SharedPreferences sharedpreferences = getSharedPreferences("my_data", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            editor.clear();
+            editor.commit();
+            Intent intent = new Intent( MainActivity.this,LoginActivity.class);
+            startActivity(intent);
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
