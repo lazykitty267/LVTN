@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LVTN</string>
+    <string name="app_name">abc</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -19,6 +19,13 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <!-- Toolbar titles when navigation menu item is selected -->
+    <string-array name="nav_item_activity_titles">
+        <item>Báo cáo</item>
+        <item>Mẫu báo cáo</item>
+        <item>Ghi chú</item>
+        <item>Cá nhân</item>
+    </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

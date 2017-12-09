@@ -8,10 +8,15 @@
 
         <ListView
             android:id="@+id/list_user_reports"
-            android:background="@color/gray"
-            android:layout_marginTop="40dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:divider="#EEEEEE"
+            android:dividerHeight="40px"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            >
         </ListView>
 
 

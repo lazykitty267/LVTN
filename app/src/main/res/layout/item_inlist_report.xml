@@ -1,49 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginBottom="10dp"
-    android:layout_marginTop="10dp"
-    android:orientation="horizontal">
-
-    <LinearLayout
-        android:layout_width="100dp"
-        android:layout_height="100dp">
-
-        <ImageView
+    android:layout_height="wrap_content"
+    android:background="#f4f5f7"
+   >
+    <TableRow
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="5dp"
-            android:src="@drawable/report_thumbnai" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="100dp">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-
-            <ImageButton
-                android:id="@+id/modify_report_button"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@mipmap/ic_edit"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/round"
+            android:id="@+id/wrap_layout"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="60dp"
+                android:layout_height="80dp"
+                android:paddingTop="7dp"
+                android:paddingBottom="7dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="0dp"
+                    android:layout_marginTop="5dp"
+                    android:src="@drawable/report_thumbnai"
+                    android:id="@+id/img_rp_thumbnai"/>
+
+            </LinearLayout>
+            <!--This is the Grey vertical line next to the icon on the left-->
+            <!--Use margin to determine how close the line is to the top/bottom of item-->
+            <ImageView
+                android:id="@+id/delimiter_poi_tile"
+                android:layout_width="3dp"
                 android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:layout_toLeftOf="@+id/modify_report_button"
+                android:layout_marginTop="13dp"
+                android:layout_marginBottom="13dp"
+                android:src="@color/black_overlay"
+                android:background="#393a3d"/>
+
+            <LinearLayout
+                android:layout_width="250dp"
+                android:layout_height="80dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
                 android:orientation="vertical">
+
 
                 <TextView
                     android:id="@+id/report_name"
@@ -51,24 +60,55 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:paddingTop="15dp"
+                    android:paddingLeft="10dp"
                     android:text="Báo cáo nhiệm kỳ Xxxxxxxxxxxxxxxxxxxxxxx"
-                    android:textSize="20dp"
+                    android:textColor="#393a3d"
+                    android:textSize="21dp"
                     android:textStyle="bold" />
-                <TextView
-                    android:id="@+id/report_create_date"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:paddingTop="20dp"
-                    android:text="18/11/2017"
-                    android:textSize="17dp" />
 
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="7dp">
+
+                            <ImageView
+                                android:id="@+id/imageView2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingRight="-7dp"
+                                android:src="@mipmap/ic_date_create" />
+
+                            <TextView
+                                android:id="@+id/report_create_date"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_toRightOf="@+id/imageView2"
+                                android:ellipsize="end"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:text="18/11/2017"
+                                android:textColor="#F19406"
+                                android:textSize="18dp" />
+
+                        </RelativeLayout>
+
+
+
+                    </LinearLayout>
 
             </LinearLayout>
-        </RelativeLayout>
 
-    </LinearLayout>
 
-</LinearLayout>
+        <ImageButton
+            android:id="@+id/modify_report_button"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="#e03838"
+            android:src="@drawable/ic_modify_rp"
+            android:layout_weight="1"
+            />
+
+    </TableRow>
+
+</TableLayout>
