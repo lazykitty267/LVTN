@@ -2,11 +2,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="bk.lvtn.NoteActivity">
 
     <!-- TODO: Update blank fragment layout -->
-    <CalendarView
+    <com.applandeo.materialcalendarview.CalendarView
+        android:id="@+id/calendar_note"
+        android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></CalendarView>
+        app:headerColor="@color/appBg"
+        app:selectionColor="@color/appBg"
+         />
 
 </FrameLayout>
