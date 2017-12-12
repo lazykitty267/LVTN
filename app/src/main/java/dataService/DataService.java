@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import entity.AttachImage;
+import entity.Note;
 import entity.PdfFile;
 import entity.Report;
 import entity.User;
@@ -428,5 +429,30 @@ public class DataService {
 
     private String getCurdateTime() {
         return new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+    }
+
+    /**
+     * Lưu thông tin note lên server
+     *
+     * @param note Thông tin note
+     * @return Lưu có thành công hay không
+     */
+
+    public boolean saveNote(@NonNull final Note note) {
+        DatabaseReference databaseReference = databaseConnection.connectNoteDatabase();
+        String id = databaseReference.push().getKey();
+        note.setId(id);
+        return databaseReference.child(note.getUserName()).child(id).setValue(note).isSuccessful();
+    }
+
+    /**
+     * Cập nhật thông tin note
+     *
+     * @param note thông tin note sau khi sửa
+     * @return lưu có thành công hay không
+     */
+    public boolean updateNote(Note note) {
+        DatabaseReference databaseReference = databaseConnection.connectNoteDatabase();
+        return databaseReference.child(note.getUserName()).child(note.getId()).setValue(note).isSuccessful();
     }
 }

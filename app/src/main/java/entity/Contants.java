@@ -20,4 +20,6 @@ public class Contants {
     public static final String SIGNATURE_PATH = "signature/";
 
     public static final String USERS_PATH = "Users";
+
+    public static final String NOTE_PATH = "Notes";
 }

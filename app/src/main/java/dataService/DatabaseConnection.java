@@ -55,4 +55,9 @@ public class DatabaseConnection {
         StorageReference storageReference = FirebaseStorage.getInstance().getReference(Contants.SIGNATURE_PATH);
         return storageReference;
     }
+
+    public DatabaseReference connectNoteDatabase() {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(Contants.NOTE_PATH);
+        return databaseReference;
+    }
 }
