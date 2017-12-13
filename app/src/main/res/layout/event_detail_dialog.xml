@@ -11,7 +11,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_menu_note"
+            android:src="@drawable/ic_alarm_add_black_40dp"
             android:layout_marginTop="10dp"/>
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,6 +30,7 @@
                 android:text="11:30"
                 android:layout_marginBottom="10dp"
                 android:paddingRight="20dp"
+                android:paddingTop="4dp"
                 android:id="@+id/event_time"/>
         </LinearLayout>
 
@@ -42,7 +43,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_menu_note"
+            android:src="@drawable/ic_location_on_black_40dp"
             android:layout_marginTop="10dp"/>
         <LinearLayout
             android:layout_width="match_parent"
@@ -59,6 +60,7 @@
                 android:layout_weight="1"
                 android:textSize="30dp"
                 android:text="Phòng 3 TTT Tower"
+                android:paddingTop="4dp"
                 android:layout_marginBottom="10dp"
                 android:paddingRight="20dp"
                 android:id="@+id/event_place"/>
@@ -73,7 +75,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_menu_note"
+            android:src="@drawable/ic_forum_black_40dp"
             android:layout_marginTop="10dp"/>
         <LinearLayout
             android:layout_width="match_parent"
@@ -92,7 +94,8 @@
                 android:text="Demo prototype"
                 android:id="@+id/event_des"
                 android:layout_marginBottom="10dp"
-                android:paddingRight="20dp"/>
+                android:paddingRight="20dp"
+                android:paddingTop="4dp"/>
         </LinearLayout>
 
     </LinearLayout>
@@ -104,7 +107,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_menu_note"
+            android:src="@drawable/ic_person_black_40dp"
             android:layout_marginTop="10dp"/>
         <LinearLayout
             android:layout_width="match_parent"
@@ -119,11 +122,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:id="@+id/event_assignee"
+                android:id="@+id/event_creator"
                 android:textSize="30dp"
                 android:text="admin"
                 android:layout_marginBottom="10dp"
-                android:paddingRight="20dp"/>
+                android:paddingRight="20dp"
+                android:paddingTop="4dp"/>
         </LinearLayout>
 
     </LinearLayout>

@@ -7,31 +7,29 @@ import com.applandeo.materialcalendarview.EventDay;
 
 import java.util.Calendar;
 
+import entity.Note;
+
 /**
  * Created by Phupc on 12/11/17.
  */
 
 public class EventFromServer extends EventDay {
-    private String mDes;
-    private String mPlace;
-
-    public boolean isUserCreated() {
-        return isUserCreated;
+    public Note getEvent() {
+        return event;
     }
 
-    private boolean isUserCreated;
-    public String getmPlace() {
-        return mPlace;
+    public void setEvent(Note event) {
+        this.event = event;
     }
 
-    public EventFromServer(Calendar day, int imageResource, String des, String place,boolean isUserCreated) {
+    private Note event;
+
+
+
+    public EventFromServer(Calendar day, int imageResource, Note event) {
         super(day, imageResource);
-        mDes = des;
-        mPlace = place;
-        this.isUserCreated = isUserCreated;
-    }
-    String getmDes() {
-        return mDes;
+        this.event = event;
+
     }
 
 }
