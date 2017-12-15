@@ -298,7 +298,7 @@ public class DataService {
                 });
     }
 
-    public void savePublicKey(@NonNull final File file, @NonNull final String username) {
+    public void savePublicKey(@NonNull final File file, @NonNull final String username, @NonNull final Context context) {
         Uri data = Uri.fromFile(file);
         StorageReference storageReference = databaseConnection.connectPublicKeyDatabase();
         final StorageReference sRef = storageReference.child(username + ".publicKey");
@@ -308,6 +308,16 @@ public class DataService {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 String url = taskSnapshot.getDownloadUrl().toString();
                 //TODO: Lưu vào file
+                final File keyFileParent = new File(context.getFilesDir(),  "rsa/");
+                final File keyFileDirectory = new File(keyFileParent,  username + "/");
+                try {
+                    keyFileDirectory.mkdir();
+                    final File URL = new File(keyFileDirectory, url);
+                    URL.mkdirs();
+                }
+                catch (Exception e){
+
+                }
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
@@ -430,7 +440,7 @@ public class DataService {
         return user;
     }
 
-    private String getCurdateTime() {
+    public String getCurdateTime() {
         return new SimpleDateFormat("yyyy/MM/dd").format(new Date());
     }
 

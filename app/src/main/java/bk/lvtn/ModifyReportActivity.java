@@ -241,7 +241,7 @@ public class ModifyReportActivity extends AppCompatActivity {
                         final DatabaseConnection databaseConnection = new DatabaseConnection();
                         DatabaseReference databaseReference = databaseConnection.connectPdfDatabase();
                         final List<PdfFile> pdfFileList = new ArrayList<>();
-                        databaseReference.addValueEventListener(new ValueEventListener() {
+                        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 try {
@@ -269,7 +269,7 @@ public class ModifyReportActivity extends AppCompatActivity {
                                     dos.write(s);
                                     dos.flush();
                                     dos.close();
-                                    dataService.saveSignature(signal, curreport.getId());
+                                    dataService.saveSignature(signal, pdfFile);
                                     signal.delete();
 
 

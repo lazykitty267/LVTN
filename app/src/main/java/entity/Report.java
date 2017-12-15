@@ -16,6 +16,26 @@ public class Report implements Serializable {
 
     private String reportName;
 
+    public String getPrivateField() {
+        return privateField;
+    }
+
+    public void setPrivateField(String privateField) {
+        this.privateField = privateField;
+    }
+
+    public String getHashTag() {
+        return hashTag;
+    }
+
+    public void setHashTag(String hashTag) {
+        this.hashTag = hashTag;
+    }
+
+    private String privateField;
+
+    private String hashTag;
+
     public String getReportName() {
         return reportName;
     }

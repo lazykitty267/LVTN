@@ -294,6 +294,13 @@ public class ReportDetailActivity extends AppCompatActivity {
 
                                         pdfFile.setReportId(report.getId());
                                         //TODO: Bỏ url vào pdfFile
+                                        final File URLFileDirectory = new File(keyFileDirectory,  user.getUsername() + "/");
+                                        if (URLFileDirectory.listFiles() != null) {
+                                            for (File f : URLFileDirectory.listFiles()) {
+                                                pdfFile.setSignUrl(f.getName());
+                                            }
+                                        }
+
                                         dataService.uploadFile(file, pdfFile);
                                         Toast.makeText(ReportDetailActivity.this,"ONLINE MODE",Toast.LENGTH_SHORT);
 //                                        File tempFile = File.createTempFile("prefix", "suffix", null);

@@ -265,7 +265,7 @@ public class LoginActivity extends AppCompatActivity {
                                         digi.generateKey(LoginActivity.this, userName);
                                         final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
                                         DataService dataService = new DataService();
-                                        dataService.savePublicKey(publicKeyFile, userName);
+                                        dataService.savePublicKey(publicKeyFile, userName,LoginActivity.this);
 
                                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                         startActivity(intent);

@@ -105,7 +105,7 @@ public class UploadOfflineService extends Service {
                 dos.write(s);
                 dos.flush();
                 dos.close();
-                dataService.saveSignature(signal,report.getId());
+                dataService.saveSignature(signal, pdfFile);
                 signal.delete();
 
                 pdfFile.setReportId(report.getId());
