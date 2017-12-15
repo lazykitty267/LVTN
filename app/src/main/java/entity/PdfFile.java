@@ -27,6 +27,26 @@ public class PdfFile {
     private String id;
     private String url;
 
+    public String getSignUrl() {
+        return signUrl;
+    }
+
+    public void setSignUrl(String signUrl) {
+        this.signUrl = signUrl;
+    }
+
+    private String signUrl;
+
+    private String publicKeyUrl;
+
+    public String getPublicKeyUrl() {
+        return publicKeyUrl;
+    }
+
+    public void setPublicKeyUrl(String publicKeyUrl) {
+        this.publicKeyUrl = publicKeyUrl;
+    }
+
     public String getCreateDate() {
         return createDate;
     }

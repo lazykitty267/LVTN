@@ -306,7 +306,8 @@ public class DataService {
             @SuppressWarnings("VisitableForTests")
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
+                String url = taskSnapshot.getDownloadUrl().toString();
+                //TODO: Lưu vào file
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
@@ -319,15 +320,17 @@ public class DataService {
 
 
 
-    public void saveSignature(@NonNull final File file, @NonNull final String reportId) {
+    public void saveSignature(@NonNull final File file, @NonNull final PdfFile pdfFile) {
         Uri data = Uri.fromFile(file);
         StorageReference storageReference = databaseConnection.connectSignatureDatabase();
-        final StorageReference sRef = storageReference.child(reportId + ".signature");
+        Date date = new Date();
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(date);
+        final StorageReference sRef = storageReference.child(timeStamp + ".signature");
         sRef.putFile(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @SuppressWarnings("VisitableForTests")
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
+                pdfFile.setSignUrl(taskSnapshot.getDownloadUrl().toString());
             }
         })
                 .addOnFailureListener(new OnFailureListener() {

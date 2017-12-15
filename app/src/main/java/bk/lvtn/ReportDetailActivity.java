@@ -288,11 +288,12 @@ public class ReportDetailActivity extends AppCompatActivity {
                                         dos.write(s);
                                         dos.flush();
                                         dos.close();
-                                        dataService.saveSignature(signal,report.getId());
+                                        dataService.saveSignature(signal, pdfFile);
                                         signal.delete();
 
 
                                         pdfFile.setReportId(report.getId());
+                                        //TODO: Bỏ url vào pdfFile
                                         dataService.uploadFile(file, pdfFile);
                                         Toast.makeText(ReportDetailActivity.this,"ONLINE MODE",Toast.LENGTH_SHORT);
 //                                        File tempFile = File.createTempFile("prefix", "suffix", null);
