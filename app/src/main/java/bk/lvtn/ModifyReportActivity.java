@@ -71,6 +71,7 @@ import dataService.OfflineDataService;
 import entity.AttachImage;
 import entity.PdfFile;
 import entity.Report;
+import entity.User;
 
 
 public class ModifyReportActivity extends AppCompatActivity {
@@ -215,7 +216,7 @@ public class ModifyReportActivity extends AppCompatActivity {
 
                         PdfFile pdfFile = new PdfFile();
 
-                        File file = form.createForm1(Environment.getExternalStorageDirectory().getAbsolutePath().toString(), is, pdfFile);
+                        final File file = form.createForm1(Environment.getExternalStorageDirectory().getAbsolutePath().toString(), is, pdfFile);
                         if (file == null) {
                             return;
                         }
@@ -235,9 +236,56 @@ public class ModifyReportActivity extends AppCompatActivity {
 //                            Toast.makeText(ModifyReportActivity.this, "OFFLINE MODE", Toast.LENGTH_SHORT);
 //                        } else {
 
-                        DataService dataService = new DataService();
-                        dataService.updateReport(curreport);
+//                        DataService dataService = new DataService();
+//                        dataService.updateReport(curreport);
+                        final DatabaseConnection databaseConnection = new DatabaseConnection();
+                        DatabaseReference databaseReference = databaseConnection.connectPdfDatabase();
+                        final List<PdfFile> pdfFileList = new ArrayList<>();
+                        databaseReference.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                try {
+                                    PdfFile pdfFile = dataSnapshot.child(curreport.getId()).getValue(PdfFile.class);
+                                    pdfFileList.add(pdfFile);
+                                    PdfFile pdfFile1 = pdfFileList.get(0);
+                                    DataService dataService = new DataService();
+                                    dataService.deletePdf(pdfFile1);
+                                    curreport.setUpdateDate(dataService.getCurdateTime());
+                                    DatabaseReference databaseReference1 = databaseConnection.connectReportDatabase();
+                                    databaseReference1.child(curreport.getUserName()).child(curreport.getId()).setValue(curreport).isSuccessful();
+                                    final File keyFileDirectory = new File(getFilesDir(), "rsa/");
+                                    User user = dataService.getCurrentUser(ModifyReportActivity.this);
+                                    final File privateKeyFile = new File(keyFileDirectory, user.getUsername() + "_priv_key");
+                                    final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
+                                    byte[] b = new byte[(int) file.length()];
+                                    FileInputStream fileInputStream = new FileInputStream(file);
+                                    fileInputStream.read(b);
+                                    String k = digi.myhash(b);
+                                    byte[] s = digi.rsaSign(k.getBytes(), digi.getPrivateKey(privateKeyFile));
 
+                                    final File signal = new File(getFilesDir(), "signal");
+                                    signal.createNewFile();
+                                    DataOutputStream dos = new DataOutputStream(new FileOutputStream(signal));
+                                    dos.write(s);
+                                    dos.flush();
+                                    dos.close();
+                                    dataService.saveSignature(signal, curreport.getId());
+                                    signal.delete();
+
+
+                                    pdfFile.setReportId(curreport.getId());
+                                    dataService.uploadFile(file, pdfFile);
+                                }
+                                catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
                         showSuccessDialog();
 //                        }
 

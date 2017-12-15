@@ -27,7 +27,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
+import at.markushi.ui.CircleButton;
 import bk.lvtn.ModifyReportActivity;
 import bk.lvtn.R;
 import bk.lvtn.ReportDetailActivity;
@@ -40,6 +42,7 @@ import entity.Report;
 public class ReportAdapter extends ArrayAdapter<Report> {
     Activity context;
     ArrayList<Report> listReport;
+    ArrayList<Report> listReportTmp;
     int resId;
 
     public ReportAdapter(Activity context, ArrayList<Report> listReport, int resId){
@@ -47,6 +50,7 @@ public class ReportAdapter extends ArrayAdapter<Report> {
         this.context = context;
         this.listReport = listReport;
         this.resId = resId;
+        listReportTmp = new ArrayList<Report>();
     }
 
 
@@ -66,15 +70,15 @@ public class ReportAdapter extends ArrayAdapter<Report> {
 //        }
         ImageView imageView = (ImageView) convertView.findViewById(R.id.img_rp_thumbnai) ;
 
-        Bitmap mbitmap = ((BitmapDrawable) context.getResources().getDrawable(R.drawable.report_thumbnai)).getBitmap();
-        Bitmap imageRounded = Bitmap.createBitmap(mbitmap.getWidth(), mbitmap.getHeight(), mbitmap.getConfig());
-        Canvas canvas = new Canvas(imageRounded);
-        Paint mpaint = new Paint();
-        mpaint.setAntiAlias(true);
-        mpaint.setShader(new BitmapShader(mbitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
-        canvas.drawRoundRect((new RectF(0, 0, mbitmap.getWidth(), mbitmap.getHeight())), 100, 100, mpaint);// Round Image Corner 100 100 100 100
-        imageView.setImageBitmap(imageRounded);
-        ImageButton mod_button = (ImageButton) convertView.findViewById(R.id.modify_report_button);
+//        Bitmap mbitmap = ((BitmapDrawable) context.getResources().getDrawable(R.drawable.report_thumbnai)).getBitmap();
+//        Bitmap imageRounded = Bitmap.createBitmap(mbitmap.getWidth(), mbitmap.getHeight(), mbitmap.getConfig());
+//        Canvas canvas = new Canvas(imageRounded);
+//        Paint mpaint = new Paint();
+//        mpaint.setAntiAlias(true);
+//        mpaint.setShader(new BitmapShader(mbitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
+//        canvas.drawRoundRect((new RectF(0, 0, mbitmap.getWidth(), mbitmap.getHeight())), 100, 100, mpaint);// Round Image Corner 100 100 100 100
+//        imageView.setImageBitmap(imageRounded);
+        CircleButton mod_button = (CircleButton) convertView.findViewById(R.id.modify_report_button);
         final Report report = listReport.get(position);
         reportName.setText(report.getReportName());
         reportCreateDate.setText(report.getCreateDate());
@@ -90,4 +94,22 @@ public class ReportAdapter extends ArrayAdapter<Report> {
         return convertView;
 
     }
+    public void copyList(){
+        listReportTmp.addAll(listReport);
+    }
+    // Filter Class
+    public void filter(String charText) {
+            charText = charText.toLowerCase(Locale.getDefault());
+            listReport.clear();
+            if (charText.length() == 0) {
+                listReport.addAll(listReportTmp);
+            } else {
+                for (Report rp : listReportTmp) {
+                    if (rp.getReportName().toLowerCase(Locale.getDefault()).contains(charText)) {
+                        listReport.add(rp);
+                    }
+                }
+            }
+            notifyDataSetChanged();
+        }
 }

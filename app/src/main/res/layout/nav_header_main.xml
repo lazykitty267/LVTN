@@ -22,7 +22,7 @@
         android:id="@+id/profile_image"
         android:layout_width="96dp"
         android:layout_height="96dp"
-        android:src="@drawable/user"
+        android:src="@drawable/user_image"
         app:border_width="1dp"
         app:border_color="#FF000000"/>
 
@@ -30,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="5dp"
-            android:text="Phú Phan"
+            android:text="Kohn Smith"
             android:textSize="18dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:gravity="center"/>

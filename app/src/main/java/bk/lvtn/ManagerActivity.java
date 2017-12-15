@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,9 +31,9 @@ import entity.User;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ManagerActivity extends Fragment {
+public class ManagerActivity extends Fragment implements SearchView.OnQueryTextListener{
 
-
+    SearchView editsearch;
     public ManagerActivity() {
         // Required empty public constructor
     }
@@ -59,6 +60,7 @@ public class ManagerActivity extends Fragment {
                     arrRp.add(report);
                     adapter.notifyDataSetChanged();
                 }
+                adapter.copyList();
             }
 
             @Override
@@ -69,8 +71,24 @@ public class ManagerActivity extends Fragment {
 
         ListView listView = (ListView)view.findViewById(R.id.list_user_reports);
         adapter = new ReportAdapter(getActivity(), arrRp,R.layout.item_inlist_report);
-        listView.setAdapter(adapter);
+        listView.setAdapter(adapter);// Locate the EditText in listview_main.xml
+        // Locate the EditText in listview_main.xml
+        editsearch = (SearchView) view.findViewById(R.id.search_rp);
+        editsearch.setOnQueryTextListener(this);
+
         return view;
+    }
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        String text = newText;
+        adapter.filter(text);
+        return false;
     }
 
 }

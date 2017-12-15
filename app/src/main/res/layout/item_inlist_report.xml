@@ -1,36 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="80dp"
     android:background="#f4f5f7"
    >
-    <TableRow
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="horizontal"
             android:background="@drawable/round"
             android:id="@+id/wrap_layout"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
             android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="true"
+            android:layout_toLeftOf="@+id/layout2"
+            >
 
             <LinearLayout
                 android:layout_width="60dp"
-                android:layout_height="80dp"
-                android:paddingTop="7dp"
-                android:paddingBottom="7dp">
+                android:layout_height="80dp">
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginRight="0dp"
-                    android:layout_marginTop="5dp"
                     android:src="@drawable/report_thumbnai"
                     android:id="@+id/img_rp_thumbnai"/>
 
@@ -39,20 +32,15 @@
             <!--Use margin to determine how close the line is to the top/bottom of item-->
             <ImageView
                 android:id="@+id/delimiter_poi_tile"
-                android:layout_width="3dp"
+                android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_marginTop="13dp"
-                android:layout_marginBottom="13dp"
                 android:src="@color/black_overlay"
                 android:background="#393a3d"/>
 
             <LinearLayout
-                android:layout_width="250dp"
+                android:layout_width="wrap_content"
                 android:layout_height="80dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
                 android:orientation="vertical">
-
 
                 <TextView
                     android:id="@+id/report_name"
@@ -61,6 +49,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:paddingLeft="10dp"
+                    android:paddingTop="15dp"
                     android:text="Báo cáo nhiệm kỳ Xxxxxxxxxxxxxxxxxxxxxxx"
                     android:textColor="#393a3d"
                     android:textSize="21dp"
@@ -73,22 +62,24 @@
 
                             <ImageView
                                 android:id="@+id/imageView2"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:paddingRight="-7dp"
-                                android:src="@mipmap/ic_date_create" />
+                                android:layout_width="26dp"
+                                android:layout_height="26dp"
+                                android:layout_marginLeft="8dp"
+                                android:src="@mipmap/ic_create_time" />
 
                             <TextView
                                 android:id="@+id/report_create_date"
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
+                                android:layout_marginLeft="3dp"
+                                android:paddingBottom="5dp"
                                 android:layout_toRightOf="@+id/imageView2"
                                 android:ellipsize="end"
                                 android:gravity="center"
                                 android:maxLines="1"
                                 android:text="18/11/2017"
                                 android:textColor="#F19406"
-                                android:textSize="18dp" />
+                                android:textSize="19dp" />
 
                         </RelativeLayout>
 
@@ -98,17 +89,30 @@
 
             </LinearLayout>
 
-
-        <ImageButton
-            android:id="@+id/modify_report_button"
-            android:layout_width="100dp"
+        <!--<ImageButton-->
+            <!--android:id="@+id/modify_report_button"-->
+            <!--android:layout_width="100dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:background="#e03838"-->
+            <!--android:layout_weight="1"-->
+            <!--/>-->
+        <RelativeLayout
+            android:layout_width="55dip"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
-            android:background="#e03838"
-            android:src="@drawable/ic_modify_rp"
-            android:layout_weight="1"
-            />
+            android:id="@+id/layout2">
+            <at.markushi.ui.CircleButton
+                android:id="@+id/modify_report_button"
+                android:layout_width="55dip"
+                android:layout_height="55dip"
+                android:src="@drawable/ic_modify_rp"
+                app:cb_color="#e03838"
+                app:cb_pressedRingWidth="8dip"
+                android:layout_centerVertical="true"
+                />
 
-    </TableRow>
+        </RelativeLayout>
 
-</TableLayout>
+
+</RelativeLayout>

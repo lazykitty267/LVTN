@@ -5,19 +5,34 @@
     tools:context="bk.lvtn.ManagerActivity">
 
     <!-- TODO: Update blank fragment layout -->
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <SearchView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingBottom="4dp"
+            android:iconifiedByDefault="false"
+            android:queryHint="Tìm kiếm"
+            android:background="@drawable/abc"
+            android:id="@+id/search_rp"></SearchView>
         <ListView
             android:id="@+id/list_user_reports"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="#EEEEEE"
-            android:dividerHeight="40px"
+            android:divider="@color/black_overlay"
+            android:dividerHeight="2dp"
             android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:paddingLeft="5dp"
+            android:paddingLeft="1dp"
             android:paddingRight="5dp"
             >
         </ListView>
+
+    </LinearLayout>
 
 
 
