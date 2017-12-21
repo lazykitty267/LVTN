@@ -353,7 +353,23 @@ public class DigitalSignature {
 
     }
 
+    public String byteToHex(byte[] b) throws IOException {
+        StringBuffer hexString1 = new StringBuffer();
 
+
+
+        for (int i = 0; i < b.length; i++)
+
+            hexString1.append(Integer.toHexString(0xFF & b[i]));
+
+
+
+        return hexString1.toString();
+    }
+
+    public String fileToHex(File file) throws IOException {
+        return byteToHex(readByteDataFromFile(file));
+    }
     public byte[] rsaSign (byte[] data,PrivateKey priRSA) {
 
         byte[] cipherData = null;
@@ -365,6 +381,7 @@ public class DigitalSignature {
 
             s.update(data);
             byte[] signature = s.sign();
+            String hexSign = byteToHex(signature);
             return signature;
 
 
@@ -373,6 +390,8 @@ public class DigitalSignature {
         } catch (InvalidKeyException e) {
             e.printStackTrace();
         } catch (SignatureException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
