@@ -196,7 +196,7 @@ public class Form {
             Paragraph title1 = new Paragraph("\n\nCỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM \n\nĐộc lập – Tự do – Hạnh phúc \n\n- - - - - - - o0o- - - - - - -",
                     new Font(courier, 13, Font.BOLD, BaseColor.BLACK));
 
-            Paragraph title2 = new Paragraph("TÊN CƠ QUAN, TC CHỦ QUẢN (1)……………… \n\n\n\nTÊN CƠ QUAN, TC CHỦ QUẢN (2)……………… \n\n\n\n\nSố:       /BB- … (3)….",
+            Paragraph title2 = new Paragraph("TÊN CƠ QUAN, TC CHỦ QUẢN" + this.dataForm.get(0) + " \n\n\n\nSố:       /BB- … (3)….",
                     new Font(courier, 13, Font.BOLD, BaseColor.BLACK));
 
             t.addCell(title2);
@@ -217,9 +217,9 @@ public class Form {
             Log.d("aaaaaaa", "aaaaaaaaaaaaaaaa");
             document.add(t);
 
-            String s = "\n\n\nBIÊN BẢN CUỘC HỌP GIAO BAN\n\n\n";
+            String s = "\n\n\nBIÊN BẢN CUỘC HỌP\n\n\n";
             Paragraph title3 = new Paragraph(s,
-                    new Font(courier, 16, Font.BOLD, BaseColor.BLACK));
+                    new Font(courier, 22, Font.BOLD, BaseColor.BLACK));
 
             title3.setAlignment(Element.ALIGN_CENTER);
 
@@ -227,7 +227,7 @@ public class Form {
             //document.add(title1);
             document.add(title3);
 
-            Font font = new Font(courier, 12, Font.NORMAL, BaseColor.BLACK);
+            Font font = new Font(courier, 13, Font.NORMAL, BaseColor.BLACK);
 
             System.out.print(this.dataForm);
             /*
@@ -265,11 +265,18 @@ public class Form {
             document.add(line8);
             */
 
-            for (int i = 0;i<keyForm.size();i++){
+            for (int i = 2;i<keyForm.size();i++){
                 Paragraph line1 = new Paragraph(this.keyForm.get(i) + ": " + this.dataForm.get(i), font);
                 line1.setIndentationLeft((float) 30.30);
+                line1.setAlignment(Element.ALIGN_JUSTIFIED);
                 document.add(line1);
+                Paragraph line2 = new Paragraph("", font);
+                line2.setIndentationLeft((float) 30.30);
+                document.add(line2);
             }
+            Paragraph line1 = new Paragraph(this.dataForm.get(1), font);
+            line1.setAlignment(Element.ALIGN_RIGHT);
+            document.add(line1);
 
             // Đóng File
             document.close();
