@@ -40,15 +40,15 @@ import entity.User;
  */
 public class ReportActivity extends Fragment {
     Dialog dialog;
-    ListView listRp;
-    FloatingActionButton add_b;
+
+    com.getbase.floatingactionbutton.FloatingActionButton add_b;
 
     public ReportActivity() {
         // Required empty public constructor
     }
     ArrayList<Report> arrRp = new ArrayList<Report>();
     ReportAdapter adapter;
-
+    ListView listRp;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,7 +57,7 @@ public class ReportActivity extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_report, container, false);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Báo cáo");
         listRp = (ListView)view.findViewById(R.id.listRp);
-        add_b = (FloatingActionButton)view.findViewById(R.id.fab_rp);
+        add_b = (com.getbase.floatingactionbutton.FloatingActionButton) view.findViewById(R.id.fab_rp);
         adapter = new ReportAdapter(getActivity(),arrRp,R.layout.item_inlist_report);
         listRp.setAdapter(adapter);
 
@@ -102,11 +102,14 @@ public class ReportActivity extends Fragment {
                 TemplateAdapter adapter = new TemplateAdapter(getActivity(),arrTp,R.layout.item_inlist_template);
                 lv.setAdapter(adapter);
 
-                Template test = new Template();
-                test.setTp_name("Báo cáo kết quả");
-                test.setImag_src(R.drawable.report_thumbnai);
-                arrTp.add(test);
-                arrTp.add(test);
+                Template test1 = new Template();
+                test1.setTp_name("Báo cáo 1");
+                test1.setImag_src(R.drawable.report_thumbnai);
+                Template test2 = new Template();
+                test2.setTp_name("Báo cáo 2");
+                test2.setImag_src(R.drawable.rp_cover1);
+                arrTp.add(test1);
+                arrTp.add(test2);
                 adapter.notifyDataSetChanged();
 
                 dialog.setCancelable(true);

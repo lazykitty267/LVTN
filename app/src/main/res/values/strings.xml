@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">abc</string>
+    <string name="app_name">EZ Report</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -33,7 +33,7 @@
     <string name="title_activity_field">FieldActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="speech_prompt">Say something&#8230;</string>
+    <string name="speech_prompt">Xin mời nói&#8230;</string>
     <string name="minimum_password">Password có độ dài ít nhất 6 kí tự</string>
     <string name="auth_failed">Sai email hoặc mật khẩu</string>
 </resources>

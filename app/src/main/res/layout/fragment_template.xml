@@ -9,10 +9,11 @@
         android:id="@+id/gridview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:paddingTop="20dp"
         android:gravity="center"
         android:columnWidth="100dp"
         android:verticalSpacing="24dp"
-        android:horizontalSpacing="10dp"
         android:stretchMode="spacingWidthUniform"
         android:layout_marginTop="15dp"
         android:numColumns="2"
@@ -21,11 +22,11 @@
         <!--<gridview android:columnwidth="200dp" android:gravity="center" android:horizontalspacing="10dp" android:id="@+id/gridView" android:layout_height="match_parent" android:layout_width="match_parent" android:numcolumns="2" android:padding="5dp" android:stretchmode="columnWidth" android:verticalspacing="10dp">-->
 
         <!--</gridview>-->
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_tpl"
-        android:layout_width="62dp"
-        android:layout_height="57dp"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_input_add" />
+    <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/fab_tpl"-->
+        <!--android:layout_width="62dp"-->
+        <!--android:layout_height="57dp"-->
+        <!--android:layout_gravity="bottom|end"-->
+        <!--android:layout_margin="@dimen/fab_margin"-->
+        <!--android:src="@android:drawable/ic_input_add" />-->
 </FrameLayout>

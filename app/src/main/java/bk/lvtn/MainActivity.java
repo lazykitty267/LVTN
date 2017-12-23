@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_report) {
             fragmentManager = getSupportFragmentManager();
             fragmentTransaction = fragmentManager.beginTransaction();
-            Fragment fragment1 = new ReportActivity();
+            Fragment fragment1 = new MainFragment();
             fragmentTransaction.replace(R.id.content,fragment1);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
@@ -208,13 +208,36 @@ public class MainActivity extends AppCompatActivity
 
         }
         else if (id == R.id.nav_logout) {
-            SharedPreferences sharedpreferences = getSharedPreferences("my_data", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedpreferences.edit();
-            editor.clear();
-            editor.commit();
-            Intent intent = new Intent( MainActivity.this,LoginActivity.class);
-            startActivity(intent);
-            finish();
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
+            builder1.setMessage("Bạn có muốn thoát?");
+            builder1.setCancelable(true);
+
+            builder1.setPositiveButton(
+                    "Có",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            SharedPreferences sharedpreferences = getSharedPreferences("my_data", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedpreferences.edit();
+                            editor.clear();
+                            editor.commit();
+                            Intent intent = new Intent( MainActivity.this,LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                            dialog.cancel();
+                        }
+                    });
+
+            builder1.setNegativeButton(
+                    "Không",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+
+            AlertDialog alert11 = builder1.create();
+            alert11.show();
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

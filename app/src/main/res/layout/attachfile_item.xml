@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -11,12 +12,16 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true" />
 
-    <android.support.design.widget.FloatingActionButton
+    <at.markushi.ui.CircleButton
         android:id="@+id/deleteimg_button"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:layout_alignParentTop="true"
         android:layout_alignRight="@+id/img"
+        android:src="@mipmap/ic_x_btn"
+        android:padding="6dp"
+        android:scaleType="fitCenter"
+        app:cb_color="#e03838"
         />
     <!--<ImageButton-->
     <!--android:layout_width="15dp"-->

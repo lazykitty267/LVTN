@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Environment;
 import android.speech.RecognizerIntent;
@@ -15,9 +17,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.format.DateUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -25,6 +31,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.support.v7.app.AlertDialog;
+
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.github.angads25.filepicker.controller.DialogSelectionListener;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
@@ -42,10 +51,12 @@ import java.security.KeyStore;
 import java.security.KeyStoreSpi;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import bk.lvtn.Signature.DigitalSignature;
+import bk.lvtn.data.EventFromServer;
 import bk.lvtn.form.Form;
 import bk.lvtn.fragment_adapter.AttachImages;
 import bk.lvtn.fragment_adapter.AttachImgAdapter;
@@ -56,6 +67,7 @@ import bk.lvtn.fragment_adapter.TemplateAdapter;
 import dataService.DataService;
 import dataService.OfflineDataService;
 import entity.AttachImage;
+import entity.Note;
 import entity.PdfFile;
 import entity.Report;
 import entity.User;
@@ -80,9 +92,14 @@ public class ReportDetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         final Bundle bundle = intent.getBundleExtra("Stream");
 
-        Button saveForm = (Button) findViewById(R.id.save_button);
-        Button addField = (Button) findViewById(R.id.add_button);
-        Button attachFile = (Button) findViewById(R.id.add_attachimg_button);
+//        Button saveForm = (Button) findViewById(R.id.save_button);
+//        Button addField = (Button) findViewById(R.id.add_button);
+        final FloatingActionsMenu attachFile = (FloatingActionsMenu) findViewById(R.id.add_attachimg_button);
+        FloatingActionButton attachFileFromCamera = (FloatingActionButton) findViewById(R.id.add_fcamera);
+        FloatingActionButton attachFileFromFile = (FloatingActionButton) findViewById(R.id.add_ffile);
+        FloatingActionButton addField1 = (FloatingActionButton) findViewById(R.id.add_ffield);
+        FloatingActionButton saveForm = (FloatingActionButton) findViewById(R.id.save_rp);
+        FloatingActionButton addSpecialField = (FloatingActionButton) findViewById(R.id.add_specical_field);
         listField = (ListView) findViewById(R.id.list_field);
         adapter = new FieldAdapter(this, arrField, R.layout.item_inlist_field);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_attachfile);
@@ -124,44 +141,100 @@ public class ReportDetailActivity extends AppCompatActivity {
             getExcel();
 
         }
-        addField.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                final Dialog dialog = new Dialog(ReportDetailActivity.this);
-                dialog.setContentView(R.layout.list_template_dialog);
-                GridView lv = (GridView ) dialog.findViewById(R.id.list_template_d);
-                ArrayList<Field> arrTp = new ArrayList<Field>();
-
-                adapterAdd = new FieldAdapter(ReportDetailActivity.this,arrTp,R.layout.item_inlist_field);
-                lv.setAdapter(adapterAdd);
-
-                final Field field1 = new Field("Tên Field");
-                arrTp.add(field1);
-                adapterAdd.notifyDataSetChanged();
-
-                dialog.setCancelable(true);
-                dialog.setTitle("ListView");
-                dialog.show();
-                Button rp_select = (Button) dialog.findViewById(R.id.rp_select);
-                rp_select.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(field1.getValue_field().equals("")){
-                            Toast.makeText(ReportDetailActivity.this,"Mời nhập field name!!",Toast.LENGTH_LONG);
-                            return;
-                        }
-                        else {
-                            Field f = new Field(field1.getValue_field());
-                            arrField.add(f);
-                            adapter.notifyDataSetChanged();
-                            adapterAdd=null;
-                            dialog.dismiss();
-                        }
-                    }
-                });
-            }
-        });
-        attachFile.setOnClickListener(new View.OnClickListener(){
+//        addField.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view) {
+//                View dialogView = getLayoutInflater().inflate(R.layout.add_field_dialog,null);
+//                AlertDialog.Builder builder = new AlertDialog.Builder(ReportDetailActivity.this);
+//                builder.setView(dialogView);
+//                String titleText = "Nội dung mới";
+//                // Initialize a new foreground color span instance
+//                ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(Color.RED);
+//
+//                // Initialize a new spannable string builder instance
+//                SpannableStringBuilder ssBuilder = new SpannableStringBuilder(titleText);
+//
+//                // Apply the text color span
+//                ssBuilder.setSpan(
+//                        foregroundColorSpan,
+//                        0,
+//                        titleText.length(),
+//                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+//                );
+//                builder.setTitle(ssBuilder);
+//                ListView lv = (ListView ) dialogView.findViewById(R.id.add_field_d);
+//                ArrayList<Field> arrTp = new ArrayList<Field>();
+//
+//                adapterAdd = new FieldAdapter(ReportDetailActivity.this,arrTp,R.layout.item_inlist_field);
+//                lv.setAdapter(adapterAdd);
+//
+//                final Field field1 = new Field("Tên Field");
+//                arrTp.add(field1);
+//                adapterAdd.notifyDataSetChanged();
+//                builder.setPositiveButton("Thêm", null);
+//                final AlertDialog dialog = builder.create();
+//                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+//
+//                    @Override
+//                    public void onShow(DialogInterface dialog1) {
+//                        Button b = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+//                        b.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View view) {
+//                                // TODO Do something
+//                                if(field1.getValue_field().equals("")){
+//                                    Toast.makeText(ReportDetailActivity.this,"Mời nhập field name!!",Toast.LENGTH_LONG);
+//                                }
+//                                else {
+//                                    Field f = new Field(field1.getValue_field());
+//                                    arrField.add(f);
+//                                    adapter.notifyDataSetChanged();
+//                                    adapterAdd=null;
+//                                    dialog.cancel();
+//                                }
+//                            }
+//                        });
+//
+//
+//                    }
+//                });
+//                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+//                dialog.show();
+////                final AlertDialog dialog = new AlertDialog(ReportDetailActivity.this);
+////                dialog.setContentView(R.layout.add_field_dialog);
+////                ListView lv = (ListView ) dialog.findViewById(R.id.add_field_d);
+////                ArrayList<Field> arrTp = new ArrayList<Field>();
+////
+////                adapterAdd = new FieldAdapter(ReportDetailActivity.this,arrTp,R.layout.item_inlist_field);
+////                lv.setAdapter(adapterAdd);
+////
+////                final Field field1 = new Field("Tên Field");
+////                arrTp.add(field1);
+////                adapterAdd.notifyDataSetChanged();
+////
+////                dialog.setCancelable(true);
+////                dialog.setTitle("ListView");
+////                dialog.show();
+////                Button rp_select = (Button) dialog.findViewById(R.id.rp_select);
+////                rp_select.setOnClickListener(new View.OnClickListener() {
+////                    @Override
+////                    public void onClick(View v) {
+////                        if(field1.getValue_field().equals("")){
+////                            Toast.makeText(ReportDetailActivity.this,"Mời nhập field name!!",Toast.LENGTH_LONG);
+////                            return;
+////                        }
+////                        else {
+////                            Field f = new Field(field1.getValue_field());
+////                            arrField.add(f);
+////                            adapter.notifyDataSetChanged();
+////                            adapterAdd=null;
+////                            dialog.dismiss();
+////                        }
+////                    }
+////                });
+//            }
+//        });
+        attachFileFromCamera.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 if (ContextCompat.checkSelfPermission(ReportDetailActivity.this, android.Manifest.permission.CAMERA)
@@ -177,7 +250,159 @@ public class ReportDetailActivity extends AppCompatActivity {
                 a.takePicture();
             }
         });
+        addField1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                View dialogView = getLayoutInflater().inflate(R.layout.add_field_dialog,null);
+                AlertDialog.Builder builder = new AlertDialog.Builder(ReportDetailActivity.this);
+                builder.setView(dialogView);
+                String titleText = "Nội dung mới";
+                // Initialize a new foreground color span instance
+                ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(Color.RED);
 
+                // Initialize a new spannable string builder instance
+                SpannableStringBuilder ssBuilder = new SpannableStringBuilder(titleText);
+
+                // Apply the text color span
+                ssBuilder.setSpan(
+                        foregroundColorSpan,
+                        0,
+                        titleText.length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                );
+                builder.setTitle(ssBuilder);
+                ListView lv = (ListView ) dialogView.findViewById(R.id.add_field_d);
+                ArrayList<Field> arrTp = new ArrayList<Field>();
+
+                adapterAdd = new FieldAdapter(ReportDetailActivity.this,arrTp,R.layout.item_inlist_field);
+                lv.setAdapter(adapterAdd);
+
+                final Field field1 = new Field("Tên Field");
+                arrTp.add(field1);
+                adapterAdd.notifyDataSetChanged();
+                builder.setPositiveButton("Thêm", null);
+                final AlertDialog dialog = builder.create();
+                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+                    @Override
+                    public void onShow(DialogInterface dialog1) {
+                        Button b = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                        b.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                // TODO Do something
+                                if(field1.getValue_field().equals("")){
+                                    Toast.makeText(ReportDetailActivity.this,"Mời nhập field name!!",Toast.LENGTH_LONG);
+                                }
+                                else {
+                                    Field f = new Field(field1.getValue_field());
+                                    arrField.add(f);
+                                    adapter.notifyDataSetChanged();
+                                    adapterAdd=null;
+                                    dialog.cancel();
+                                    attachFile.clearFocus();
+                                }
+                            }
+                        });
+
+
+                    }
+                });
+                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                dialog.show();
+            }
+        });
+        addSpecialField.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ReportDetailActivity.this);
+                // String array for alert dialog multi choice items
+                final String[] choices = new String[]{
+                        "Hashtag",
+                        "Ghi chú quan trọng"
+                };
+                final boolean[] checked = new boolean[]{
+                        false, // Red
+                        false
+
+                };
+                // Convert the color array to list
+                final List<String> choicesList = Arrays.asList(choices);
+                builder.setMultiChoiceItems(choices, checked, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+
+                        // Update the current focused item's checked status
+                        checked[which] = isChecked;
+
+                        // Get the current focused item
+                        String currentItem = choicesList.get(which);
+
+                    }
+                });
+                // Set a title for alert dialog
+                builder.setTitle("Nội dung đặt biệt");
+                // Set the positive/yes button click listener
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do something when click positive button
+                        for (int i = 0; i<checked.length; i++){
+                            boolean flag = checked[i];
+                            if (flag) {
+                                    Field f = new Field(choices[i]);
+                                    arrField.add(f);
+                                    adapter.notifyDataSetChanged();
+                                    adapterAdd=null;
+                            }
+                        }
+
+                    }
+                });
+                // Set the negative/no button click listener
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do something when click the negative button
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                // Display the alert dialog on interface
+                dialog.show();
+
+            }
+        });
+        attachFileFromFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogProperties properties = new DialogProperties();
+                properties.selection_mode = DialogConfigs.SINGLE_MODE;
+                properties.selection_type = DialogConfigs.FILE_SELECT;
+                properties.root = new File(DialogConfigs.DEFAULT_DIR);
+                properties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
+                properties.offset = new File(DialogConfigs.DEFAULT_DIR);
+                properties.extensions = null;
+
+                //final EditText valueField = (EditText) findViewById(R.id.company_name_input);
+//        excelfile = null;
+                //ExcelHandle excelfile = null;
+
+                FilePickerDialog dialog = new FilePickerDialog(ReportDetailActivity.this, properties);
+                dialog.setTitle("Chọn file cần đính kèm");
+                dialog.setDialogSelectionListener(new DialogSelectionListener() {
+                    @Override
+                    public void onSelectedFilePaths(String[] files) {
+                        Bitmap image = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_attach_file_icon);
+                        AttachImages attachImages = new AttachImages(String.valueOf(files[0].toString()),image);
+                        listImgAttach.add(attachImages);
+                        mRcvAdapter.notifyDataSetChanged();
+                        Toast.makeText(ReportDetailActivity.this,String.valueOf(listImgAttach.size()), Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+                dialog.show();
+            }
+        });
         saveForm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -351,10 +576,10 @@ public class ReportDetailActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult (int position, int resultCode, Intent data){
         if(position==999){
-            AttachImageService a = new AttachImageService(ReportDetailActivity.this,getApplication());
+            AttachImageService attachImageService = new AttachImageService(ReportDetailActivity.this,getApplication());
             File photoFile =null;
             try {
-                photoFile = a.createImageFile();
+                photoFile = attachImageService.createImageFile();
                 Log.d("image path",photoFile.getAbsolutePath());
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -400,7 +625,6 @@ public class ReportDetailActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(this, "null cmnr", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -444,7 +668,7 @@ public class ReportDetailActivity extends AppCompatActivity {
         //ExcelHandle excelfile = null;
 
         FilePickerDialog dialog = new FilePickerDialog(ReportDetailActivity.this, properties);
-        dialog.setTitle("Select a File");
+        dialog.setTitle("Chọn file excel");
         dialog.setDialogSelectionListener(new DialogSelectionListener() {
             @Override
             public void onSelectedFilePaths(String[] files) {

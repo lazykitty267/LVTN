@@ -41,7 +41,7 @@ public class UploadOfflineService extends Service {
         strContent = "Đang đồng bộ các báo cáo ngoại tuyến";
         mBuilder =
                 new NotificationCompat.Builder(getApplicationContext())
-                        .setSmallIcon(R.drawable.ic_menu_camera)
+                        .setSmallIcon(R.drawable.ic_account_black_24dp)
                         .setContentTitle("EASYREPORT")
                         .setContentText(strContent);
 

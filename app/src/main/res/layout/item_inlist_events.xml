@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:background="#f4f5f7">
+
+    <LinearLayout
+        android:id="@+id/wrap_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/layout2"
+        android:background="@drawable/round"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/event_color"
+            android:layout_width="15dp"
+            android:layout_height="90dp"
+            android:background="@drawable/bordergreen"
+            android:orientation="vertical">
+
+
+        </LinearLayout>
+        <!--This is the Grey vertical line next to the icon on the left-->
+        <!--Use margin to determine how close the line is to the top/bottom of item-->
+        <!--<ImageView-->
+        <!--android:id="@+id/delimiter_poi_tile"-->
+        <!--android:layout_width="1dp"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:src="@color/black_overlay"-->
+        <!--android:background="#393a3d"/>-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/event_des_inlist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:paddingLeft="7dp"
+                android:paddingTop="5dp"
+                android:text="Gặp khách hàng"
+                android:textColor="#393a3d"
+                android:textSize="21dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/event_place_inlist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Lý Thường Kiệt"
+                android:textColor="#F19406"
+                android:textSize="19dp"
+                android:paddingLeft="7dp"
+                android:paddingTop="1dp"/>
+
+            <TextView
+                android:id="@+id/event_time_inlist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="18/12/2017 12:00"
+                android:textColor="#F19406"
+                android:textSize="19dp"
+                android:paddingLeft="7dp"
+                android:paddingTop="1dp"/>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout2"
+        android:layout_width="55dip"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true">
+
+        <!--<at.markushi.ui.CircleButton-->
+            <!--android:id="@+id/modify_report_button"-->
+            <!--android:layout_width="55dip"-->
+            <!--android:layout_height="55dip"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:src="@mipmap/ic_info"-->
+            <!--app:cb_color="#e03838"-->
+            <!--app:cb_pressedRingWidth="8dip" />-->
+
+    </RelativeLayout>
+
+
+</RelativeLayout>
