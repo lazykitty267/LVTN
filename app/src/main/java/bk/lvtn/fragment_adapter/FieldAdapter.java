@@ -51,6 +51,12 @@ public class FieldAdapter extends ArrayAdapter<Field> {
         LayoutInflater layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = layoutInflater.inflate(resId,null);
         TextView keyField = (TextView)convertView.findViewById(R.id.key_field);
+        if(keyField.getText().equals("Hashtag")){
+            keyField.setTextColor(context.getResources().getColor(R.color.appBg));
+        }
+        else if(keyField.getText().equals("Ghi chú quan trọng")){
+            keyField.setTextColor(context.getResources().getColor(R.color.fab_color));
+        }
         valueField = (EditText) convertView.findViewById(R.id.value_field);
         ImageButton voiceButton = (ImageButton) convertView.findViewById(R.id.voice_button);
         field = listField.get(position);

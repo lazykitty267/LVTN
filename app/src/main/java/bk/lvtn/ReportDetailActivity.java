@@ -51,6 +51,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreSpi;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -98,6 +99,7 @@ public class ReportDetailActivity extends AppCompatActivity {
         FloatingActionButton attachFileFromFile = (FloatingActionButton) findViewById(R.id.add_ffile);
         FloatingActionButton addField1 = (FloatingActionButton) findViewById(R.id.add_ffield);
         FloatingActionButton saveForm = (FloatingActionButton) findViewById(R.id.save_rp);
+        FloatingActionButton addSpecialField = (FloatingActionButton) findViewById(R.id.add_specical_field);
         listField = (ListView) findViewById(R.id.list_field);
         adapter = new FieldAdapter(this, arrField, R.layout.item_inlist_field);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_attachfile);
@@ -308,6 +310,66 @@ public class ReportDetailActivity extends AppCompatActivity {
                 });
                 dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
                 dialog.show();
+            }
+        });
+        addSpecialField.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ReportDetailActivity.this);
+                // String array for alert dialog multi choice items
+                final String[] choices = new String[]{
+                        "Hashtag",
+                        "Ghi chú quan trọng"
+                };
+                final boolean[] checked = new boolean[]{
+                        false, // Red
+                        false
+
+                };
+                // Convert the color array to list
+                final List<String> choicesList = Arrays.asList(choices);
+                builder.setMultiChoiceItems(choices, checked, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+
+                        // Update the current focused item's checked status
+                        checked[which] = isChecked;
+
+                        // Get the current focused item
+                        String currentItem = choicesList.get(which);
+
+                    }
+                });
+                // Set a title for alert dialog
+                builder.setTitle("Nội dung đặt biệt");
+                // Set the positive/yes button click listener
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do something when click positive button
+                        for (int i = 0; i<checked.length; i++){
+                            boolean flag = checked[i];
+                            if (flag) {
+                                    Field f = new Field(choices[i]);
+                                    arrField.add(f);
+                                    adapter.notifyDataSetChanged();
+                                    adapterAdd=null;
+                            }
+                        }
+
+                    }
+                });
+                // Set the negative/no button click listener
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do something when click the negative button
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                // Display the alert dialog on interface
+                dialog.show();
+
             }
         });
         attachFileFromFile.setOnClickListener(new View.OnClickListener() {

@@ -75,8 +75,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 fab:fab_colorNormal="@color/fab_color"
-                fab:fab_title="Thêm trường nội dung"
+                fab:fab_title="Thêm nội dung"
                 fab:fab_icon="@mipmap/ic_add_field_icon"
+                />
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_specical_field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/fab_color"
+                fab:fab_title="Thêm nội dung đặt biệt"
+                fab:fab_icon="@mipmap/ic_star"
                 />
         </com.getbase.floatingactionbutton.FloatingActionsMenu>
     </RelativeLayout>
