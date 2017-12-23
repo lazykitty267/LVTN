@@ -18,6 +18,10 @@
             android:id="@+id/nav_manager"
             android:icon="@drawable/ic_menu_personal"
             android:title="Cá nhân" />
+        <item
+            android:id="@+id/nav_hagtag"
+            android:icon="@drawable/ic_exit_to_app_black_24dp"
+            android:title="Hagtag" />
     </group>
     <group android:checkableBehavior="single"
         android:id="@+id/grp2">

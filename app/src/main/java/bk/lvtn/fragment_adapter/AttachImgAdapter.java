@@ -12,6 +12,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import at.markushi.ui.CircleButton;
 import bk.lvtn.R;
 
 /**
@@ -22,11 +23,11 @@ public class AttachImgAdapter extends RecyclerView.Adapter<AttachImgAdapter.Recy
     private List<AttachImages> data = new ArrayList<>();
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
         ImageView img_item;
-        FloatingActionButton delete_img;
+        CircleButton delete_img;
         public RecyclerViewHolder(View itemView) {
             super(itemView);
             img_item = (ImageView) itemView.findViewById(R.id.img);
-            delete_img = (FloatingActionButton) itemView.findViewById(R.id.deleteimg_button);
+            delete_img = (CircleButton) itemView.findViewById(R.id.deleteimg_button);
         }
     }
 

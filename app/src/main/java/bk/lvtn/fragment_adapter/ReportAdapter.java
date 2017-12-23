@@ -2,8 +2,10 @@ package bk.lvtn.fragment_adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -16,6 +18,7 @@ import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +31,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Random;
 
 import at.markushi.ui.CircleButton;
 import bk.lvtn.ModifyReportActivity;
@@ -61,23 +65,15 @@ public class ReportAdapter extends ArrayAdapter<Report> {
         convertView = layoutInflater.inflate(resId,null);
         TextView reportName = (TextView)convertView.findViewById(R.id.report_name);
         TextView reportCreateDate = (TextView) convertView.findViewById(R.id.report_create_date);
-//        LinearLayout linearLayout = (LinearLayout) convertView.findViewById(R.id.wrap_layout);
-//        if((position%2)==1){
-//            linearLayout.setBackgroundResource(R.drawable.round2);
-//        }
-//        else {
-//            linearLayout.setBackgroundResource(R.drawable.round);
-//        }
-        ImageView imageView = (ImageView) convertView.findViewById(R.id.img_rp_thumbnai) ;
 
-//        Bitmap mbitmap = ((BitmapDrawable) context.getResources().getDrawable(R.drawable.report_thumbnai)).getBitmap();
-//        Bitmap imageRounded = Bitmap.createBitmap(mbitmap.getWidth(), mbitmap.getHeight(), mbitmap.getConfig());
-//        Canvas canvas = new Canvas(imageRounded);
-//        Paint mpaint = new Paint();
-//        mpaint.setAntiAlias(true);
-//        mpaint.setShader(new BitmapShader(mbitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
-//        canvas.drawRoundRect((new RectF(0, 0, mbitmap.getWidth(), mbitmap.getHeight())), 100, 100, mpaint);// Round Image Corner 100 100 100 100
-//        imageView.setImageBitmap(imageRounded);
+        ImageView imageView = (ImageView) convertView.findViewById(R.id.img_rp_thumbnai) ;
+        Random rand = new Random();
+        if((position%2)==1){
+            imageView.setBackgroundResource(R.drawable.report_thumbnai);
+        }
+        else {
+            imageView.setBackgroundResource(R.drawable.rp_cover1);
+        }
         CircleButton mod_button = (CircleButton) convertView.findViewById(R.id.modify_report_button);
         final Report report = listReport.get(position);
         reportName.setText(report.getReportName());
@@ -85,9 +81,25 @@ public class ReportAdapter extends ArrayAdapter<Report> {
         mod_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, ModifyReportActivity.class);
-                intent.putExtra("CURREPORT",report );
-                ((Activity)context).startActivity(intent);
+                //pop up dialog
+                final CharSequence actions[] = new CharSequence[] {"Tải xuống","Chỉnh sửa"};
+
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+//                builder.setTitle("Pick a color");
+                builder.setItems(actions, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // the user clicked on colors[which]
+                        if(which==1){
+                            Intent intent = new Intent(context, ModifyReportActivity.class);
+                            intent.putExtra("CURREPORT",report );
+                            ((Activity)context).startActivity(intent);
+                        }
+                        else {
+                        }
+                    }
+                });
+                builder.show();
 
             }
         });

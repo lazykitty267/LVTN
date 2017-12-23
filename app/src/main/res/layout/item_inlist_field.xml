@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -13,10 +14,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|left"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="9dp"
             android:layout_marginRight="10dp"
             android:layout_weight="1"
-            android:padding="10dp"
+            android:paddingBottom="3dp"
             android:text="Nội dung"
             android:textSize="20dp"
             android:textStyle="bold" />
@@ -27,9 +28,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:layout_marginRight="15dp"
-            android:background="@color/white"
-            android:src="@mipmap/voice_icon"
-            android:text="voice" />
+            android:background="#f9fbff"
+            android:src="@mipmap/voice_icon" />
     </LinearLayout>
 
     <LinearLayout
@@ -42,7 +42,6 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="5dp"
             android:layout_weight="1"
             android:background="@drawable/edittext"
             android:ems="10"

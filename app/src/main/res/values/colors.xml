@@ -11,4 +11,6 @@
     <color name="colorStart">#7AC141</color>
     <color name="appBg">#6DCC50</color>
     <color name="littleWhite">#f9fbff</color>
+    <color name="black_semi_transparent">#B2000000</color>
+    <color name="fab_color">#DB4437</color>
 </resources>
