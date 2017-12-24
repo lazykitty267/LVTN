@@ -14,6 +14,7 @@ import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
+import android.net.Uri;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,7 +30,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
@@ -37,6 +45,9 @@ import at.markushi.ui.CircleButton;
 import bk.lvtn.ModifyReportActivity;
 import bk.lvtn.R;
 import bk.lvtn.ReportDetailActivity;
+import dataService.DataService;
+import dataService.DatabaseConnection;
+import entity.PdfFile;
 import entity.Report;
 
 /**
@@ -82,20 +93,40 @@ public class ReportAdapter extends ArrayAdapter<Report> {
             @Override
             public void onClick(View view) {
                 //pop up dialog
-                final CharSequence actions[] = new CharSequence[] {"Tải xuống","Chỉnh sửa"};
+                final CharSequence actions[] = new CharSequence[] {"Xem","Chỉnh sửa"};
 
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-//                builder.setTitle("Pick a color");
                 builder.setItems(actions, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // the user clicked on colors[which]
                         if(which==1){
                             Intent intent = new Intent(context, ModifyReportActivity.class);
                             intent.putExtra("CURREPORT",report );
                             ((Activity)context).startActivity(intent);
                         }
                         else {
+                            DatabaseConnection databaseConnection = new DatabaseConnection();
+                            DatabaseReference databaseReference = databaseConnection.connectPdfDatabase();
+                            databaseReference.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    PdfFile pdfFile = dataSnapshot.child(report.getId()).getValue(PdfFile.class);
+                                    DataService dataService = new DataService();
+                                    File pdffile =dataService.downloadFile(pdfFile,report.getReportName());
+                                    if (pdffile.exists()) {
+                                        Uri path = Uri.fromFile(pdffile);
+                                        Intent objIntent = new Intent(Intent.ACTION_VIEW);
+                                        objIntent.setDataAndType(path, "application/pdf");
+                                        objIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        ((Activity)context).startActivity(objIntent);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
                         }
                     }
                 });

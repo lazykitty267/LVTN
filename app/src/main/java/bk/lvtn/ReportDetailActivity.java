@@ -426,9 +426,20 @@ public class ReportDetailActivity extends AppCompatActivity {
                                 Report report = new Report();
                                 for (int i = 0; i < adapter.getCount(); i++) {
                                     final String s = adapter.getItem(i).getValue_field();
-                                    report.addValue(adapter.getItem(i).getKey_field(), new ArrayList<String>() {{
-                                        add(s);
-                                    }});
+                                    if(adapter.getItem(i).getKey_field().equals("Hashtag")){
+                                        report.setHashTag(s);
+                                        report.addValue(adapter.getItem(i).getKey_field(), new ArrayList<String>() {{
+                                            add(s);
+                                        }});
+                                    }
+                                    else if(adapter.getItem(i).getKey_field().equals("Ghi chú quan trọng")){
+                                        report.setPrivateField(s);
+                                    }
+                                    else {
+                                        report.addValue(adapter.getItem(i).getKey_field(), new ArrayList<String>() {{
+                                            add(s);
+                                        }});
+                                    }
                                 }
                                 report.setReportName(report_name.getText().toString());
                                 form = new Form(report);

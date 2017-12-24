@@ -3,6 +3,7 @@ package dataService;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -68,10 +69,14 @@ public class DataService {
      * @param pdfFile Thông tin file được download
      * @return file pdf
      */
-    public File downloadFile(@NonNull final PdfFile pdfFile) {
+    public File downloadFile(@NonNull final PdfFile pdfFile,String reportName) {
         try {
             StorageReference storageReference = databaseConnection.connectPdfFileDatabase();
-            File localFIle = File.createTempFile(pdfFile.getId() + "_" + pdfFile.getName(), "pdf");
+            File storageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath().toString(), "pdf_download");
+            if (!storageDir.exists()) {
+                storageDir.mkdir();
+            }
+            File localFIle = File.createTempFile(reportName+"_"+getCurdateTimeDifType(), ".pdf",storageDir);
             storageReference.child(pdfFile.getId() + "_" + pdfFile.getName() + ".pdf").getFile(localFIle);
             return localFIle;
         } catch (IOException e) {
@@ -455,6 +460,9 @@ public class DataService {
 
     public String getCurdateTime() {
         return new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+    }
+    public String getCurdateTimeDifType() {
+        return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
     }
 
     /**
