@@ -92,8 +92,6 @@ public class ReportDetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         final Bundle bundle = intent.getBundleExtra("Stream");
 
-//        Button saveForm = (Button) findViewById(R.id.save_button);
-//        Button addField = (Button) findViewById(R.id.add_button);
         final FloatingActionsMenu attachFile = (FloatingActionsMenu) findViewById(R.id.add_attachimg_button);
         FloatingActionButton attachFileFromCamera = (FloatingActionButton) findViewById(R.id.add_fcamera);
         FloatingActionButton attachFileFromFile = (FloatingActionButton) findViewById(R.id.add_ffile);
@@ -524,7 +522,9 @@ public class ReportDetailActivity extends AppCompatActivity {
                                         dos.write(s);
                                         dos.flush();
                                         dos.close();
-                                        dataService.saveSignature(signal, pdfFile);
+                                        DigitalSignature digitalSignature = new DigitalSignature();
+                                        String hexName = digitalSignature.fileToHex(file);
+                                        pdfFile.setSignUrl(hexName);
                                         signal.delete();
 
 
@@ -533,7 +533,7 @@ public class ReportDetailActivity extends AppCompatActivity {
                                         final File URLFileDirectory = new File(keyFileDirectory,  user.getUsername() + "/");
                                         if (URLFileDirectory.listFiles() != null) {
                                             for (File f : URLFileDirectory.listFiles()) {
-                                                pdfFile.setSignUrl(f.getName());
+                                                pdfFile.setPublicKeyUrl(f.getName());
                                             }
                                         }
 

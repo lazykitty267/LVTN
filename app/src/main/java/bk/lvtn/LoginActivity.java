@@ -265,7 +265,21 @@ public class LoginActivity extends AppCompatActivity {
                                         digi.generateKey(LoginActivity.this, userName);
                                         final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
                                         DataService dataService = new DataService();
-                                        dataService.savePublicKey(publicKeyFile, userName,LoginActivity.this);
+                                        final File keyFileParent = new File(getFilesDir(),  "rsa/");
+                                        final File keyFileDirectory = new File(keyFileParent,  userName + "/");
+                                        try {
+                                            keyFileDirectory.mkdir();
+//                    final File URL = new File(keyFileDirectory, url);
+//                    URL.mkdirs();
+                                            // Luu pubkey dang hex
+                                            DigitalSignature digitalSignature = new DigitalSignature();
+                                            String hexName = digitalSignature.fileToHex(publicKeyFile);
+                                            final File hexPubkey = new File(keyFileDirectory, hexName);
+                                            hexPubkey.mkdirs();
+                                        }
+                                        catch (Exception e){
+
+                                        }
 
                                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                         startActivity(intent);
