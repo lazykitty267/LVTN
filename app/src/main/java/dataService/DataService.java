@@ -318,13 +318,13 @@ public class DataService {
                 final File keyFileDirectory = new File(keyFileParent,  username + "/");
                 try {
                     keyFileDirectory.mkdir();
-                    final File URL = new File(keyFileDirectory, url);
-                    URL.mkdirs();
+//                    final File URL = new File(keyFileDirectory, url);
+//                    URL.mkdirs();
                     // Luu pubkey dang hex
-//                    DigitalSignature digitalSignature = new DigitalSignature();
-//                    String hexName = digitalSignature.fileToHex(file);
-//                    final File hexPubkey = new File(keyFileDirectory, hexName);
-//                    hexPubkey.mkdirs();
+                    DigitalSignature digitalSignature = new DigitalSignature();
+                    String hexName = digitalSignature.fileToHex(file);
+                    final File hexPubkey = new File(keyFileDirectory, hexName);
+                    hexPubkey.mkdirs();
                 }
                 catch (Exception e){
 
@@ -351,14 +351,14 @@ public class DataService {
             @SuppressWarnings("VisitableForTests")
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                pdfFile.setSignUrl(taskSnapshot.getDownloadUrl().toString());
-//                DigitalSignature digitalSignature = new DigitalSignature();
-//                try {
-//                    String hexName = digitalSignature.fileToHex(file);
-//                    pdfFile.setSignUrl(hexName);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
+//                pdfFile.setSignUrl(taskSnapshot.getDownloadUrl().toString());
+                DigitalSignature digitalSignature = new DigitalSignature();
+                try {
+                    String hexName = digitalSignature.fileToHex(file);
+                    pdfFile.setSignUrl(hexName);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
