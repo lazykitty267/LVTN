@@ -64,7 +64,7 @@ public class Report implements Serializable {
 
     private String note;
 
-    private String managerId;
+    private String managerName;
 
     public String getId() {
         return id;
@@ -114,16 +114,15 @@ public class Report implements Serializable {
         this.note = note;
     }
 
-    public String getManagerId() {
-        return managerId;
+    public String getManagerName() {
+        return managerName;
     }
 
-    public void setManagerId(String managerId) {
-        this.managerId = managerId;
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
     }
 
-
-    public void addValue(String key,List<String> value){
+    public void addValue(String key, List<String> value){
         DataRow a = new DataRow(key,value);
         fieldList.add(a);
     }

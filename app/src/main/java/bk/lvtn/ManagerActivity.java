@@ -52,7 +52,7 @@ public class ManagerActivity extends Fragment implements SearchView.OnQueryTextL
         DataService dataService = new DataService();
         User user = dataService.getCurrentUser(getActivity());
         arrRp = new ArrayList<>();
-        databaseReference.child(user.getUsername()).addValueEventListener(new ValueEventListener() {
+        databaseReference.child(user.getManagerName()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {

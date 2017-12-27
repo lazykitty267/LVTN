@@ -96,7 +96,7 @@ public class DataService {
         String id = databaseReference.push().getKey();
         report.setId(id);
         report.setCreateDate(getCurdateTime());
-        return databaseReference.child(report.getUserName()).child(id).setValue(report).isSuccessful();
+        return databaseReference.child(report.getManagerName()).child(id).setValue(report).isSuccessful();
     }
 
     /**
@@ -110,7 +110,7 @@ public class DataService {
         deletePdf(file);
         report.setUpdateDate(getCurdateTime());
         DatabaseReference databaseReference = databaseConnection.connectReportDatabase();
-        return databaseReference.child(report.getUserName()).child(report.getId()).setValue(report).isSuccessful();
+        return databaseReference.child(report.getManagerName()).child(report.getId()).setValue(report).isSuccessful();
     }
 
     /**

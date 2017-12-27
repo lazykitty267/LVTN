@@ -94,7 +94,7 @@ public class MainFragment extends Fragment {
             }
         });
         databaseReference = databaseConnection.connectReportDatabase();
-        databaseReference.child(user.getUsername()).addValueEventListener(new ValueEventListener() {
+        databaseReference.child(user.getManagerName()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
