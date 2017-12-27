@@ -265,21 +265,16 @@ public class LoginActivity extends AppCompatActivity {
                                         digi.generateKey(LoginActivity.this, userName);
                                         final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
                                         DataService dataService = new DataService();
-                                        final File keyFileParent = new File(getFilesDir(),  "rsa/");
-                                        final File keyFileDirectory = new File(keyFileParent,  userName + "/");
-                                        try {
-                                            keyFileDirectory.mkdir();
-//                    final File URL = new File(keyFileDirectory, url);
-//                    URL.mkdirs();
+                                        String path = Environment.getExternalStorageDirectory().getAbsolutePath().toString();
+                                        final File keyFileParent = new File(path,  "rsa/");
+                                        final File keyFileDirec = new File(keyFileParent,  userName + "/");
+                                        keyFileParent.mkdir();
+                                        keyFileDirec.mkdir();
                                             // Luu pubkey dang hex
-                                            DigitalSignature digitalSignature = new DigitalSignature();
-                                            String hexName = digitalSignature.fileToHex(publicKeyFile);
-                                            final File hexPubkey = new File(keyFileDirectory, hexName);
-                                            hexPubkey.mkdirs();
-                                        }
-                                        catch (Exception e){
-
-                                        }
+                                        DigitalSignature digitalSignature = new DigitalSignature();
+                                        String hexName = digitalSignature.fileToHex(publicKeyFile);
+                                        final File hexPubkey = new File(keyFileDirec, hexName);
+                                        hexPubkey.mkdirs();
 
                                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                         startActivity(intent);

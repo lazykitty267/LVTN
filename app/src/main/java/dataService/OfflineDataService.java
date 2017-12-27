@@ -66,7 +66,7 @@ public class OfflineDataService {
         values.put("createDate",report.getCreateDate());
         values.put("updateDate",report.getUpdateDate());
         values.put("note",report.getNote());
-        values.put("managerId",report.getManagerId());
+        values.put("managerId",report.getManagerName());
         database.insert("report",null,values);
         doInsertField(report.getFieldList(),report.getId());
 
@@ -105,7 +105,7 @@ public class OfflineDataService {
             r.setCreateDate(reportCursor.getString(4));
             r.setUpdateDate(reportCursor.getString(5));
             r.setNote(reportCursor.getString(6));
-            r.setManagerId(reportCursor.getString(7));
+            r.setManagerName(reportCursor.getString(7));
             final Cursor fieldCursor=database.query("field",null,"Id=?",new String[]{r.getId()},null,null,null);
             fieldCursor.moveToFirst();
             while(!fieldCursor.isAfterLast()){

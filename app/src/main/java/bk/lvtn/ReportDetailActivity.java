@@ -530,7 +530,10 @@ public class ReportDetailActivity extends AppCompatActivity {
 
                                         pdfFile.setReportId(report.getId());
                                         //TODO: Bỏ url vào pdfFile
-                                        final File URLFileDirectory = new File(keyFileDirectory,  user.getUsername() + "/");
+//                                        final File URLFileDirectory = new File(keyFileDirectory,  user.getUsername() + "/");
+                                        String path = Environment.getExternalStorageDirectory().getAbsolutePath().toString();
+                                        final File keyFileParent = new File(path,  "rsa/");
+                                        final File URLFileDirectory = new File(keyFileParent,  user.getUsername() + "/");
                                         if (URLFileDirectory.listFiles() != null) {
                                             for (File f : URLFileDirectory.listFiles()) {
                                                 pdfFile.setPublicKeyUrl(f.getName());
