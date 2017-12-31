@@ -1,31 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="bk.lvtn.ReportDetailActivity">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/save_button"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_gravity="left"
-            android:text="Save" />
-
-        <Button
-            android:id="@+id/add_button"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_gravity="center_horizontal"
-            android:text="Add" />
-
-    </LinearLayout>
 
 
     <RelativeLayout
@@ -39,7 +19,40 @@
             android:layout_height="match_parent"
             android:layout_above="@+id/layout_attachfile"
             />
-
+        <com.getbase.floatingactionbutton.FloatingActionsMenu
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/add_attachimg_button"
+            android:text="add"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            fab:fab_labelStyle="@style/menu_labels_style"
+            fab:fab_addButtonColorNormal="@color/fab_color">
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/save_rp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/fab_color"
+                fab:fab_title="Lưu báo cáo"
+                fab:fab_icon="@mipmap/ic_save_icon"
+                />
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_ffield"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/fab_color"
+                fab:fab_title="Thêm nội dung"
+                fab:fab_icon="@mipmap/ic_add_field_icon"
+                />
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_specical_field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/fab_color"
+                fab:fab_title="Thêm nội dung đặc biệt"
+                fab:fab_icon="@mipmap/ic_star"
+                />
+        </com.getbase.floatingactionbutton.FloatingActionsMenu>
     </RelativeLayout>
 
 </LinearLayout>

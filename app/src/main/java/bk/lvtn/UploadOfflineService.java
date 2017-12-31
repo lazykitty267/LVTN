@@ -1,9 +1,11 @@
 package bk.lvtn;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -41,7 +43,7 @@ public class UploadOfflineService extends Service {
         strContent = "Đang đồng bộ các báo cáo ngoại tuyến";
         mBuilder =
                 new NotificationCompat.Builder(getApplicationContext())
-                        .setSmallIcon(R.drawable.ic_account_black_24dp)
+                        .setSmallIcon(R.drawable.ic_done_black_24dp)
                         .setContentTitle("EASYREPORT")
                         .setContentText(strContent);
 
@@ -119,6 +121,10 @@ public class UploadOfflineService extends Service {
                 stopSelf();
                 e.printStackTrace();
             }
+
+            MediaPlayer mp;
+            mp = MediaPlayer.create(this, R.raw.notiaudio);
+            mp.start();
             mBuilder.setContentText("Đồng bộ thành công");
             mNotifyMgr.notify(mNotificationId, mBuilder.build());
             stopSelf();

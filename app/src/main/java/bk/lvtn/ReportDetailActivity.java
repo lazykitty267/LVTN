@@ -13,6 +13,8 @@ import android.os.Environment;
 import android.speech.RecognizerIntent;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -40,13 +42,19 @@ import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 
 
+import org.apache.poi.util.IOUtils;
+
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.security.KeyStore;
 import java.security.KeyStoreSpi;
 import java.text.SimpleDateFormat;
@@ -298,7 +306,7 @@ public class ReportDetailActivity extends AppCompatActivity {
                                     adapter.notifyDataSetChanged();
                                     adapterAdd=null;
                                     dialog.cancel();
-                                    attachFile.clearFocus();
+                                    attachFile.toggle();
                                 }
                             }
                         });
@@ -339,7 +347,7 @@ public class ReportDetailActivity extends AppCompatActivity {
                     }
                 });
                 // Set a title for alert dialog
-                builder.setTitle("Nội dung đặt biệt");
+                builder.setTitle("Nội dung đặc biệt");
                 // Set the positive/yes button click listener
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -409,7 +417,6 @@ public class ReportDetailActivity extends AppCompatActivity {
                     dialog.setContentView(R.layout.private_key_dialog);
 
                     dialog.setCancelable(true);
-                    dialog.setTitle("Private key");
                     dialog.show();
                     Button name_add = (Button) dialog.findViewById(R.id.pk_add);
                     final EditText report_name = (EditText) dialog.findViewById(R.id.private_key);
@@ -458,6 +465,7 @@ public class ReportDetailActivity extends AppCompatActivity {
                                     DataService dataService = new DataService();
                                     User user = dataService.getCurrentUser(ReportDetailActivity.this);
                                     report.setUserName(user.getUsername());
+                                    report.setManagerName(user.getManagerName());
                                     if (!isOnline()){
                                         report.setId(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
                                         report.setNote(OfflineDataService.CREATE_MODE);
@@ -510,10 +518,12 @@ public class ReportDetailActivity extends AppCompatActivity {
                                         final File keyFileDirectory = new File(getFilesDir(), "rsa/");
                                         final File privateKeyFile = new File(keyFileDirectory, user.getUsername() + "_priv_key");
                                         final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
+                                        pdfFile.longg = privateKeyFile.toString();
                                         byte[] b = new byte[(int) file.length()];
                                         FileInputStream fileInputStream = new FileInputStream(file);
                                         fileInputStream.read(b);
                                         String k = digi.myhash(b);
+                                        pdfFile.dongkcualong = k;
                                         byte[] s = digi.rsaSign(k.getBytes(), digi.getPrivateKey(privateKeyFile));
 
                                         final File signal = new File(getFilesDir(), "signal");
@@ -522,6 +532,7 @@ public class ReportDetailActivity extends AppCompatActivity {
                                         dos.write(s);
                                         dos.flush();
                                         dos.close();
+                                        dataService.saveSignature(signal,pdfFile);
                                         DigitalSignature digitalSignature = new DigitalSignature();
                                         String hexName = digitalSignature.fileToHex(file);
                                         pdfFile.setSignUrl(hexName);
@@ -533,43 +544,39 @@ public class ReportDetailActivity extends AppCompatActivity {
 //                                        final File URLFileDirectory = new File(keyFileDirectory,  user.getUsername() + "/");
                                         String path = Environment.getExternalStorageDirectory().getAbsolutePath().toString();
                                         final File keyFileParent = new File(path,  "rsa/");
-                                        final File URLFileDirectory = new File(keyFileParent,  user.getUsername() + "/");
-                                        if (URLFileDirectory.listFiles() != null) {
-                                            for (File f : URLFileDirectory.listFiles()) {
-                                                pdfFile.setPublicKeyUrl(f.getName());
-                                            }
+                                        if (!keyFileParent.exists()) {
+                                            keyFileParent.mkdir();
                                         }
+                                        final File URLFileDirectory = new File(keyFileParent,  user.getUsername() + "/");
+                                        if (!URLFileDirectory.exists()) {
+                                            URLFileDirectory.mkdir();
+                                        }
+//                                        if (URLFileDirectory.listFiles() != null) {
+//                                            for (File f : URLFileDirectory.listFiles()) {
+//                                                pdfFile.setPublicKeyUrl(f.getName());
+//                                            }
+//                                        }
+                                        final File hexPubkey = new File(URLFileDirectory, "key.txt");
+//                                        DataInputStream dis = new DataInputStream(new FileInputStream(hexPubkey));
+//                                        String name = dis.readUTF();
+//                                        dis.close();
+                                        StringBuilder text = new StringBuilder();
+                                        try {
+                                            BufferedReader br = new BufferedReader(new FileReader(hexPubkey));
+                                            String line;
+
+                                           while ((line = br.readLine()) != null) {
+                                                text.append(line);
+                                            }
+                                            br.close();
+                                        }
+                                        catch (IOException e) {
+                                            //You'll need to add proper error handling here
+                                        }
+                                        pdfFile.setPublicKeyUrl(text.toString().replace("\u0000", ""));
 
                                         dataService.uploadFile(file, pdfFile);
                                         Toast.makeText(ReportDetailActivity.this,"ONLINE MODE",Toast.LENGTH_SHORT);
-//                                        File tempFile = File.createTempFile("prefix", "suffix", null);
-//                                        FileOutputStream fos = new FileOutputStream(tempFile);
-//                                        fos.write(s);
-//                                        AttachImage attachImage = new AttachImage();
-//                                        attachImage.setReportId(report.getId());
-//                                        attachImage.setName( new  SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
-//                                        dataService.uploadAttachFile(tempFile, attachImage);
-//
-//                                        s = digi.decrypt(tempFile,digi.uk);
-//                                        //File tempFile1 = File.createTempFile("prefix", "suffix", null);
-//                                        File tempFile1 = new File(new File(Environment.getExternalStorageDirectory().getAbsolutePath().toString(),"pdfdemo"),"encrypt.pdf");
-//
-//                                        FileOutputStream fos1 = new FileOutputStream(tempFile1);
-//                                        fos1.write(s);
-//                                        if (digi.rsaVerify(k.getBytes(),s,digi.getPublicKey(publicKeyFile)) & publicKeyFile.isFile() & privateKeyFile.isFile()) {
-//                                            if (publicKeyFile.exists()) {
-//                                                publicKeyFile.delete();
-//                                            }
-//
-//                                            if (privateKeyFile.exists()) {
-//                                                privateKeyFile.delete();
-//                                            }
-//                                            finish();
-//                                        }
-//                                    fos1.close();
-//                                    fos.close();
-//
-//                                    Toast.makeText(ReportDetailActivity.this,s,Toast.LENGTH_SHORT);
                                         showSuccessDialog();
                                     }
                                 } catch (Exception e) {
@@ -741,4 +748,25 @@ public class ReportDetailActivity extends AppCompatActivity {
 
         return false;
     }
+    @Override
+    public void onBackPressed() {
+            AlertDialog alertbox = new AlertDialog.Builder(this)
+                    .setMessage("Báo cáo chưa được lưu, bạn có muốn thoát")
+                    .setPositiveButton("Có", new DialogInterface.OnClickListener() {
+
+                        // do something when the button is clicked
+                        public void onClick(DialogInterface arg0, int arg1) {
+
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("Không", new DialogInterface.OnClickListener() {
+
+                        // do something when the button is clicked
+                        public void onClick(DialogInterface arg0, int arg1) {
+                        }
+                    })
+                    .show();
+    }
+
 }

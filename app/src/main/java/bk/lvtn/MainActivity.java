@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_logout) {
             AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
-            builder1.setMessage("Bạn có muốn thoát?");
+            builder1.setMessage("Bạn có muốn đăng xuất tài khoản?");
             builder1.setCancelable(true);
 
             builder1.setPositiveButton(

@@ -3,22 +3,24 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Mời bạn nhập tên báo cáo"
-        android:textAlignment="center"
-        android:layout_gravity="center_horizontal"></TextView>
     <EditText
         android:id="@+id/private_key"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Example"
+        android:hint="Tên báo cáo"
+        android:textSize="30dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginBottom="20dp"
         />
     <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tạo"
+        android:background="@color/appBg"
+        android:textColor="@android:color/white"
         android:id="@+id/pk_add"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:text="OK"
-        android:layout_gravity="center_horizontal"/>
+        android:layout_gravity="center|bottom"/>
 </LinearLayout>

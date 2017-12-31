@@ -26,7 +26,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="270dp"
+                    android:layout_width="300dp"
                     android:layout_height="match_parent"
                     android:text="Chào Thanh, bạn có 3 sự kiện mới trong tuần này!"
                     android:textSize="20dp" />

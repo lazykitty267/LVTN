@@ -75,7 +75,8 @@ public class ManagerActivity extends Fragment implements SearchView.OnQueryTextL
         // Locate the EditText in listview_main.xml
         editsearch = (SearchView) view.findViewById(R.id.search_rp);
         editsearch.setOnQueryTextListener(this);
-
+        editsearch.setIconified(false);
+        editsearch.clearFocus();
         return view;
     }
     @Override

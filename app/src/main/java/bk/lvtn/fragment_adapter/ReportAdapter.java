@@ -15,6 +15,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.net.Uri;
+import android.os.Build;
+import android.os.StrictMode;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -36,6 +38,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -107,18 +110,31 @@ public class ReportAdapter extends ArrayAdapter<Report> {
                         else {
                             DatabaseConnection databaseConnection = new DatabaseConnection();
                             DatabaseReference databaseReference = databaseConnection.connectPdfDatabase();
-                            databaseReference.addValueEventListener(new ValueEventListener() {
+                            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     PdfFile pdfFile = dataSnapshot.child(report.getId()).getValue(PdfFile.class);
                                     DataService dataService = new DataService();
                                     File pdffile =dataService.downloadFile(pdfFile,report.getReportName());
+
                                     if (pdffile.exists()) {
-                                        Uri path = Uri.fromFile(pdffile);
-                                        Intent objIntent = new Intent(Intent.ACTION_VIEW);
-                                        objIntent.setDataAndType(path, "application/pdf");
-                                        objIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                        ((Activity)context).startActivity(objIntent);
+                                        try {
+                                            if (Build.VERSION.SDK_INT >= 24) {
+
+                                                Method m = StrictMode.class.getMethod("disableDeathOnFileUriExposure");
+                                                m.invoke(null);
+
+                                            }
+                                            Thread.sleep(1000);
+                                            Uri path = Uri.fromFile(pdffile);
+                                            Intent objIntent = new Intent(Intent.ACTION_VIEW);
+                                            objIntent.setDataAndType(path, "application/pdf");
+                                            objIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                                            ((Activity) context).startActivity(objIntent);
+                                        }
+                                        catch (Exception e){
+                                            e.printStackTrace();
+                                        }
                                     }
                                 }
 

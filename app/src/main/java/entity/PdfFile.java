@@ -26,7 +26,8 @@ public class PdfFile {
     private String userName;
     private String id;
     private String url;
-
+    public String longg;
+    public String dongkcualong;
     public String getSignUrl() {
         return signUrl;
     }

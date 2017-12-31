@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -52,6 +53,7 @@ public class FieldAdapter extends ArrayAdapter<Field> {
         convertView = layoutInflater.inflate(resId,null);
         TextView keyField = (TextView)convertView.findViewById(R.id.key_field);
         valueField = (EditText) convertView.findViewById(R.id.value_field);
+        showSoftKeyboard(valueField);
         ImageButton voiceButton = (ImageButton) convertView.findViewById(R.id.voice_button);
         field = listField.get(position);
         keyField.setText(field.getKey_field());
@@ -108,5 +110,11 @@ public class FieldAdapter extends ArrayAdapter<Field> {
                     Toast.LENGTH_SHORT).show();
         }
     }
-
+    public void showSoftKeyboard(View view) {
+        if (view.requestFocus()) {
+            InputMethodManager imm = (InputMethodManager)
+                    ((Activity)context) .getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
 }

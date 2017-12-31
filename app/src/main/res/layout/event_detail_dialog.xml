@@ -12,10 +12,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_alarm_add_black_40dp"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="11dp"/>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
@@ -44,10 +44,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_location_on_black_40dp"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="11dp"/>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
@@ -76,10 +76,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_forum_black_40dp"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="11dp"/>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
@@ -108,10 +108,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_person_black_40dp"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="11dp"/>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"

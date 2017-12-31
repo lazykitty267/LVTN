@@ -131,7 +131,6 @@ public class MainFragment extends Fragment {
                 adapter.notifyDataSetChanged();
 
                 dialog.setCancelable(true);
-                dialog.setTitle("ListView");
                 dialog.show();
                 Button rp_select = (Button) dialog.findViewById(R.id.rp_select);
                 rp_select.setOnClickListener(new View.OnClickListener() {

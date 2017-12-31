@@ -29,6 +29,8 @@ import android.widget.Toast;
 import android.support.v7.app.AlertDialog;
 
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.github.angads25.filepicker.controller.DialogSelectionListener;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
@@ -82,25 +84,7 @@ public class ModifyReportActivity extends AppCompatActivity {
     FieldAdapter adapter, adapterAdd = null;
     String excel_name = "";
     Form form;
-    String[] fileList = null;
-    RecyclerView mRecyclerView;
-    AttachImgAdapter mRcvAdapter;
-    Dialog dialog;
 
-    public static Bitmap getBitmapFromURL(String src) {
-        try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,9 +100,11 @@ public class ModifyReportActivity extends AppCompatActivity {
 //
 
         // todo : convert AttachImage to AttachImages
-        Button saveForm = (Button) findViewById(R.id.save_button);
-        Button addField = (Button) findViewById(R.id.add_button);
-        Button attachFile = (Button) findViewById(R.id.add_attachimg_button);
+        final FloatingActionsMenu attachFile = (FloatingActionsMenu) findViewById(R.id.add_attachimg_button);
+        FloatingActionButton addField1 = (FloatingActionButton) findViewById(R.id.add_ffield);
+        FloatingActionButton saveForm = (FloatingActionButton) findViewById(R.id.save_rp);
+        FloatingActionButton addSpecialField = (FloatingActionButton) findViewById(R.id.add_specical_field);
+
         listField = (ListView) findViewById(R.id.list_field);
         adapter = new FieldAdapter(this, arrField, R.layout.item_inlist_field);
         listField.setAdapter(adapter);
@@ -129,19 +115,9 @@ public class ModifyReportActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
 
         final DigitalSignature digi = new DigitalSignature();
-//        try {
-//
-//            digi.generateKey(this);
-//
-//        } catch (Exception e1) {
-//
-//            // TODO Auto-generated catch block
-//
-//            e1.printStackTrace();
-//
-//        }
 
-        addField.setOnClickListener(new View.OnClickListener() {
+
+        addField1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final Dialog dialog = new Dialog(ModifyReportActivity.this);
@@ -177,23 +153,7 @@ public class ModifyReportActivity extends AppCompatActivity {
                 });
             }
         });
-//        attachFile.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (ContextCompat.checkSelfPermission(ModifyReportActivity.this, android.Manifest.permission.CAMERA)
-//                        == PackageManager.PERMISSION_GRANTED) {
-//                    //TODO: Do somethings
-//                } else {
-//                    //Request camera permission
-//                    ActivityCompat.requestPermissions(ModifyReportActivity.this, new String[]{android.Manifest.permission.CAMERA},
-//                            1);
-//                }
-////                getAttachFile();
-//                AttachImageService a = new AttachImageService(ModifyReportActivity.this, getApplication());
-//                a.takePicture();
-//            }
-//        });
-        // // TODO: 11/20/17 update curreport on database
+
         saveForm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -220,24 +180,7 @@ public class ModifyReportActivity extends AppCompatActivity {
                         if (file == null) {
                             return;
                         }
-//                        if (!isOnline()) {
-//                            OfflineDataService offData = new OfflineDataService();
-//                            offData.doCreateDb(ModifyReportActivity.this);
-//                            offData.doInsertReport(curreport);
-//
-//                            byte[] b = new byte[(int) file.length()];
-//                            FileInputStream fileInputStream = new FileInputStream(file);
-//                            fileInputStream.read(b);
-//
-//                            DataOutputStream dos = new DataOutputStream(openFileOutput(curreport.getReportName(), ModifyReportActivity.this.MODE_PRIVATE));
-//                            dos.write(b);
-//                            dos.flush();
-//                            dos.close();
-//                            Toast.makeText(ModifyReportActivity.this, "OFFLINE MODE", Toast.LENGTH_SHORT);
-//                        } else {
 
-//                        DataService dataService = new DataService();
-//                        dataService.updateReport(curreport);
                         final DatabaseConnection databaseConnection = new DatabaseConnection();
                         DatabaseReference databaseReference = databaseConnection.connectPdfDatabase();
                         final List<PdfFile> pdfFileList = new ArrayList<>();
@@ -316,14 +259,13 @@ public class ModifyReportActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(this, "null cmnr", Toast.LENGTH_SHORT).show();
         }
     }
 
 
     private void showSuccessDialog() {
         AlertDialog alertbox = new AlertDialog.Builder(ModifyReportActivity.this).setTitle("Success")
-                .setMessage("Báo cáo đã được tạo")
+                .setMessage("Sửa đổi đã được lưu")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface arg0, int arg1) {
                         Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);

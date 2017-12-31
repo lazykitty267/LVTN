@@ -113,7 +113,6 @@ public class ReportActivity extends Fragment {
                 adapter.notifyDataSetChanged();
 
                 dialog.setCancelable(true);
-                dialog.setTitle("ListView");
                 dialog.show();
                 Button rp_select = (Button) dialog.findViewById(R.id.rp_select);
                 rp_select.setOnClickListener(new View.OnClickListener() {
@@ -124,7 +123,7 @@ public class ReportActivity extends Fragment {
                         final Bundle bundle = new Bundle();
                         AlertDialog alertbox = new AlertDialog.Builder(getActivity())
                                 .setMessage("Bạn có muốn thêm dữ liệu kèm theo?")
-                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                .setPositiveButton("Có", new DialogInterface.OnClickListener() {
 
                                     // do something when the button is clicked
                                     public void onClick(DialogInterface arg0, int arg1) {
@@ -136,7 +135,7 @@ public class ReportActivity extends Fragment {
 
                                     }
                                 })
-                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                .setNegativeButton("Không", new DialogInterface.OnClickListener() {
 
                                     // do something when the button is clicked
                                     public void onClick(DialogInterface arg0, int arg1) {

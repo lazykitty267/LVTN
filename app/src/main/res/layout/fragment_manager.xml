@@ -12,11 +12,9 @@
         <SearchView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="10dp"
-            android:paddingLeft="20dp"
+
             android:paddingRight="20dp"
             android:paddingBottom="4dp"
-            android:iconifiedByDefault="false"
             android:queryHint="Tìm kiếm"
             android:background="@drawable/abc"
             android:id="@+id/search_rp"></SearchView>
