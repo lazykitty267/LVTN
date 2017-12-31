@@ -45,6 +45,10 @@ import java.security.spec.X509EncodedKeySpec;
 
 import android.util.Base64;
 
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemReader;
+import org.bouncycastle.util.io.pem.PemWriter;
+import org.apache.commons.codec.binary.Hex;
 
 public class DigitalSignature {
 
@@ -301,7 +305,7 @@ public class DigitalSignature {
 
         publicKeyFile.createNewFile();
         privateKeyFile.createNewFile();
-        saveByteDataToFile(publicKeyFile, keyPair.getPublic().getEncoded());
+        writeUKToPemFile(publicKeyFile,keyPair.getPublic());
         saveByteDataToFile(privateKeyFile, keyPair.getPrivate().getEncoded());
     }
 
@@ -335,19 +339,19 @@ public class DigitalSignature {
 
 
 
-        StringBuffer hexString1 = new StringBuffer();
+//        StringBuffer hexString1 = new StringBuffer();
+//
+//
+//
+//        for (int i = 0; i < md5.digest().length; i++)
+//
+//
+//
+//            hexString1.append(Integer.toHexString(0xFF & output1[i]));
 
 
 
-        for (int i = 0; i < md5.digest().length; i++)
-
-
-
-            hexString1.append(Integer.toHexString(0xFF & output1[i]));
-
-
-
-        return hexString1.toString();
+        return Hex.encodeHexString( output1 );
 
 
 
@@ -573,6 +577,16 @@ public class DigitalSignature {
         dis.readFully(read);
         dis.close();
         return read;
+    }
+
+    public void writeUKToPemFile(File filename,PublicKey key) throws FileNotFoundException, IOException, NoSuchAlgorithmException {
+        PemObject pemObject = new PemObject("PUBLIC KEY", key.getEncoded());
+        PemWriter pemWriter = new PemWriter(new OutputStreamWriter(new FileOutputStream(filename)));
+        try {
+            pemWriter.writeObject(pemObject);
+        } finally {
+            pemWriter.close();
+        }
     }
 //
 //    public static String byte2hex(byte[] b) {

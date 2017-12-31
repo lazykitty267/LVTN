@@ -518,12 +518,12 @@ public class ReportDetailActivity extends AppCompatActivity {
                                         final File keyFileDirectory = new File(getFilesDir(), "rsa/");
                                         final File privateKeyFile = new File(keyFileDirectory, user.getUsername() + "_priv_key");
                                         final File publicKeyFile = new File(keyFileDirectory, "sikkr_pub_key");
-                                        pdfFile.longg = privateKeyFile.toString();
+//                                        pdfFile.longg = privateKeyFile.toString();
                                         byte[] b = new byte[(int) file.length()];
                                         FileInputStream fileInputStream = new FileInputStream(file);
                                         fileInputStream.read(b);
                                         String k = digi.myhash(b);
-                                        pdfFile.dongkcualong = k;
+//                                        pdfFile.dongkcualong = k;
                                         byte[] s = digi.rsaSign(k.getBytes(), digi.getPrivateKey(privateKeyFile));
 
                                         final File signal = new File(getFilesDir(), "signal");
@@ -533,9 +533,9 @@ public class ReportDetailActivity extends AppCompatActivity {
                                         dos.flush();
                                         dos.close();
                                         dataService.saveSignature(signal,pdfFile);
-                                        DigitalSignature digitalSignature = new DigitalSignature();
-                                        String hexName = digitalSignature.fileToHex(file);
-                                        pdfFile.setSignUrl(hexName);
+//                                        DigitalSignature digitalSignature = new DigitalSignature();
+//                                        String hexName = digitalSignature.fileToHex(file);
+//                                        pdfFile.setSignUrl(hexName);
                                         signal.delete();
 
 
@@ -556,13 +556,13 @@ public class ReportDetailActivity extends AppCompatActivity {
 //                                                pdfFile.setPublicKeyUrl(f.getName());
 //                                            }
 //                                        }
-                                        final File hexPubkey = new File(URLFileDirectory, "key.txt");
+                                        final File pubkeyURL = new File(URLFileDirectory, "key.txt");
 //                                        DataInputStream dis = new DataInputStream(new FileInputStream(hexPubkey));
 //                                        String name = dis.readUTF();
 //                                        dis.close();
                                         StringBuilder text = new StringBuilder();
                                         try {
-                                            BufferedReader br = new BufferedReader(new FileReader(hexPubkey));
+                                            BufferedReader br = new BufferedReader(new FileReader(pubkeyURL));
                                             String line;
 
                                            while ((line = br.readLine()) != null) {
@@ -573,7 +573,7 @@ public class ReportDetailActivity extends AppCompatActivity {
                                         catch (IOException e) {
                                             //You'll need to add proper error handling here
                                         }
-                                        pdfFile.setPublicKeyUrl(text.toString().replace("\u0000", ""));
+                                        pdfFile.setPublicKeyUrl(text.toString());
 
                                         dataService.uploadFile(file, pdfFile);
                                         Toast.makeText(ReportDetailActivity.this,"ONLINE MODE",Toast.LENGTH_SHORT);

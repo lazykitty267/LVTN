@@ -15,7 +15,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -314,21 +317,28 @@ public class DataService {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 String url = taskSnapshot.getDownloadUrl().toString();
                 //TODO: Lưu vào file
-//                final File keyFileParent = new File(context.getFilesDir(),  "rsa/");
-//                final File keyFileDirectory = new File(keyFileParent,  username + "/");
-//                try {
-//                    keyFileDirectory.mkdir();
-////                    final File URL = new File(keyFileDirectory, url);
-////                    URL.mkdirs();
-//                    // Luu pubkey dang hex
-//                    DigitalSignature digitalSignature = new DigitalSignature();
-//                    String hexName = digitalSignature.fileToHex(file);
-//                    final File hexPubkey = new File(keyFileDirectory, hexName);
-//                    hexPubkey.mkdirs();
-//                }
-//                catch (Exception e){
-//
-//                }
+                try {
+                    String path = Environment.getExternalStorageDirectory().getAbsolutePath().toString();
+                    final File keyFileParent = new File(path, "rsa/");
+                    if (!keyFileParent.exists()) {
+                        keyFileParent.mkdir();
+                    }
+                    final File keyFileDirec = new File(keyFileParent, username + "/");
+                    if (!keyFileDirec.exists()) {
+                        keyFileDirec.mkdir();
+                    }
+                    // Luu pubkey dang hex
+                    final File pubkeyURL = new File(keyFileDirec, "key.txt");
+                    pubkeyURL.createNewFile();
+                    DataOutputStream dos = new DataOutputStream(new FileOutputStream(pubkeyURL));
+                    dos.writeChars(url);
+                    dos.flush();
+                    dos.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
@@ -351,7 +361,7 @@ public class DataService {
             @SuppressWarnings("VisitableForTests")
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                pdfFile.longg=(taskSnapshot.getDownloadUrl().toString());
+                pdfFile.setSignUrl(taskSnapshot.getDownloadUrl().toString());
 //                DigitalSignature digitalSignature = new DigitalSignature();
 //                try {
 //                    String hexName = digitalSignature.fileToHex(file);
