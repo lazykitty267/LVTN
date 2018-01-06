@@ -288,8 +288,9 @@ public class DataService {
     public void uploadAttachFile(@NonNull final File file, @NonNull final AttachImage attachFile) {
         Uri data = Uri.fromFile(file);
         StorageReference storageReference = databaseConnection.connectAttachFileDatabase();
+        attachFile.setName(file.getName());
         saveAttachFile(attachFile);
-        final StorageReference sRef = storageReference.child(attachFile.getId() + "_" + attachFile.getName() + ".jpg");
+        final StorageReference sRef = storageReference.child(attachFile.getId() + "_" + file.getName());
         sRef.putFile(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @SuppressWarnings("VisitableForTests")
             @Override

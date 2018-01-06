@@ -43,6 +43,7 @@ import com.github.angads25.filepicker.view.FilePickerDialog;
 
 
 import org.apache.poi.util.IOUtils;
+import org.apache.poi.util.StringUtil;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -554,10 +555,13 @@ public class ReportDetailActivity extends AppCompatActivity {
                                             //You'll need to add proper error handling here
                                         }
                                         pdfFile.setPublicKeyUrl(text.toString().replace("\u0000", ""));
-
-                                        dataService.uploadFile(file, pdfFile);
-                                        Toast.makeText(ReportDetailActivity.this,"ONLINE MODE",Toast.LENGTH_SHORT);
-                                        showSuccessDialog();
+                                        while (pdfFile.getSignUrl() != null
+                                                && pdfFile.getPublicKeyUrl() != null
+                                                && pdfFile.getUrl() != null) {
+                                            dataService.uploadFile(file, pdfFile);
+                                            Toast.makeText(ReportDetailActivity.this,"ONLINE MODE",Toast.LENGTH_SHORT);
+                                            showSuccessDialog();
+                                        }
                                     }
                                 } catch (Exception e) {
                                     Toast.makeText(ReportDetailActivity.this,e.toString(),Toast.LENGTH_SHORT);
