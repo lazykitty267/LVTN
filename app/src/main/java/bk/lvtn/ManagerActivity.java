@@ -50,15 +50,17 @@ public class ManagerActivity extends Fragment implements SearchView.OnQueryTextL
         DatabaseConnection databaseConnection = new DatabaseConnection();
         DatabaseReference databaseReference = databaseConnection.connectReportDatabase();
         DataService dataService = new DataService();
-        User user = dataService.getCurrentUser(getActivity());
+        final User user = dataService.getCurrentUser(getActivity());
         arrRp = new ArrayList<>();
         databaseReference.child(user.getManagerName()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Report report = postSnapshot.getValue(Report.class);
-                    arrRp.add(report);
-                    adapter.notifyDataSetChanged();
+                    if (report.getUserName().equals(user.getUsername())) {
+                        arrRp.add(report);
+                        adapter.notifyDataSetChanged();
+                    }
                 }
                 adapter.copyList();
             }

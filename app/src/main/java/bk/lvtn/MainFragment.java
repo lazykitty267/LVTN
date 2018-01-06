@@ -79,7 +79,7 @@ public class MainFragment extends Fragment {
         DatabaseReference databaseReference = databaseConnection.connectNoteDatabase();
         //30p break
         DataService dataService = new DataService();
-        User user = dataService.getCurrentUser(getActivity());
+        final User user = dataService.getCurrentUser(getActivity());
         databaseReference.child(user.getUsername()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -103,8 +103,10 @@ public class MainFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Report report = postSnapshot.getValue(Report.class);
-                    arrRp.add(report);
-                    adapterRp.notifyDataSetChanged();
+                    if (report.getUserName().equals(user.getUsername())) {
+                        arrRp.add(report);
+                        adapterRp.notifyDataSetChanged();
+                    }
                 }
             }
 
