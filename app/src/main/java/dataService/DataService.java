@@ -364,6 +364,7 @@ public class DataService {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 pdfFile.setSignUrl(taskSnapshot.getDownloadUrl().toString());
+                System.out.println(pdfFile.getSignUrl().toString());
 //                DigitalSignature digitalSignature = new DigitalSignature();
 //                try {
 //                    String hexName = digitalSignature.fileToHex(file);
