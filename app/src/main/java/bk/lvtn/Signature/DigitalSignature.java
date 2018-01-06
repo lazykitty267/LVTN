@@ -48,8 +48,7 @@ import android.util.Base64;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.bouncycastle.util.io.pem.PemWriter;
-import org.apache.commons.codec.binary.Hex;
-
+import android.org.apache.commons.codec.binary.Hex;
 public class DigitalSignature {
 
     /** Called when the activity is first created. */
@@ -348,8 +347,6 @@ public class DigitalSignature {
 //
 //
 //            hexString1.append(Integer.toHexString(0xFF & output1[i]));
-
-
 
         return Hex.encodeHexString( output1 );
 

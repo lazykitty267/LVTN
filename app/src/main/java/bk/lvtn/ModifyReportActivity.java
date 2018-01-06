@@ -54,6 +54,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreSpi;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -115,11 +116,72 @@ public class ModifyReportActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
 
         final DigitalSignature digi = new DigitalSignature();
+        addSpecialField.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attachFile.toggle();
+                AlertDialog.Builder builder = new AlertDialog.Builder(ModifyReportActivity.this);
+                // String array for alert dialog multi choice items
+                final String[] choices = new String[]{
+                        "Hashtag",
+                        "Ghi chú quan trọng"
+                };
+                final boolean[] checked = new boolean[]{
+                        false, // Red
+                        false
 
+                };
+                // Convert the color array to list
+                final List<String> choicesList = Arrays.asList(choices);
+                builder.setMultiChoiceItems(choices, checked, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+
+                        // Update the current focused item's checked status
+                        checked[which] = isChecked;
+
+                        // Get the current focused item
+                        String currentItem = choicesList.get(which);
+
+                    }
+                });
+                // Set a title for alert dialog
+                builder.setTitle("Nội dung đặc biệt");
+                // Set the positive/yes button click listener
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do something when click positive button
+                        for (int i = 0; i<checked.length; i++){
+                            boolean flag = checked[i];
+                            if (flag) {
+                                Field f = new Field(choices[i]);
+                                arrField.add(f);
+                                adapter.notifyDataSetChanged();
+                                adapterAdd=null;
+                            }
+                        }
+
+                    }
+                });
+                // Set the negative/no button click listener
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do something when click the negative button
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                // Display the alert dialog on interface
+                dialog.show();
+
+            }
+        });
 
         addField1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                attachFile.toggle();
                 final Dialog dialog = new Dialog(ModifyReportActivity.this);
                 dialog.setContentView(R.layout.list_template_dialog);
                 GridView lv = (GridView) dialog.findViewById(R.id.list_template_d);
@@ -133,7 +195,6 @@ public class ModifyReportActivity extends AppCompatActivity {
                 adapterAdd.notifyDataSetChanged();
 
                 dialog.setCancelable(true);
-                dialog.setTitle("ListView");
                 dialog.show();
                 Button rp_select = (Button) dialog.findViewById(R.id.rp_select);
                 rp_select.setOnClickListener(new View.OnClickListener() {
@@ -158,6 +219,7 @@ public class ModifyReportActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 {
+                    attachFile.toggle();
                     curreport.getFieldList().clear();
                     for (int i = 0; i < adapter.getCount(); i++) {
                         final String s = adapter.getItem(i).getValue_field();

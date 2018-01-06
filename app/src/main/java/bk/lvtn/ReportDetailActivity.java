@@ -82,6 +82,7 @@ import entity.User;
 
 
 public class ReportDetailActivity extends AppCompatActivity {
+    String regexPhoneNum = "^[0-9]*$";
     FieldActivityAsyncTask fieldActivityAsyncTask;
     ListView listField;
     ArrayList<Field> arrField = new ArrayList<Field>();
@@ -123,6 +124,7 @@ public class ReportDetailActivity extends AppCompatActivity {
         Field field3 = new Field("Địa điểm");
         Field field4 = new Field("Thành phần tham dự");
         Field field5 = new Field("Nội dung");
+        Field field6 = new Field("Số điện thoại");
         arrField.add(field1);
         arrField.add(field2);
         arrField.add(field3);
@@ -253,74 +255,50 @@ public class ReportDetailActivity extends AppCompatActivity {
                 }
 //                getAttachFile();
                 AttachImageService a = new AttachImageService(ReportDetailActivity.this,getApplication());
+                attachFile.toggle();
                 a.takePicture();
             }
         });
         addField1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                View dialogView = getLayoutInflater().inflate(R.layout.add_field_dialog,null);
-                AlertDialog.Builder builder = new AlertDialog.Builder(ReportDetailActivity.this);
-                builder.setView(dialogView);
-                String titleText = "Nội dung mới";
-                // Initialize a new foreground color span instance
-                ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(Color.RED);
-
-                // Initialize a new spannable string builder instance
-                SpannableStringBuilder ssBuilder = new SpannableStringBuilder(titleText);
-
-                // Apply the text color span
-                ssBuilder.setSpan(
-                        foregroundColorSpan,
-                        0,
-                        titleText.length(),
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                );
-                builder.setTitle(ssBuilder);
-                ListView lv = (ListView ) dialogView.findViewById(R.id.add_field_d);
+                attachFile.toggle();
+                final Dialog dialog = new Dialog(ReportDetailActivity.this);
+                dialog.setContentView(R.layout.add_field_dialog1);
+                GridView lv = (GridView) dialog.findViewById(R.id.list_template_d);
                 ArrayList<Field> arrTp = new ArrayList<Field>();
 
-                adapterAdd = new FieldAdapter(ReportDetailActivity.this,arrTp,R.layout.item_inlist_field);
+                adapterAdd = new FieldAdapter(ReportDetailActivity.this, arrTp, R.layout.item_inlist_field);
                 lv.setAdapter(adapterAdd);
 
                 final Field field1 = new Field("Tên Field");
                 arrTp.add(field1);
                 adapterAdd.notifyDataSetChanged();
-                builder.setPositiveButton("Thêm", null);
-                final AlertDialog dialog = builder.create();
-                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
 
+                dialog.setCancelable(true);
+                dialog.show();
+                Button rp_select = (Button) dialog.findViewById(R.id.rp_select);
+                rp_select.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onShow(DialogInterface dialog1) {
-                        Button b = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                        b.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                // TODO Do something
-                                if(field1.getValue_field().equals("")){
-                                    Toast.makeText(ReportDetailActivity.this,"Mời nhập field name!!",Toast.LENGTH_LONG);
-                                }
-                                else {
-                                    Field f = new Field(field1.getValue_field());
-                                    arrField.add(f);
-                                    adapter.notifyDataSetChanged();
-                                    adapterAdd=null;
-                                    dialog.cancel();
-                                    attachFile.toggle();
-                                }
-                            }
-                        });
-
-
+                    public void onClick(View v) {
+                        if (field1.getValue_field().equals("")) {
+                            Toast.makeText(ReportDetailActivity.this, "Mời nhập field name!!", Toast.LENGTH_LONG);
+                            return;
+                        } else {
+                            Field f = new Field(field1.getValue_field());
+                            arrField.add(f);
+                            adapterAdd.notifyDataSetChanged();
+                            adapterAdd = null;
+                            dialog.dismiss();
+                        }
                     }
                 });
-                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-                dialog.show();
             }
         });
         addSpecialField.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                attachFile.toggle();
                 AlertDialog.Builder builder = new AlertDialog.Builder(ReportDetailActivity.this);
                 // String array for alert dialog multi choice items
                 final String[] choices = new String[]{
@@ -381,6 +359,7 @@ public class ReportDetailActivity extends AppCompatActivity {
         attachFileFromFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                attachFile.toggle();
                 DialogProperties properties = new DialogProperties();
                 properties.selection_mode = DialogConfigs.SINGLE_MODE;
                 properties.selection_type = DialogConfigs.FILE_SELECT;
@@ -413,6 +392,7 @@ public class ReportDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 {
+                    attachFile.toggle();
                     dialog = new Dialog(ReportDetailActivity.this);
                     dialog.setContentView(R.layout.private_key_dialog);
 
@@ -573,7 +553,7 @@ public class ReportDetailActivity extends AppCompatActivity {
                                         catch (IOException e) {
                                             //You'll need to add proper error handling here
                                         }
-                                        pdfFile.setPublicKeyUrl(text.toString());
+                                        pdfFile.setPublicKeyUrl(text.toString().replace("\u0000", ""));
 
                                         dataService.uploadFile(file, pdfFile);
                                         Toast.makeText(ReportDetailActivity.this,"ONLINE MODE",Toast.LENGTH_SHORT);
@@ -621,8 +601,6 @@ public class ReportDetailActivity extends AppCompatActivity {
                 os.flush();
                 os.close();
             } catch (Exception e) {
-                Toast.makeText(this, "erorrrrr",
-                        Toast.LENGTH_SHORT).show();
             }
         }
         else{
@@ -632,7 +610,20 @@ public class ReportDetailActivity extends AppCompatActivity {
                         .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                 try {
                     if (adapterAdd == null) {
+                        boolean flag;
                         Field field = adapter.getItem(position);
+                        switch (field.getKey_field()){
+                            case "Số điện thoại":{
+                                if(field.getValue_field().matches(regexPhoneNum)){
+                                    flag = true;
+                                }
+                                else {
+                                    flag = false;
+                                }
+                            }
+
+                        }
+
                         field.setValue_field(field.getValue_field() + result.get(0) + ".");
                         adapter.notifyDataSetChanged();
                     }

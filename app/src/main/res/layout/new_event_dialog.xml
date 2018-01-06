@@ -30,6 +30,7 @@ android:layout_height="match_parent">
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="textCapSentences"
                 android:layout_weight="1"
                 android:textSize="24dp"
                 android:hint="Địa điểm"
@@ -62,6 +63,7 @@ android:layout_height="match_parent">
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="textCapSentences"
                 android:layout_weight="1"
                 android:textSize="24dp"
                 android:hint="Công việc"

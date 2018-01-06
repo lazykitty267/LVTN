@@ -78,11 +78,6 @@ public class FieldAdapter extends ArrayAdapter<Field> {
 
             @Override
             public void afterTextChanged(Editable editable) {
-//                valueField.setText("asdasdsa");
-
-//                field.
-//                Toast.makeText(context, valueField.getText().toString(),
-//                        Toast.LENGTH_SHORT).show();
             }
         });
         voiceButton.setOnClickListener(new View.OnClickListener() {

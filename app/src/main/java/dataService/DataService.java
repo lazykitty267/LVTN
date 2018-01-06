@@ -329,6 +329,7 @@ public class DataService {
                     }
                     // Luu pubkey dang hex
                     final File pubkeyURL = new File(keyFileDirec, "key.txt");
+                    if (pubkeyURL.exists()) pubkeyURL.delete();
                     pubkeyURL.createNewFile();
                     DataOutputStream dos = new DataOutputStream(new FileOutputStream(pubkeyURL));
                     dos.writeChars(url);

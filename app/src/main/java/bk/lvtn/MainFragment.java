@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,6 +45,7 @@ import entity.User;
  * A simple {@link Fragment} subclass.
  */
 public class MainFragment extends Fragment {
+    String text_notify ="";
     ArrayList<Note> arrEvent ;
     EventAdapter adapter;
     com.getbase.floatingactionbutton.FloatingActionButton add_b;
@@ -51,6 +53,7 @@ public class MainFragment extends Fragment {
     ReportAdapter adapterRp;
     WrapContentListview listRp;
     Dialog dialog;
+    TextView thongbao;
     public MainFragment() {
         // Required empty public constructor
     }
@@ -64,7 +67,7 @@ public class MainFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         arrEvent = new ArrayList<Note>();
         WrapContentListview listView = (WrapContentListview)view.findViewById(R.id.list_event_inweek);
-
+        thongbao = (TextView)view.findViewById(R.id.text_notify);
         adapter = new EventAdapter(getActivity(), arrEvent,R.layout.item_inlist_events);
         listRp = (WrapContentListview)view.findViewById(R.id.list_report_inweek);
         add_b = (com.getbase.floatingactionbutton.FloatingActionButton) view.findViewById(R.id.fab_rp);
@@ -85,6 +88,7 @@ public class MainFragment extends Fragment {
                     event = postSnapshot.getValue(Note.class);
                     arrEvent.add(event);
                 }
+                thongbao.setText("Chào Thanh, bạn có "+String.valueOf(arrEvent.size()) +" sự kiện mới trong tuần này!");
                 adapter.notifyDataSetChanged();
             }
 
