@@ -555,11 +555,7 @@ public class ReportDetailActivity extends AppCompatActivity {
                                             //You'll need to add proper error handling here
                                         }
                                         pdfFile.setPublicKeyUrl(text.toString().replace("\u0000", ""));
-                                        while (pdfFile.getSignUrl() == null
-                                                || pdfFile.getPublicKeyUrl() == null
-                                                || pdfFile.getUrl() == null) {
-
-                                        }
+                                        Thread.sleep(3000);
                                         dataService.uploadFile(file, pdfFile);
                                         Toast.makeText(ReportDetailActivity.this,"ONLINE MODE",Toast.LENGTH_SHORT);
                                         showSuccessDialog();
